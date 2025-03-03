@@ -109,11 +109,11 @@ dotnet_naming_symbols.interfaces_symbols.applicable_kinds = interface
 dotnet_naming_symbols.interfaces_symbols.resharper_applicable_kinds = interface
 dotnet_naming_symbols.interfaces_symbols.resharper_required_modifiers = any
 dotnet_naming_symbols.unity_serialized_field_symbols.applicable_accessibilities = *
-dotnet_naming_symbols.unity_serialized_field_symbols.applicable_kinds = 
+dotnet_naming_symbols.unity_serialized_field_symbols.applicable_kinds =
 dotnet_naming_symbols.unity_serialized_field_symbols.resharper_applicable_kinds = unity_serialised_field
 dotnet_naming_symbols.unity_serialized_field_symbols.resharper_required_modifiers = instance
 dotnet_naming_symbols.unity_serialized_field_symbols_1.applicable_accessibilities = *
-dotnet_naming_symbols.unity_serialized_field_symbols_1.applicable_kinds = 
+dotnet_naming_symbols.unity_serialized_field_symbols_1.applicable_kinds =
 dotnet_naming_symbols.unity_serialized_field_symbols_1.resharper_applicable_kinds = unity_serialised_field
 dotnet_naming_symbols.unity_serialized_field_symbols_1.resharper_required_modifiers = instance
 dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:suggestion
@@ -181,7 +181,7 @@ resharper_indent_nested_for_stmt = true
 resharper_indent_nested_lock_stmt = true
 resharper_indent_nested_usings_stmt = true
 resharper_indent_nested_while_stmt = true
-resharper_instance_members_qualify_declared_in = 
+resharper_instance_members_qualify_declared_in =
 resharper_int_align_switch_expressions = true
 resharper_int_align_switch_sections = true
 resharper_keep_existing_declaration_parens_arrangement = false
@@ -282,7 +282,7 @@ csharp_indent_switch_labels = true
 csharp_indent_labels = one_less_than_current
 
 # Modifier preferences
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:suggestion
 
 # Types: use keywords instead of BCL types, and permit var only when the type is clear
 csharp_style_var_for_built_in_types = false:suggestion
@@ -385,7 +385,7 @@ csharp_space_between_square_brackets = false
 dotnet_code_quality.api_surface = all
 
 # License header
-file_header_template = Copyright (c) .NET Foundation and contributors. All rights reserved.\nLicensed under the MIT license. See LICENSE file in the project root for full license information.\n
+file_header_template = Copyright (c).NET Foundation and contributors.All rights reserved.\nLicensed under the MIT license.See LICENSE file in the project root for full license information.\n
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
