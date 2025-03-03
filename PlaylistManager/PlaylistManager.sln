@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{5D240CC7-2299-4F97-B37E-75AE82399023}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistManager.DAL", "PlaylistManager.DAL\PlaylistManager.DAL.csproj", "{ECB5D816-9968-49AF-B02D-98B4CC3EBD63}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{3077CB7F-0E3F-41FD-9C99-ACC5A60E7FBF}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+		..\.editorconfig = ..\.editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B3618455-3519-43DD-8D7A-A96A2435911F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaylistManager.Common", "PlaylistManager.Common\PlaylistManager.Common.csproj", "{60AB5436-D053-449C-9DF8-529E926A4B75}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECB5D816-9968-49AF-B02D-98B4CC3EBD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECB5D816-9968-49AF-B02D-98B4CC3EBD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECB5D816-9968-49AF-B02D-98B4CC3EBD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECB5D816-9968-49AF-B02D-98B4CC3EBD63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60AB5436-D053-449C-9DF8-529E926A4B75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60AB5436-D053-449C-9DF8-529E926A4B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60AB5436-D053-449C-9DF8-529E926A4B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60AB5436-D053-449C-9DF8-529E926A4B75}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ECB5D816-9968-49AF-B02D-98B4CC3EBD63} = {5D240CC7-2299-4F97-B37E-75AE82399023}
+		{60AB5436-D053-449C-9DF8-529E926A4B75} = {5D240CC7-2299-4F97-B37E-75AE82399023}
+	EndGlobalSection
+EndGlobal
