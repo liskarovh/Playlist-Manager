@@ -1,9 +1,9 @@
 namespace PlaylistManager.DAL.Entities;
 
 /// <summary>
-/// Represents a playlist entity.
+/// Represents the base entity for a playlist.
 /// </summary>
-public record PlaylistEntity : IEntity
+public abstract record PlaylistBaseEntity : IEntity
 {
     /// <summary>
     /// Gets or sets the unique identifier for the playlist entity.
@@ -19,10 +19,4 @@ public record PlaylistEntity : IEntity
     /// Gets or sets the description of the playlist.
     /// </summary>
     public string? Description { get; set; }
-
-    /// <summary>
-    /// Gets the collection of multimedia entities associated with the playlist.
-    /// </summary>
-    public ICollection<PlaylistMultimediaEntity> PlaylistMultimedia { get; init; }
-        = new List<PlaylistMultimediaEntity>();
 }

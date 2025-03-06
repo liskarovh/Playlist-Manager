@@ -23,7 +23,7 @@ public record PlaylistMultimediaEntity : IEntity
     /// <summary>
     /// Gets the associated playlist entity.
     /// </summary>
-    public required PlaylistEntity Playlist { get; init; }
+    public required PlaylistBaseEntity Playlist { get; init; }
 
     /// <summary>
     /// Gets the associated multimedia entity.
