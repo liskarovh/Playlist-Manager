@@ -12,6 +12,20 @@ namespace PlaylistManager.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Playlists",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    Discriminator = table.Column<string>(type: "TEXT", maxLength: 34, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Playlists", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MultimediaBaseEntities",
                 columns: table => new
                 {
@@ -25,27 +39,32 @@ namespace PlaylistManager.DAL.Migrations
                     Discriminator = table.Column<string>(type: "TEXT", maxLength: 21, nullable: false),
                     Format = table.Column<int>(type: "INTEGER", nullable: true),
                     Genre = table.Column<int>(type: "INTEGER", nullable: true),
+                    AudioBookPlaylistEntityId = table.Column<Guid>(type: "TEXT", nullable: true),
                     MusicEntity_Genre = table.Column<int>(type: "INTEGER", nullable: true),
+                    MusicPlaylistEntityId = table.Column<Guid>(type: "TEXT", nullable: true),
                     VideoMediaEntity_Format = table.Column<int>(type: "INTEGER", nullable: true),
                     VideoMediaEntity_Genre = table.Column<int>(type: "INTEGER", nullable: true),
-                    Resolution = table.Column<string>(type: "TEXT", nullable: true)
+                    Resolution = table.Column<string>(type: "TEXT", nullable: true),
+                    VideoPlaylistEntityId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MultimediaBaseEntities", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Playlists",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Playlists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MultimediaBaseEntities_Playlists_AudioBookPlaylistEntityId",
+                        column: x => x.AudioBookPlaylistEntityId,
+                        principalTable: "Playlists",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MultimediaBaseEntities_Playlists_MusicPlaylistEntityId",
+                        column: x => x.MusicPlaylistEntityId,
+                        principalTable: "Playlists",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MultimediaBaseEntities_Playlists_VideoPlaylistEntityId",
+                        column: x => x.VideoPlaylistEntityId,
+                        principalTable: "Playlists",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -72,6 +91,21 @@ namespace PlaylistManager.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MultimediaBaseEntities_AudioBookPlaylistEntityId",
+                table: "MultimediaBaseEntities",
+                column: "AudioBookPlaylistEntityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MultimediaBaseEntities_MusicPlaylistEntityId",
+                table: "MultimediaBaseEntities",
+                column: "MusicPlaylistEntityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MultimediaBaseEntities_VideoPlaylistEntityId",
+                table: "MultimediaBaseEntities",
+                column: "VideoPlaylistEntityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlaylistMultimedia_MultimediaId",
