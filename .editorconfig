@@ -130,7 +130,7 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:suggest
 # ReSharper properties
 resharper_align_linq_query = true
 resharper_align_multiline_argument = true
-resharper_align_multiline_array_and_object_initializer = true
+resharper_align_multiline_array_and_object_initializer = false
 resharper_align_multiline_binary_patterns = true
 resharper_align_multiline_calls_chain = true
 resharper_align_multiline_expression = true
