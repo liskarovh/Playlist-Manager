@@ -205,6 +205,7 @@ resharper_place_simple_accessor_on_single_line = false
 resharper_place_simple_embedded_statement_on_same_line = false
 resharper_place_simple_enum_on_single_line = true
 resharper_place_simple_switch_expression_on_single_line = true
+resharper_max_initializer_elements_on_line = 1
 resharper_resx_insert_final_newline = false
 resharper_resx_max_line_length = 200
 resharper_shaderlab_insert_final_newline = false
