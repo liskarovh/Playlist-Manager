@@ -26,4 +26,10 @@ public record PlaylistEntity : IEntity
     /// Determines the type of the playlist.
     /// </summary>
     public required PlaylistType Type { get; init; }
+
+    /// <summary>
+    /// Gets or sets the collection of multimedia entities associated with the playlist.
+    /// </summary>
+    public ICollection<PlaylistMultimediaEntity> PlaylistMultimedia { get; set; }
+        = new List<PlaylistMultimediaEntity>();
 }

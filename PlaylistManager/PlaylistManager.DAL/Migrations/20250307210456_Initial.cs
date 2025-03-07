@@ -55,7 +55,8 @@ namespace PlaylistManager.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     PlaylistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    MultimediaId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    MultimediaId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AddedDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

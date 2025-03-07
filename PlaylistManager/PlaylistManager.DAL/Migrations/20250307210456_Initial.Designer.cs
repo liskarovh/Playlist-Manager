@@ -11,7 +11,7 @@ using PlaylistManager.DAL;
 namespace PlaylistManager.DAL.Migrations
 {
     [DbContext(typeof(PlaylistManagerDbContext))]
-    [Migration("20250307185539_Initial")]
+    [Migration("20250307210456_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -84,6 +84,9 @@ namespace PlaylistManager.DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("AddedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("MultimediaId")
@@ -171,7 +174,7 @@ namespace PlaylistManager.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("PlaylistManager.DAL.Entities.PlaylistEntity", "Playlist")
-                        .WithMany()
+                        .WithMany("PlaylistMultimedia")
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -179,6 +182,11 @@ namespace PlaylistManager.DAL.Migrations
                     b.Navigation("Multimedia");
 
                     b.Navigation("Playlist");
+                });
+
+            modelBuilder.Entity("PlaylistManager.DAL.Entities.PlaylistEntity", b =>
+                {
+                    b.Navigation("PlaylistMultimedia");
                 });
 #pragma warning restore 612, 618
         }

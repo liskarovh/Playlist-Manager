@@ -83,6 +83,9 @@ namespace PlaylistManager.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("MultimediaId")
                         .HasColumnType("TEXT");
 
@@ -168,7 +171,7 @@ namespace PlaylistManager.DAL.Migrations
                         .IsRequired();
 
                     b.HasOne("PlaylistManager.DAL.Entities.PlaylistEntity", "Playlist")
-                        .WithMany()
+                        .WithMany("PlaylistMultimedia")
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -176,6 +179,11 @@ namespace PlaylistManager.DAL.Migrations
                     b.Navigation("Multimedia");
 
                     b.Navigation("Playlist");
+                });
+
+            modelBuilder.Entity("PlaylistManager.DAL.Entities.PlaylistEntity", b =>
+                {
+                    b.Navigation("PlaylistMultimedia");
                 });
 #pragma warning restore 612, 618
         }
