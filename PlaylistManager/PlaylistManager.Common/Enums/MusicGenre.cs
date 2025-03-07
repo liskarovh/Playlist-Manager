@@ -36,14 +36,19 @@ public enum MusicGenre
     Electronic,
 
     /// <summary>
-    /// Reggae genre.
+    /// Pop genre.
     /// </summary>
-    Reggae,
+    Pop,
 
     /// <summary>
     /// Punk genre.
     /// </summary>
     Punk,
+
+    /// <summary>
+    /// Anime genre
+    /// </summary>
+    Anime,
 
     /// <summary>
     /// Other genres.
