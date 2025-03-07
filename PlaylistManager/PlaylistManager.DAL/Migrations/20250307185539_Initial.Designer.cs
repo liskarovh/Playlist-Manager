@@ -11,7 +11,7 @@ using PlaylistManager.DAL;
 namespace PlaylistManager.DAL.Migrations
 {
     [DbContext(typeof(PlaylistManagerDbContext))]
-    [Migration("20250306190038_Initial")]
+    [Migration("20250307185539_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -59,7 +59,7 @@ namespace PlaylistManager.DAL.Migrations
                     b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.PlaylistBaseEntity", b =>
+            modelBuilder.Entity("PlaylistManager.DAL.Entities.PlaylistEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,22 +68,16 @@ namespace PlaylistManager.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(34)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("Playlists");
-
-                    b.HasDiscriminator().HasValue("PlaylistBaseEntity");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("PlaylistManager.DAL.Entities.PlaylistMultimediaEntity", b =>
@@ -130,11 +124,6 @@ namespace PlaylistManager.DAL.Migrations
                     b.Property<string>("Resolution")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("VideoPlaylistEntityId")
-                        .HasColumnType("TEXT");
-
-                    b.HasIndex("VideoPlaylistEntityId");
-
                     b.ToTable("MultimediaBaseEntities", t =>
                         {
                             t.Property("Format")
@@ -147,38 +136,12 @@ namespace PlaylistManager.DAL.Migrations
                     b.HasDiscriminator().HasValue("VideoMediaEntity");
                 });
 
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.AudioBookPlaylistEntity", b =>
-                {
-                    b.HasBaseType("PlaylistManager.DAL.Entities.PlaylistBaseEntity");
-
-                    b.HasDiscriminator().HasValue("AudioBookPlaylistEntity");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.MusicPlaylistEntity", b =>
-                {
-                    b.HasBaseType("PlaylistManager.DAL.Entities.PlaylistBaseEntity");
-
-                    b.HasDiscriminator().HasValue("MusicPlaylistEntity");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.VideoPlaylistEntity", b =>
-                {
-                    b.HasBaseType("PlaylistManager.DAL.Entities.PlaylistBaseEntity");
-
-                    b.HasDiscriminator().HasValue("VideoPlaylistEntity");
-                });
-
             modelBuilder.Entity("PlaylistManager.DAL.Entities.AudioBookEntity", b =>
                 {
                     b.HasBaseType("PlaylistManager.DAL.Entities.AudioMediaEntity");
 
-                    b.Property<Guid?>("AudioBookPlaylistEntityId")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Genre")
                         .HasColumnType("INTEGER");
-
-                    b.HasIndex("AudioBookPlaylistEntityId");
 
                     b.HasDiscriminator().HasValue("AudioBookEntity");
                 });
@@ -189,11 +152,6 @@ namespace PlaylistManager.DAL.Migrations
 
                     b.Property<int>("Genre")
                         .HasColumnType("INTEGER");
-
-                    b.Property<Guid?>("MusicPlaylistEntityId")
-                        .HasColumnType("TEXT");
-
-                    b.HasIndex("MusicPlaylistEntityId");
 
                     b.ToTable("MultimediaBaseEntities", t =>
                         {
@@ -212,7 +170,7 @@ namespace PlaylistManager.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PlaylistManager.DAL.Entities.PlaylistBaseEntity", "Playlist")
+                    b.HasOne("PlaylistManager.DAL.Entities.PlaylistEntity", "Playlist")
                         .WithMany()
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -221,42 +179,6 @@ namespace PlaylistManager.DAL.Migrations
                     b.Navigation("Multimedia");
 
                     b.Navigation("Playlist");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.VideoMediaEntity", b =>
-                {
-                    b.HasOne("PlaylistManager.DAL.Entities.VideoPlaylistEntity", null)
-                        .WithMany("Multimedia")
-                        .HasForeignKey("VideoPlaylistEntityId");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.AudioBookEntity", b =>
-                {
-                    b.HasOne("PlaylistManager.DAL.Entities.AudioBookPlaylistEntity", null)
-                        .WithMany("Multimedia")
-                        .HasForeignKey("AudioBookPlaylistEntityId");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.MusicEntity", b =>
-                {
-                    b.HasOne("PlaylistManager.DAL.Entities.MusicPlaylistEntity", null)
-                        .WithMany("Multimedia")
-                        .HasForeignKey("MusicPlaylistEntityId");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.AudioBookPlaylistEntity", b =>
-                {
-                    b.Navigation("Multimedia");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.MusicPlaylistEntity", b =>
-                {
-                    b.Navigation("Multimedia");
-                });
-
-            modelBuilder.Entity("PlaylistManager.DAL.Entities.VideoPlaylistEntity", b =>
-                {
-                    b.Navigation("Multimedia");
                 });
 #pragma warning restore 612, 618
         }

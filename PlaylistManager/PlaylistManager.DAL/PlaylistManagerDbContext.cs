@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using PlaylistManager.Common.Enums;
 using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.DAL;
@@ -15,24 +14,9 @@ public class PlaylistManagerDbContext(DbContextOptions contextOptions) : DbConte
     public DbSet<PlaylistMultimediaEntity> PlaylistMultimedia => Set<PlaylistMultimediaEntity>();
 
     /// <summary>
-    /// Gets or sets the DbSet for PlaylistBaseEntity.
+    /// Gets or sets the DbSet for PlaylistEntity.
     /// </summary>
-    public DbSet<PlaylistBaseEntity> Playlists => Set<PlaylistBaseEntity>();
-
-    /// <summary>
-    /// Gets or sets the DbSet for MusicPlaylistEntity.
-    /// </summary>
-    public DbSet<MusicPlaylistEntity> MusicPlaylists => Set<MusicPlaylistEntity>();
-
-    /// <summary>
-    /// Gets or sets the DbSet for VideoPlaylistEntity.
-    /// </summary>
-    public DbSet<VideoPlaylistEntity> VideoPlaylists => Set<VideoPlaylistEntity>();
-
-    /// <summary>
-    /// Gets or sets the DbSet for AudioBookPlaylistEntity.
-    /// </summary>
-    public DbSet<AudioBookPlaylistEntity> AudioBookPlaylists => Set<AudioBookPlaylistEntity>();
+    public DbSet<PlaylistEntity> Playlists => Set<PlaylistEntity>();
 
     /// <summary>
     /// Gets or sets the DbSet for MultimediaBaseEntity.
