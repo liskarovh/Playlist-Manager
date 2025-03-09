@@ -25,7 +25,7 @@ public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsB
         AudioBookEntity entity = new()
         {
             // Made up AudioBook, Guid is random
-            Id = Guid.Parse("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx01xxx"),
+            Id = Guid.Parse("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxx01xxxx"),
             Title = "Audiobook Title",
             Description = "A detailed and useful description of the AudioBook.",
             Duration = 314,
