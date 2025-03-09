@@ -27,7 +27,7 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
         VideoMediaEntity entity = new()
         {
             //VideoMedia details, Guid is random, made up
-            Id = Guid.Parse("dae89c82-812d-4f0f-8dcf-734f8fbe9c0b"),
+            Id = Guid.Parse("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxx03xxxx"),
             Title = "A very nice movie",
             Description = "A very good movie about a very nice guy.",
             Duration = 7302,
