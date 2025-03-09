@@ -52,23 +52,28 @@ public static class PlaylistSeeds
     };
 
     /// <summary>
-    /// Represents an updated clone of the MusicPlaylist entity.
+    /// Represents an update of the MusicPlaylist entity.
     /// </summary>
-    public static readonly PlaylistEntity MusicPlaylistUpdate = MusicPlaylist with
+    public static readonly PlaylistEntity MusicPlaylistUpdate = new()
     {
         Id = Guid.Parse("41b93013-7605-4ee1-bbfb-e1503f125825"),
         Title = "Rock Playlist Updated",
-        Description = "Updated best of rock 2025"
+        Description = "Updated best of rock 2025",
+        Type = PlaylistType.Music
     };
 
+
     /// <summary>
-    /// Represents a clone of the MusicPlaylist entity for deletion.
+    /// Represents a MusicPlaylist entity for deletion.
     /// </summary>
-    public static readonly PlaylistEntity MusicPlaylistDelete = MusicPlaylist with
+    public static readonly PlaylistEntity MusicPlaylistDelete = new()
     {
         Id = Guid.Parse("df7fa7e8-df17-4f61-b93d-189eae0cbdc6"),
-        Title = "Rock Playlist for Delete"
+        Title = "Rock Playlist for Delete",
+        Description = "A collection of rock songs",
+        Type = PlaylistType.Music
     };
+
 
     /// <summary>
     /// Seeds the database context with Playlist entities.
@@ -78,12 +83,13 @@ public static class PlaylistSeeds
     public static DbContext SeedPlaylist(this DbContext dbx)
     {
         dbx.Set<PlaylistEntity>()
-           .AddRange(EmptyPlaylist,
+           .AddRange(
                      AudioBookPlaylist,
                      VideoPlaylist,
                      MusicPlaylist,
                      MusicPlaylistUpdate,
                      MusicPlaylistDelete
+                     // EmptyPlaylist
                     );
         return dbx;
     }

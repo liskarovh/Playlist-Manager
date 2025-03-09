@@ -123,13 +123,14 @@ public static class PlaylistMultimediaSeeds
     public static DbContext SeedPlaylistMultimedia(this DbContext dbContext)
     {
         dbContext.Set<PlaylistMultimediaEntity>()
-                 .AddRange(EmptyPlaylistMultimedia,
+                 .AddRange(
                            MusicPlaylist_BohemianRhapsody,
                            MusicPlaylist_AmericanIdiot,
                            VideoPlaylist_TheMatrix,
                            AudioBookPlaylist_Dune,
                            MusicPlaylist_BohemianRhapsodyUpdate,
                            MusicPlaylist_BohemianRhapsodyDelete
+        // EmptyPlaylistMultimedia,
                           );
         return dbContext;
     }

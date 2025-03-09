@@ -44,17 +44,33 @@ public static class AudioBookSeeds
     /// <summary>
     /// Represents an updated clone of the "Ready Player One" AudioBook entity.
     /// </summary>
-    public static readonly AudioBookEntity ReadyPlayerOneUpdate = ReadyPlayerOne with
+    public static readonly AudioBookEntity ReadyPlayerOneUpdate = new()
     {
-        Id = Guid.Parse("51ae4321-45d9-4ec1-bd81-1a3ec5d884ea")
+        Id = Guid.Parse("51ae4321-45d9-4ec1-bd81-1a3ec5d884ea"),
+        Title = "Ready Player One",
+        Description = "Dystopian sci-fi novel set in a virtual reality world.",
+        Duration = 49680,
+        Author = "Ernest Cline",
+        ReleaseYear = 2011,
+        Url = "https://isbnsearch.org/isbn/9780307887443",
+        Genre = AudioBookGenre.SciFi,
+        Format = AudioFormat.Mp3
     };
 
     /// <summary>
     /// Represents a clone of the "Ready Player One" AudioBook entity for deletion.
     /// </summary>
-    public static readonly AudioBookEntity ReadyPlayerOneDelete = ReadyPlayerOne with
+    public static readonly AudioBookEntity ReadyPlayerOneDelete = new()
     {
-        Id = Guid.Parse("97b5afd8-e2d2-430d-b762-401bc3f9c382")
+        Id = Guid.Parse("97b5afd8-e2d2-430d-b762-401bc3f9c382"),
+        Title = "Ready Player One",
+        Description = "Dystopian sci-fi novel set in a virtual reality world.",
+        Duration = 49680,
+        Author = "Ernest Cline",
+        ReleaseYear = 2011,
+        Url = "https://isbnsearch.org/isbn/9780307887443",
+        Genre = AudioBookGenre.SciFi,
+        Format = AudioFormat.Mp3
     };
 
     /// <summary>

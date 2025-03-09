@@ -54,9 +54,9 @@ public class DbContextTestsBase : IAsyncLifetime
 
         dbx.SeedAudioBook()
            .SeedMusic()
-           .SeedVideoMedia();
-        //.SeedPlaylist()
-        //.SeedPlaylistMultimedia();
+           .SeedVideoMedia()
+           .SeedPlaylist()
+           .SeedPlaylistMultimedia();
         await dbx.SaveChangesAsync();
     }
 

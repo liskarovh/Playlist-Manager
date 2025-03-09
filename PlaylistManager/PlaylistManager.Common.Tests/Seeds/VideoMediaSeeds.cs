@@ -45,17 +45,33 @@ public static class VideoMediaSeeds
     /// <summary>
     /// Reprezentuje aktualizovanou kopii entity "The Matrix".
     /// </summary>
-    public static readonly VideoMediaEntity MatrixUpdate = Matrix with
+    public static readonly VideoMediaEntity MatrixUpdate = new()
     {
-        Id = Guid.Parse("8a029d15-ac27-4723-8cc7-6e2448838f4b")
+        Id = Guid.Parse("8a029d15-ac27-4723-8cc7-6e2448838f4b"),
+        Title = "The Matrix",
+        Description = "A cyberpunk sci-fi film exploring simulated reality.",
+        Duration = 7860,
+        Author = "The Wachowskis",
+        ReleaseYear = 1999,
+        Url = "https://www.rottentomatoes.com/m/matrix",
+        Genre = VideoGenre.SciFi,
+        Format = VideoFormat.Mkv
     };
 
     /// <summary>
     /// Reprezentuje kopii entity "The Matrix" pro smazání.
     /// </summary>
-    public static readonly VideoMediaEntity MatrixDelete = Matrix with
+    public static readonly VideoMediaEntity MatrixDelete = new()
     {
-        Id = Guid.Parse("deb291a5-5af0-416c-909a-f06af798458c")
+        Id = Guid.Parse("deb291a5-5af0-416c-909a-f06af798458c"),
+        Title = "The Matrix",
+        Description = "A cyberpunk sci-fi film exploring simulated reality.",
+        Duration = 7860,
+        Author = "The Wachowskis",
+        ReleaseYear = 1999,
+        Url = "https://www.rottentomatoes.com/m/matrix",
+        Genre = VideoGenre.SciFi,
+        Format = VideoFormat.Mkv
     };
 
     /// <summary>

@@ -44,17 +44,33 @@ public static class MusicSeeds
     /// <summary>
     /// Reprezentuje aktualizovanou kopii entity "Bohemian Rhapsody".
     /// </summary>
-    public static readonly MusicEntity BohemianRhapsodyUpdate = BohemianRhapsody with
+    public static readonly MusicEntity BohemianRhapsodyUpdate = new()
     {
-        Id = Guid.Parse("88f2f2d5-b9b9-4fcb-953a-66d9d7043803")
+        Id = Guid.Parse("88f2f2d5-b9b9-4fcb-953a-66d9d7043803"),
+        Title = "Bohemian Rhapsody",
+        Description = "A progressive rock song with operatic sections.",
+        Duration = 355,
+        Author = "Queen",
+        ReleaseYear = 1975,
+        Url = "https://youtu.be/fJ9rUzIMcZQ?si=_20Z0J3G5PMaPbZD",
+        Genre = MusicGenre.Rock,
+        Format = AudioFormat.Mp3
     };
 
     /// <summary>
     /// Reprezentuje kopii entity "Bohemian Rhapsody" pro smazání.
     /// </summary>
-    public static readonly MusicEntity BohemianRhapsodyDelete = BohemianRhapsody with
+    public static readonly MusicEntity BohemianRhapsodyDelete = new()
     {
-        Id = Guid.Parse("f1e41bc6-f074-4b38-b7d8-40e7cc937b4b")
+        Id = Guid.Parse("f1e41bc6-f074-4b38-b7d8-40e7cc937b4b"),
+        Title = "Bohemian Rhapsody",
+        Description = "A progressive rock song with operatic sections.",
+        Duration = 355,
+        Author = "Queen",
+        ReleaseYear = 1975,
+        Url = "https://youtu.be/fJ9rUzIMcZQ?si=_20Z0J3G5PMaPbZD",
+        Genre = MusicGenre.Rock,
+        Format = AudioFormat.Mp3
     };
 
     /// <summary>
