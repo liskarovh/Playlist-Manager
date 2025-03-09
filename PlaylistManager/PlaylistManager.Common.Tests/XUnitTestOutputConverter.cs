@@ -4,25 +4,25 @@ using Xunit.Abstractions;
 namespace PlaylistManager.Common.Tests;
 
 /// <summary>
-/// Třída pro převod výstupu testů XUnit na textový výstup.
+/// Class for converting XUnit test output to text output.
 /// </summary>
 public class XUnitTestOutputConverter(ITestOutputHelper output) : TextWriter
 {
     /// <summary>
-    /// Získává kódování používané textovým zapisovačem.
+    /// Gets the encoding used by the text writer.
     /// </summary>
     public override Encoding Encoding => Encoding.UTF8;
 
     /// <summary>
-    /// Zapíše řádek zprávy do výstupu testu.
+    /// Writes a line of message to the test output.
     /// </summary>
-    /// <param name="message">Zpráva k zápisu.</param>
+    /// <param name="message">The message to write.</param>
     public override void WriteLine(string? message) => output.WriteLine(message);
 
     /// <summary>
-    /// Zapíše formátovaný řádek zprávy do výstupu testu.
+    /// Writes a formatted line of message to the test output.
     /// </summary>
-    /// <param name="format">Formátovací řetězec.</param>
-    /// <param name="args">Argumenty pro formátovací řetězec.</param>
+    /// <param name="format">The format string.</param>
+    /// <param name="args">The arguments for the format string.</param>
     public override void WriteLine(string format, params object?[] args) => output.WriteLine(format, args);
 }

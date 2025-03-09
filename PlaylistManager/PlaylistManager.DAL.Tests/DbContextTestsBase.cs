@@ -1,12 +1,7 @@
-
-
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
-using PlaylistManager.DAL.Entities;
 using PlaylistManager.DAL.Factories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace PlaylistManager.DAL.Tests;
@@ -15,7 +10,6 @@ namespace PlaylistManager.DAL.Tests;
 /// Base class for database-related tests
 /// Provides a structured setup and teardown process for tests involving the `PlaylistManagerDbContext`.
 /// </summary>
-
 public class DbContextTestsBase : IAsyncLifetime
 {
     /// <summary>

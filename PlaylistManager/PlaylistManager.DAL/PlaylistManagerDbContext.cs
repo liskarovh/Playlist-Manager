@@ -43,6 +43,12 @@ public class PlaylistManagerDbContext(DbContextOptions contextOptions) : DbConte
     /// </summary>
     public DbSet<MusicEntity> Music => Set<MusicEntity>();
 
+    /// <summary>
+    /// Configures the model that was discovered by convention from the entity types
+    /// exposed in DbSet properties on your derived context. The resulting model may be cached
+    /// and re-used for subsequent instances of your derived context.
+    /// </summary>
+    /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -61,5 +67,4 @@ public class PlaylistManagerDbContext(DbContextOptions contextOptions) : DbConte
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
     }
-
 }

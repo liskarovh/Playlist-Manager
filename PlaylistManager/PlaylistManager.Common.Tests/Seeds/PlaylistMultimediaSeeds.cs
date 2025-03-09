@@ -25,7 +25,7 @@ public static class PlaylistMultimediaSeeds
     /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsody = new()
     {
-        Id = Guid.Parse("40b4f1e8-5605-4c3e-8f4c-c3cb105094a7"),
+        Id = Guid.Parse(input: "40b4f1e8-5605-4c3e-8f4c-c3cb105094a7"),
         PlaylistId = PlaylistSeeds.MusicPlaylist.Id,
         Playlist = PlaylistSeeds.MusicPlaylist,
         MultimediaId = MusicSeeds.BohemianRhapsody.Id,
@@ -37,7 +37,7 @@ public static class PlaylistMultimediaSeeds
     /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_AmericanIdiot = new()
     {
-        Id = Guid.Parse("77e70961-178e-4ce6-b6a3-94bb9f7475ea"),
+        Id = Guid.Parse(input: "77e70961-178e-4ce6-b6a3-94bb9f7475ea"),
         PlaylistId = PlaylistSeeds.MusicPlaylist.Id,
         Playlist = PlaylistSeeds.MusicPlaylist,
         MultimediaId = MusicSeeds.AmericanIdiot.Id,
@@ -49,7 +49,7 @@ public static class PlaylistMultimediaSeeds
     /// </summary>
     public static readonly PlaylistMultimediaEntity VideoPlaylist_TheMatrix = new()
     {
-        Id = Guid.Parse("a77defd1-8bc4-455e-bc4f-4a3add1ae820"),
+        Id = Guid.Parse(input: "a77defd1-8bc4-455e-bc4f-4a3add1ae820"),
         PlaylistId = PlaylistSeeds.VideoPlaylist.Id,
         Playlist = PlaylistSeeds.VideoPlaylist,
         MultimediaId = VideoMediaSeeds.Matrix.Id,
@@ -61,7 +61,7 @@ public static class PlaylistMultimediaSeeds
     /// </summary>
     public static readonly PlaylistMultimediaEntity AudioBookPlaylist_Dune = new()
     {
-        Id = Guid.Parse("8b09152d-a5ad-4cc6-a5da-7f8f3e1784cc"),
+        Id = Guid.Parse(input: "8b09152d-a5ad-4cc6-a5da-7f8f3e1784cc"),
         PlaylistId = PlaylistSeeds.AudioBookPlaylist.Id,
         Playlist = PlaylistSeeds.AudioBookPlaylist,
         MultimediaId = AudioBookSeeds.Dune.Id,
@@ -72,13 +72,13 @@ public static class PlaylistMultimediaSeeds
     /// Represents an updated Bohemian Rhapsody multimedia in the Music playlist.
     /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyUpdate = new()
-        {
-            Id = Guid.Parse("87f6a5cf-519b-462d-9872-3d17f1c1b67b"),
-            PlaylistId = PlaylistSeeds.MusicPlaylistForMultimediaUpdate.Id,
-            Playlist = PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
-            MultimediaId = MusicSeeds.BohemianRhapsody.Id,
-            Multimedia = MusicSeeds.BohemianRhapsody
-        };
+    {
+        Id = Guid.Parse(input: "87f6a5cf-519b-462d-9872-3d17f1c1b67b"),
+        PlaylistId = PlaylistSeeds.MusicPlaylistForMultimediaUpdate.Id,
+        Playlist = PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+        MultimediaId = MusicSeeds.BohemianRhapsody.Id,
+        Multimedia = MusicSeeds.BohemianRhapsody
+    };
 
     /// <summary>
     /// Represents a deleted Bohemian Rhapsody multimedia in the Music playlist.
@@ -86,7 +86,7 @@ public static class PlaylistMultimediaSeeds
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyDelete =
         MusicPlaylist_BohemianRhapsody with
         {
-            Id = Guid.Parse("d660ede9-513c-44e9-9390-71dca1aeadd7"),
+            Id = Guid.Parse(input: "d660ede9-513c-44e9-9390-71dca1aeadd7"),
             PlaylistId = PlaylistSeeds.MusicPlaylistForMultimediaDelete.Id,
             Playlist = PlaylistSeeds.MusicPlaylistForMultimediaDelete
         };
@@ -124,14 +124,13 @@ public static class PlaylistMultimediaSeeds
     public static DbContext SeedPlaylistMultimedia(this DbContext dbContext)
     {
         dbContext.Set<PlaylistMultimediaEntity>()
-                 .AddRange(
-                           MusicPlaylist_BohemianRhapsody,
+                 .AddRange(MusicPlaylist_BohemianRhapsody,
                            MusicPlaylist_AmericanIdiot,
                            VideoPlaylist_TheMatrix,
                            AudioBookPlaylist_Dune,
                            MusicPlaylist_BohemianRhapsodyUpdate,
                            MusicPlaylist_BohemianRhapsodyDelete
-        // EmptyPlaylistMultimedia,
+                           // EmptyPlaylistMultimedia,
                           );
         return dbContext;
     }

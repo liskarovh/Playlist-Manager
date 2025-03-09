@@ -1,31 +1,28 @@
-
 using PlaylistManager.Common.Enums;
-namespace PlaylistManager.DAL.Tests;
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.Common.Tests.Seeds;
-using Xunit;
 using Xunit.Abstractions;
 using Microsoft.EntityFrameworkCore;
+
+namespace PlaylistManager.DAL.Tests;
 
 /// <summary>
 /// Test class verifies CRUD operations on the `MusicEntity` within the `PlaylistManagerDbContext`.
 /// Ensures that Music can be created, retrieved, updated, and deleted correctly.
 /// Verifies constraints such as preventing the deletion of Music used in Playlist.
 /// </summary>
-
 public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
-
     /// <summary>
     /// Tests if a new Music entity is successfully added and persisted in the database.
     /// </summary>
     [Fact]
     public async Task AddNew_Music_Persisted()
     {
-        //Arrange
+        // Arrange
         MusicEntity entity = new()
         {
-            //Music details, Guid is random
+            // Made up Music, Guid is random
             Id = Guid.Parse(input: "80fcf7ad-f2d5-481a-a830-d5fefb5db616"),
             Title = "What A Wonderful World",
             Description = "Flowy calming jazz song.",
@@ -37,11 +34,11 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
             Format = AudioFormat.Mp3
         };
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.Music.Add(entity);
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
         var actualEntities = await dbx.Music.SingleAsync(i => i.Id == entity.Id);
         Assert.Equal(entity, actualEntities);
@@ -53,13 +50,12 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
     [Fact]
     public async Task GetAll_Music_ContainsSeededVltava()
     {
-        //Act
+        // Act
         var entities = await PlaylistManagerDbContextSUT.Music.ToArrayAsync();
 
-        //Assert
+        // Assert
         Assert.Contains(MusicSeeds.Vltava, entities);
     }
-
 
     /// <summary>
     /// Tests if retrieving a Music by its ID correctly returns the expected entity.
@@ -67,10 +63,10 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
     [Fact]
     public async Task GetById_Music_VltavaRetrieved()
     {
-        //Act
+        // Act
         var entity = await PlaylistManagerDbContextSUT.Music.SingleAsync(i => i.Id == MusicSeeds.Vltava.Id);
 
-        //Assert
+        // Assert
         Assert.Equal(MusicSeeds.Vltava, entity);
     }
 
@@ -80,7 +76,7 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
     [Fact]
     public async Task Update_Music_Persisted()
     {
-        //Arrange
+        // Arrange
         var baseEntity = MusicSeeds.BohemianRhapsodyUpdate;
         var entity = baseEntity with
         {
@@ -89,11 +85,11 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
 
         };
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.Music.Update(entity);
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
         var actualEntity = await dbx.Music.SingleAsync(i => i.Id == entity.Id);
         Assert.Equal(entity, actualEntity);
@@ -102,55 +98,51 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
     /// <summary>
     /// Tests if a Music entity can be successfully deleted from the database.
     /// </summary>
-
     [Fact]
     public async Task Delete_Music_BohemianRhapsodyDeleted()
     {
-        //Arrange
+        // Arrange
         var entityBase = MusicSeeds.BohemianRhapsodyDelete;
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.Music.Remove(entityBase);
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         Assert.False(await PlaylistManagerDbContextSUT.Music.AnyAsync(i => i.Id == entityBase.Id));
     }
 
     /// <summary>
     /// Tests if deleting Music by its ID removes it from the database.
     /// </summary>
-
     [Fact]
     public async Task DeleteById_Music_BohemianRhapsodyDeleted()
     {
-        //Arrange
+        // Arrange
         var entityBase = MusicSeeds.BohemianRhapsodyDelete;
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.Music.Remove(PlaylistManagerDbContextSUT.Music.Single(i => i.Id == entityBase.Id));
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         Assert.False(await PlaylistManagerDbContextSUT.Music.AnyAsync(i => i.Id == entityBase.Id));
     }
 
     /// <summary>
     /// Tests if attempting to delete Music that is used in a Playlist throws a `DbUpdateException`.
     /// </summary>
-
     [Fact]
     public async Task Delete_Music_UsedInPlaylist_DoesNotThrowsDbUpdateException()
     {
-        //Arrange
+        // Arrange
         var entityBase = MusicSeeds.BohemianRhapsody;
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.Music.Remove(entityBase);
 
-        //Assert
+        // Assert
         var exception = await Record.ExceptionAsync(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
         Assert.Null(exception);
     }
-
 }

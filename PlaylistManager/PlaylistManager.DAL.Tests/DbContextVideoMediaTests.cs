@@ -1,11 +1,10 @@
-
 using PlaylistManager.Common.Enums;
-namespace PlaylistManager.DAL.Tests;
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.Common.Tests.Seeds;
-using Xunit;
 using Xunit.Abstractions;
 using Microsoft.EntityFrameworkCore;
+
+namespace PlaylistManager.DAL.Tests;
 
 /// <summary>
 /// Test class verifies CRUD operations on the `VideoMediaEntity` within the `PlaylistManagerDbContext`.
@@ -13,20 +12,18 @@ using Microsoft.EntityFrameworkCore;
 /// Verifies constraints such as preventing the deletion of VideoMedia used in Playlist.
 /// </summary>
 ///
-
 public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
-
     /// <summary>
     /// Tests if a new VideoMedia entity is successfully added and persisted in the database.
     /// </summary>
     [Fact]
     public async Task AddNew_VideoMedia_Persisted()
     {
-        //Arrange
+        // Arrange
         VideoMediaEntity entity = new()
         {
-            //VideoMedia details, Guid is random, made up
+            // Made up Video, Guid is random
             Id = Guid.Parse("80fcf7ad-f2d5-481a-a830-d5fefb5db616"),
             Title = "A very nice movie",
             Description = "A very good movie about a very nice guy.",
@@ -38,11 +35,11 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
             Format = VideoFormat.Mkv
         };
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.VideoMedia.Add(entity);
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
         var actualEntities = await dbx.VideoMedia.SingleAsync(i => i.Id == entity.Id);
         Assert.Equal(entity, actualEntities);
@@ -54,13 +51,12 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
     [Fact]
     public async Task GetAll_VideoMedia_ContainsSeededShining()
     {
-        //Act
+        // Act
         var entities = await PlaylistManagerDbContextSUT.VideoMedia.ToArrayAsync();
 
-        //Assert
+        // Assert
         Assert.Contains(VideoMediaSeeds.Shining, entities);
     }
-
 
     /// <summary>
     /// Tests if retrieving a VideoMedia by its ID correctly returns the expected entity.
@@ -68,10 +64,10 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
     [Fact]
     public async Task GetById_VideoMedia_ShiningRetrieved()
     {
-        //Act
+        // Act
         var entity = await PlaylistManagerDbContextSUT.VideoMedia.SingleAsync(i => i.Id == VideoMediaSeeds.Shining.Id);
 
-        //Assert
+        // Assert
         Assert.Equal(VideoMediaSeeds.Shining, entity);
     }
 
@@ -81,7 +77,7 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
     [Fact]
     public async Task Update_VideoMedia_Persisted()
     {
-        //Arrange
+        // Arrange
         var baseEntity = VideoMediaSeeds.MatrixUpdate;
         var entity = baseEntity with
         {
@@ -90,11 +86,11 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
 
         };
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.VideoMedia.Update(entity);
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
         var actualEntity = await dbx.VideoMedia.SingleAsync(i => i.Id == entity.Id);
         Assert.Equal(entity, actualEntity);
@@ -103,56 +99,51 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
     /// <summary>
     /// Tests if a VideoMedia entity can be successfully deleted from the database.
     /// </summary>
-
     [Fact]
     public async Task Delete_VideoMedia_MatrixDeleted()
     {
-        //Arrange
+        // Arrange
         var entityBase = VideoMediaSeeds.MatrixDelete;
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.VideoMedia.Remove(entityBase);
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         Assert.False(await PlaylistManagerDbContextSUT.VideoMedia.AnyAsync(i => i.Id == entityBase.Id));
     }
 
     /// <summary>
     /// Tests if deleting a VideoMedia by its ID removes it from the database.
     /// </summary>
-
     [Fact]
     public async Task DeleteById_VideoMedia_MatrixDeleted()
     {
-        //Arrange
+        // Arrange
         var entityBase = VideoMediaSeeds.MatrixDelete;
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.VideoMedia.Remove(PlaylistManagerDbContextSUT.VideoMedia.Single(i => i.Id == entityBase.Id));
         await PlaylistManagerDbContextSUT.SaveChangesAsync();
 
-        //Assert
+        // Assert
         Assert.False(await PlaylistManagerDbContextSUT.VideoMedia.AnyAsync(i => i.Id == entityBase.Id));
     }
 
     /// <summary>
     /// Tests if attempting to delete a VideoMedia that is used in a Playlist throws a `DbUpdateException`.
     /// </summary>
-
     [Fact]
     public async Task Delete_VideoMedia_UsedInPlaylist_DoesNotThrowsDbUpdateException()
     {
-        //Arrange
+        // Arrange
         var entityBase = VideoMediaSeeds.Matrix;
 
-        //Act
+        // Act
         PlaylistManagerDbContextSUT.VideoMedia.Remove(entityBase);
 
-        //Assert
+        // Assert
         var exception = await Record.ExceptionAsync(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
         Assert.Null(exception);
     }
-
 }
-

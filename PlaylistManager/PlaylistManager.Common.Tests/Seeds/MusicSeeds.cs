@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 namespace PlaylistManager.Common.Tests.Seeds;
 
 /// <summary>
-/// Poskytuje seed data pro entity Music pro testovací účely.
+/// Provides seed data for Music entities for testing purposes.
 /// </summary>
 public static class MusicSeeds
 {
     /// <summary>
-    /// Reprezentuje prázdnou entitu Music.
+    /// Represents an empty Music entity.
     /// </summary>
     public static readonly MusicEntity EmptyMusic = new()
     {
@@ -26,7 +26,7 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje entitu Music pro "Bohemian Rhapsody".
+    /// Represents the Music entity for "Bohemian Rhapsody".
     /// </summary>
     public static readonly MusicEntity BohemianRhapsody = new()
     {
@@ -42,11 +42,11 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje aktualizovanou kopii entity "Bohemian Rhapsody".
+    /// Represents an updated copy of the "Bohemian Rhapsody" entity.
     /// </summary>
     public static readonly MusicEntity BohemianRhapsodyUpdate = new()
     {
-        Id = Guid.Parse("88f2f2d5-b9b9-4fcb-953a-66d9d7043803"),
+        Id = Guid.Parse(input: "88f2f2d5-b9b9-4fcb-953a-66d9d7043803"),
         Title = "Bohemian Rhapsody",
         Description = "A progressive rock song with operatic sections.",
         Duration = 355,
@@ -58,11 +58,11 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje kopii entity "Bohemian Rhapsody" pro smazání.
+    /// Represents a copy of the "Bohemian Rhapsody" entity for deletion.
     /// </summary>
     public static readonly MusicEntity BohemianRhapsodyDelete = new()
     {
-        Id = Guid.Parse("f1e41bc6-f074-4b38-b7d8-40e7cc937b4b"),
+        Id = Guid.Parse(input: "f1e41bc6-f074-4b38-b7d8-40e7cc937b4b"),
         Title = "Bohemian Rhapsody",
         Description = "A progressive rock song with operatic sections.",
         Duration = 355,
@@ -74,7 +74,7 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje entitu Music pro "Shape of You".
+    /// Represents the Music entity for "Shape of You".
     /// </summary>
     public static readonly MusicEntity ShapeOfYou = new()
     {
@@ -90,7 +90,7 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje entitu Music pro "American Idiot".
+    /// Represents the Music entity for "American Idiot".
     /// </summary>
     public static readonly MusicEntity AmericanIdiot = new()
     {
@@ -106,7 +106,7 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje entitu Music pro "A Cruel Angel's Thesis".
+    /// Represents the Music entity for "A Cruel Angel's Thesis".
     /// </summary>
     public static readonly MusicEntity CruelAngelsThesis = new()
     {
@@ -122,7 +122,7 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Reprezentuje entitu Music pro "Vltava".
+    /// Represents the Music entity for "Vltava".
     /// </summary>
     public static readonly MusicEntity Vltava = new()
     {
@@ -138,10 +138,10 @@ public static class MusicSeeds
     };
 
     /// <summary>
-    /// Seeduje databázový kontext s entitami Music.
+    /// Seeds the database context with Music entities.
     /// </summary>
-    /// <param name="dbx">Databázový kontext k seedování.</param>
-    /// <returns>Seedovaný databázový kontext.</returns>
+    /// <param name="dbx">The database context to seed.</param>
+    /// <returns>The seeded database context.</returns>
     public static DbContext SeedMusic(this DbContext dbx)
     {
         dbx.Set<MusicEntity>()
