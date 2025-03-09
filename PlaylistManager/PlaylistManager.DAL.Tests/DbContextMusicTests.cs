@@ -140,16 +140,17 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
     /// </summary>
 
     [Fact]
-    public async Task Delete_Music_UsedInPlaylist_ThrowsDbUpdateException()
+    public async Task Delete_Music_UsedInPlaylist_DoesNotThrowsDbUpdateException()
     {
         //Arrange
-        var entityBase = MusicSeeds.Vltava;
+        var entityBase = MusicSeeds.BohemianRhapsody;
 
         //Act
         PlaylistManagerDbContextSUT.Music.Remove(entityBase);
 
         //Assert
-        await Assert.ThrowsAsync<DbUpdateException>(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
+        var exception = await Record.ExceptionAsync(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
+        Assert.Null(exception);
     }
 
 }

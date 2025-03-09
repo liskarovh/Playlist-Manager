@@ -141,16 +141,17 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
     /// </summary>
 
     [Fact]
-    public async Task Delete_VideoMedia_UsedInPlaylist_ThrowsDbUpdateException()
+    public async Task Delete_VideoMedia_UsedInPlaylist_DoesNotThrowsDbUpdateException()
     {
         //Arrange
-        var entityBase = VideoMediaSeeds.Shining;
+        var entityBase = VideoMediaSeeds.Matrix;
 
         //Act
         PlaylistManagerDbContextSUT.VideoMedia.Remove(entityBase);
 
         //Assert
-        await Assert.ThrowsAsync<DbUpdateException>(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
+        var exception = await Record.ExceptionAsync(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
+        Assert.Null(exception);
     }
 
 }

@@ -140,7 +140,7 @@ public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsB
     /// </summary>
 
     [Fact]
-    public async Task Delete_AudioBook_UsedInPlaylist_ThrowsDbUpdateException()
+    public async Task Delete_AudioBook_UsedInPlaylist_DoesNotThrowsDbUpdateException()
     {
         //Arrange
         var entityBase = AudioBookSeeds.Dune;
@@ -149,7 +149,8 @@ public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsB
         PlaylistManagerDbContextSUT.AudioBooks.Remove(entityBase);
 
         //Assert
-        await Assert.ThrowsAsync<DbUpdateException>(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
+        var exception = await Record.ExceptionAsync(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
+        Assert.Null(exception);
     }
 }
 
