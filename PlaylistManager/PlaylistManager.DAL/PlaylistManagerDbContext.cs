@@ -42,4 +42,24 @@ public class PlaylistManagerDbContext(DbContextOptions contextOptions) : DbConte
     /// Gets or sets the DbSet for MusicEntity.
     /// </summary>
     public DbSet<MusicEntity> Music => Set<MusicEntity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<PlaylistMultimediaEntity>()
+                    .HasOne(pm => pm.Playlist)
+                    .WithMany(p => p.PlaylistMultimedia)
+                    .HasForeignKey(pm => pm.PlaylistId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+
+        modelBuilder.Entity<PlaylistMultimediaEntity>()
+                    .HasOne(pm => pm.Multimedia)
+                    .WithMany()
+                    .HasForeignKey(pm => pm.MultimediaId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+    }
+
 }
