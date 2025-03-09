@@ -25,7 +25,7 @@ public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsB
         AudioBookEntity entity = new()
         {
             // Made up AudioBook, Guid is random
-            Id = Guid.Parse("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxx01xxxx"),
+            Id = Guid.Parse("ddf0fc90-4e4e-47a3-ad1c-aa931e1b4b77"),
             Title = "Audiobook Title",
             Description = "A detailed and useful description of the AudioBook.",
             Duration = 314,
@@ -151,6 +151,5 @@ public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsB
         //Assert
         await Assert.ThrowsAsync<DbUpdateException>(async () => await PlaylistManagerDbContextSUT.SaveChangesAsync());
     }
-
 }
 

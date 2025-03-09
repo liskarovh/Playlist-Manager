@@ -26,7 +26,7 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
         MusicEntity entity = new()
         {
             //Music details, Guid is random
-            Id = Guid.Parse(input: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxx02xxxx"),
+            Id = Guid.Parse(input: "80fcf7ad-f2d5-481a-a830-d5fefb5db616"),
             Title = "What A Wonderful World",
             Description = "Flowy calming jazz song.",
             Duration = 150,

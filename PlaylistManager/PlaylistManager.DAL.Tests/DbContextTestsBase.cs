@@ -52,12 +52,11 @@ public class DbContextTestsBase : IAsyncLifetime
 
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
 
-        dbx
-            .SeedMusic() //Ingredients in Cookbook
-            .SeedAudioBook() //Ingredients in Cookbook
-            .SeedVideoMedia() //Ingredients in Cookbook
-            .SeedPlaylistMultimedia() //Recipe in Cookbook
-            .SeedPlaylist(); //IngredientsAmounts in Cookbook
+        dbx.SeedAudioBook()
+           .SeedMusic()
+           .SeedVideoMedia();
+        //.SeedPlaylist()
+        //.SeedPlaylistMultimedia();
         await dbx.SaveChangesAsync();
     }
 
