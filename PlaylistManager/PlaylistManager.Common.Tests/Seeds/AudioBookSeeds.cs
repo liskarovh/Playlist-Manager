@@ -54,7 +54,7 @@ public static class AudioBookSeeds
     /// </summary>
     public static readonly AudioBookEntity ReadyPlayerOneDelete = ReadyPlayerOne with
     {
-        Id = Guid.Parse("97b5afd-e2d2-430d-b762-401bc3f9c382")
+        Id = Guid.Parse("97b5afd8-e2d2-430d-b762-401bc3f9c382")
     };
 
     /// <summary>
