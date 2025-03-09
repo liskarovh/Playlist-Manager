@@ -2,20 +2,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PlaylistManager.DAL.Factories;
 
-public class DbContextSqLiteFactory: IDbContextFactory<PlaylistManagerDbContext>
+/// <summary>
+/// Factory class for creating instances of <see cref="PlaylistManagerDbContext"/> using SQLite.
+/// </summary>
+public class DbContextSqLiteFactory : IDbContextFactory<PlaylistManagerDbContext>
 {
     private readonly DbContextOptionsBuilder<PlaylistManagerDbContext> _contextOptionsBuilder = new();
+
+    /// <summary>
+    /// Creates a new instance of <see cref="PlaylistManagerDbContext"/> with the configured options.
+    /// </summary>
+    /// <returns>A new instance of <see cref="PlaylistManagerDbContext"/>.</returns>
     public PlaylistManagerDbContext CreateDbContext() => new(_contextOptionsBuilder.Options);
 
-
-    public DbContextSqLiteFactory(string databaseName)
-    {
-        ////May be helpful for ad-hoc testing, not drop in replacement, needs some more configuration.
-        //builder.UseSqlite($"Data Source =:memory:;");
-        _contextOptionsBuilder.UseSqlite($"Data Source={databaseName};Cache=Shared");
-
-        ////Enable in case you want to see tests details, enabled may cause some inconsistencies in tests
-        //_contextOptionsBuilder.EnableSensitiveDataLogging();
-        //_contextOptionsBuilder.LogTo(Console.WriteLine);
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DbContextSqLiteFactory"/> class.
+    /// </summary>
+    /// <param name="databaseName">The name of the database.</param>
+    public DbContextSqLiteFactory(string databaseName) => _contextOptionsBuilder.UseSqlite($"Data Source={databaseName};Cache=Shared");
 }

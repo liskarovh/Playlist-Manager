@@ -11,7 +11,7 @@ using PlaylistManager.DAL;
 namespace PlaylistManager.DAL.Migrations
 {
     [DbContext(typeof(PlaylistManagerDbContext))]
-    [Migration("20250303155813_Initial")]
+    [Migration("20250307210456_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -72,6 +72,9 @@ namespace PlaylistManager.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("Playlists");
@@ -81,6 +84,9 @@ namespace PlaylistManager.DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("AddedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("MultimediaId")

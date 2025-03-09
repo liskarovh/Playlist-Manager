@@ -69,6 +69,9 @@ namespace PlaylistManager.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("Playlists");
@@ -78,6 +81,9 @@ namespace PlaylistManager.DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("AddedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("MultimediaId")

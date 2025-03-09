@@ -4,12 +4,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-- 'main'
-- 'feature'
+  branches:
+    include:
+      - '*'
 
 pr:
-- 'main'
-- 'feature'
+  branches:
+    include:
+      - '*'
 
 pool:
   vmImage: 'windows-latest'
@@ -18,21 +20,67 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  testResultsDir: '$(Agent.TempDirectory)/TestResults'
 
 steps:
-- task: NuGetToolInstaller@1
+  - checkout: self
+    fetchDepth: 0
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+  - task: NuGetToolInstaller@1
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore'
+    inputs:
+      restoreSolution: '$(solution)'
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: SonarCloudPrepare@3
+    displayName: 'Prepare SonarQube Cloud analysis configuration - Main'
+    continueOnError: true
+    inputs:
+      SonarQube: 'SonarQube Cloud'
+      organization: 'ics-2025-xkalinj00'
+      scannerMode: 'dotnet'
+      projectKey: 'ics-2025-xkalinj00_ics-team-project'
+      projectName: 'ics-team-project'
+      extraProperties: |
+        sonar.scanner.scanAll=false
+        sonar.cs.opencover.reportsPaths="$(testResultsDir)/**/*.xml"
+        sonar.cs.vstest.reportsPaths="$(testResultsDir)/**/*.trx"
+        sonar.exclusions="**/Migrations/**"
+
+  - task: VSBuild@1
+    displayName: 'Build solution'
+    inputs:
+      solution: '$(solution)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+
+  - powershell: |
+      $solution = Get-ChildItem -Path $(Build.SourcesDirectory) -Filter "*.sln" -Recurse | Select-Object -First 1
+      Write-Host "Using solution: $solution"
+      dotnet test "$($solution.FullName)" --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" --logger trx --results-directory "$(testResultsDir)"
+    displayName: 'Run Tests with Code Coverage'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '$(testResultsDir)/**/*.trx'
+    condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@2
+    continueOnError: true
+    displayName: 'Publish Code Coverage Report'
+    inputs:
+      summaryFileLocation: '$(testResultsDir)/**/coverage.cobertura.xml'
+
+  - task: SonarCloudAnalyze@3
+    continueOnError: true
+    displayName: 'Analyze solution with SonarQube Cloud'
+
+  - task: SonarCloudPublish@3
+    continueOnError: true
+    condition: always()
+    displayName: 'Publish SonarQube Cloud analysis result'
+    inputs:
+      pollingTimeoutSec: '300'

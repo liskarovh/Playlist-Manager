@@ -38,5 +38,10 @@ public enum AudioBookGenre
     /// <summary>
     /// Romance genre.
     /// </summary>
-    Romance
+    Romance,
+
+    /// <summary>
+    /// Dystopian genre.
+    /// </summary>
+    Dystopia
 }

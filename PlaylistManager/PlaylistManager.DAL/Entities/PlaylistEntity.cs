@@ -1,7 +1,9 @@
+using PlaylistManager.Common.Enums;
+
 namespace PlaylistManager.DAL.Entities;
 
 /// <summary>
-/// Represents a playlist entity.
+/// Represents the base entity for a playlist.
 /// </summary>
 public record PlaylistEntity : IEntity
 {
@@ -21,8 +23,13 @@ public record PlaylistEntity : IEntity
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets the collection of multimedia entities associated with the playlist.
+    /// Determines the type of the playlist.
     /// </summary>
-    public ICollection<PlaylistMultimediaEntity> PlaylistMultimedia { get; init; }
+    public required PlaylistType Type { get; init; }
+
+    /// <summary>
+    /// Gets or sets the collection of multimedia entities associated with the playlist.
+    /// </summary>
+    public ICollection<PlaylistMultimediaEntity> PlaylistMultimedia { get; set; }
         = new List<PlaylistMultimediaEntity>();
 }

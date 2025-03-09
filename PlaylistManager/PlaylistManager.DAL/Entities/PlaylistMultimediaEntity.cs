@@ -21,6 +21,11 @@ public record PlaylistMultimediaEntity : IEntity
     public required Guid MultimediaId { get; set; }
 
     /// <summary>
+    /// Gets the date when the multimedia entity was added to the playlist.
+    /// </summary>
+    public DateTime AddedDate { get; init; } = DateTime.Now;
+
+    /// <summary>
     /// Gets the associated playlist entity.
     /// </summary>
     public required PlaylistEntity Playlist { get; init; }
