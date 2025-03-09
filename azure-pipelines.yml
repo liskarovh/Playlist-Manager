@@ -6,12 +6,12 @@
 trigger:
   branches:
     include:
-    - '*'
+      - '*'
 
 pr:
   branches:
     include:
-    - '*'
+      - '*'
 
 pool:
   vmImage: 'windows-latest'
@@ -23,64 +23,64 @@ variables:
   testResultsDir: '$(Agent.TempDirectory)/TestResults'
 
 steps:
-- checkout: self
-  fetchDepth: 0
+  - checkout: self
+    fetchDepth: 0
 
-- task: NuGetToolInstaller@1
+  - task: NuGetToolInstaller@1
 
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
-  inputs:
-    restoreSolution: '$(solution)'
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore'
+    inputs:
+      restoreSolution: '$(solution)'
 
-- task: SonarCloudPrepare@3
-  displayName: 'Prepare SonarQube Cloud analysis configuration - Main'
-  continueOnError: true
-  inputs:
-    SonarQube: 'SonarQube Cloud'
-    organization: 'ics-2025-xkalinj00'
-    scannerMode: 'dotnet'
-    projectKey: 'ics-2025-xkalinj00_ics-team-project'
-    projectName: 'ics-team-project'
-    extraProperties: |
-      sonar.verbose=true
-      sonar.scanner.scanAll=false
-      sonar.cs.opencover.reportsPaths="$(testResultsDir)/**/*.xml"
-      sonar.cs.vstest.reportsPaths="$(testResultsDir)/**/*.trx"
-      sonar.exclusions="**/Migrations/**"
+  - task: SonarCloudPrepare@3
+    displayName: 'Prepare SonarQube Cloud analysis configuration - Main'
+    continueOnError: true
+    inputs:
+      SonarQube: 'SonarQube Cloud'
+      organization: 'ics-2025-xkalinj00'
+      scannerMode: 'dotnet'
+      projectKey: 'ics-2025-xkalinj00_ics-team-project'
+      projectName: 'ics-team-project'
+      extraProperties: |
+        sonar.scanner.scanAll=false
+        sonar.cs.opencover.reportsPaths="$(testResultsDir)/**/*.xml"
+        sonar.cs.vstest.reportsPaths="$(testResultsDir)/**/*.trx"
+        sonar.exclusions="**/Migrations/**"
 
-- task: VSBuild@1
-  displayName: 'Build solution'
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  - task: VSBuild@1
+    displayName: 'Build solution'
+    inputs:
+      solution: '$(solution)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
 
-- powershell: |
-    $solution = Get-ChildItem -Path $(Build.SourcesDirectory) -Filter "*.sln" -Recurse | Select-Object -First 1
-    Write-Host "Using solution: $solution"
-    dotnet test "$($solution.FullName)" --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" --logger trx --results-directory "$(testResultsDir)"
-  displayName: 'Run Tests with Code Coverage'
+  - powershell: |
+      $solution = Get-ChildItem -Path $(Build.SourcesDirectory) -Filter "*.sln" -Recurse | Select-Object -First 1
+      Write-Host "Using solution: $solution"
+      dotnet test "$($solution.FullName)" --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" --logger trx --results-directory "$(testResultsDir)"
+    displayName: 'Run Tests with Code Coverage'
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: '$(testResultsDir)/**/*.trx'
-  condition: succeededOrFailed()
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: '$(testResultsDir)/**/*.trx'
+    condition: succeededOrFailed()
 
-- task: PublishCodeCoverageResults@2
-  continueOnError: true
-  displayName: 'Publish Code Coverage Report'
-  inputs:
-    summaryFileLocation: '$(testResultsDir)/**/coverage.cobertura.xml'
+  - task: PublishCodeCoverageResults@2
+    continueOnError: true
+    displayName: 'Publish Code Coverage Report'
+    inputs:
+      summaryFileLocation: '$(testResultsDir)/**/coverage.cobertura.xml'
 
-- task: SonarCloudAnalyze@3
-  continueOnError: true
-  displayName: 'Analyze solution with SonarQube Cloud'
+  - task: SonarCloudAnalyze@3
+    continueOnError: true
+    displayName: 'Analyze solution with SonarQube Cloud'
 
-- task: SonarCloudPublish@3
-  continueOnError: true
-  displayName: 'Publish SonarQube Cloud analysis result'
-  inputs:
-    pollingTimeoutSec: '300'
+  - task: SonarCloudPublish@3
+    continueOnError: true
+    condition: always()
+    displayName: 'Publish SonarQube Cloud analysis result'
+    inputs:
+      pollingTimeoutSec: '300'
