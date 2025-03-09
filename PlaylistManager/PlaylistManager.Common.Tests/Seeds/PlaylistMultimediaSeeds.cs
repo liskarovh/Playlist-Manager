@@ -74,8 +74,8 @@ public static class PlaylistMultimediaSeeds
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyUpdate = new()
         {
             Id = Guid.Parse("87f6a5cf-519b-462d-9872-3d17f1c1b67b"),
-            PlaylistId = PlaylistSeeds.MusicPlaylistUpdate.Id,
-            Playlist = PlaylistSeeds.MusicPlaylistUpdate,
+            PlaylistId = PlaylistSeeds.MusicPlaylistForMultimediaUpdate.Id,
+            Playlist = PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
             MultimediaId = MusicSeeds.BohemianRhapsody.Id,
             Multimedia = MusicSeeds.BohemianRhapsody
         };
@@ -87,8 +87,8 @@ public static class PlaylistMultimediaSeeds
         MusicPlaylist_BohemianRhapsody with
         {
             Id = Guid.Parse("d660ede9-513c-44e9-9390-71dca1aeadd7"),
-            PlaylistId = PlaylistSeeds.MusicPlaylistDelete.Id,
-            Playlist = PlaylistSeeds.MusicPlaylistDelete
+            PlaylistId = PlaylistSeeds.MusicPlaylistForMultimediaDelete.Id,
+            Playlist = PlaylistSeeds.MusicPlaylistForMultimediaDelete
         };
 
     /// <summary>
@@ -103,10 +103,10 @@ public static class PlaylistMultimediaSeeds
         PlaylistSeeds.MusicPlaylist
                      .PlaylistMultimedia.Add(MusicPlaylist_AmericanIdiot);
 
-        PlaylistSeeds.MusicPlaylistUpdate
+        PlaylistSeeds.MusicPlaylistForMultimediaUpdate
                      .PlaylistMultimedia.Add(MusicPlaylist_BohemianRhapsodyUpdate);
 
-        PlaylistSeeds.MusicPlaylistDelete
+        PlaylistSeeds.MusicPlaylistForMultimediaDelete
                      .PlaylistMultimedia.Add(MusicPlaylist_BohemianRhapsodyDelete);
 
         PlaylistSeeds.VideoPlaylist

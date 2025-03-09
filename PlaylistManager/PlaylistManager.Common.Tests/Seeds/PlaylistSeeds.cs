@@ -15,7 +15,7 @@ public static class PlaylistSeeds
         Title = default!,
         Description = default,
         Type = default!,
-        PlaylistMultimedia = default!
+        PlaylistMultimedia = new List<PlaylistMultimediaEntity>()
     };
 
     /// <summary>
@@ -54,26 +54,48 @@ public static class PlaylistSeeds
     /// <summary>
     /// Represents an update of the MusicPlaylist entity.
     /// </summary>
-    public static readonly PlaylistEntity MusicPlaylistUpdate = new()
+    public static readonly PlaylistEntity MusicPlaylistForMultimediaUpdate = new()
     {
         Id = Guid.Parse("41b93013-7605-4ee1-bbfb-e1503f125825"),
         Title = "Rock Playlist Updated",
         Description = "Updated best of rock 2025",
-        Type = PlaylistType.Music
+        Type = PlaylistType.Music,
     };
 
+    /// <summary>
+    /// Represents an update of the MusicPlaylist entity.
+    /// </summary>
+    public static readonly PlaylistEntity MusicPlaylistUpdate = new()
+    {
+        Id = Guid.Parse("42b93013-7605-4ee1-bbfb-e1503f125826"),
+        Title = "Rock Playlist Updated",
+        Description = "Updated best of rock 2025",
+        Type = PlaylistType.Music,
+    };
+
+    /// <summary>
+    /// Represents a MusicPlaylist entity for deletion.
+    /// </summary>
+    public static readonly PlaylistEntity MusicPlaylistForMultimediaDelete = new()
+    {
+        Id = Guid.Parse("df7fa7e8-df17-4f61-b93d-189eae0cbdc6"),
+        Title = "Rock Playlist for Delete",
+        Description = "A collection of rock songs",
+        Type = PlaylistType.Music,
+        PlaylistMultimedia = new List<PlaylistMultimediaEntity>()
+    };
 
     /// <summary>
     /// Represents a MusicPlaylist entity for deletion.
     /// </summary>
     public static readonly PlaylistEntity MusicPlaylistDelete = new()
     {
-        Id = Guid.Parse("df7fa7e8-df17-4f61-b93d-189eae0cbdc6"),
+        Id = Guid.Parse("ff7fa7e8-df17-4f61-b93d-189eae0cbdb7"),
         Title = "Rock Playlist for Delete",
         Description = "A collection of rock songs",
-        Type = PlaylistType.Music
+        Type = PlaylistType.Music,
+        PlaylistMultimedia = new List<PlaylistMultimediaEntity>()
     };
-
 
     /// <summary>
     /// Seeds the database context with Playlist entities.
@@ -87,7 +109,9 @@ public static class PlaylistSeeds
                      AudioBookPlaylist,
                      VideoPlaylist,
                      MusicPlaylist,
+                     MusicPlaylistForMultimediaUpdate,
                      MusicPlaylistUpdate,
+                     MusicPlaylistForMultimediaDelete,
                      MusicPlaylistDelete
                      // EmptyPlaylist
                     );
