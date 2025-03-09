@@ -71,12 +71,13 @@ public static class PlaylistMultimediaSeeds
     /// <summary>
     /// Represents an updated Bohemian Rhapsody multimedia in the Music playlist.
     /// </summary>
-    public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyUpdate =
-        MusicPlaylist_BohemianRhapsody with
+    public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyUpdate = new()
         {
             Id = Guid.Parse("87f6a5cf-519b-462d-9872-3d17f1c1b67b"),
             PlaylistId = PlaylistSeeds.MusicPlaylistUpdate.Id,
-            Playlist = PlaylistSeeds.MusicPlaylistUpdate
+            Playlist = PlaylistSeeds.MusicPlaylistUpdate,
+            MultimediaId = MusicSeeds.BohemianRhapsody.Id,
+            Multimedia = MusicSeeds.BohemianRhapsody
         };
 
     /// <summary>

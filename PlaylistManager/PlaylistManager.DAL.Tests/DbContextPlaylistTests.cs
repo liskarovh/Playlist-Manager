@@ -1,0 +1,87 @@
+using Microsoft.EntityFrameworkCore;
+using PlaylistManager.Common.Tests.Seeds;
+using PlaylistManager.DAL.Entities;
+using Xunit.Abstractions;
+
+namespace PlaylistManager.DAL.Tests;
+
+public class DbContextPlaylistTests(ITestOutputHelper output) : DbContextTestsBase(output)
+{
+    [Fact]
+    public async Task GetAll_PlaylistMultimedia_ForPlaylist()
+    {
+        //Act
+        var playlistMultimedia = await PlaylistManagerDbContextSUT.PlaylistMultimedia
+            .Where(p=> p.PlaylistId == PlaylistSeeds.MusicPlaylist.Id)
+            .ToArrayAsync();
+
+        //Assert
+        Assert.Contains(PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody with { Multimedia = null!, Playlist = null!},playlistMultimedia);
+        Assert.Contains(PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot with { Multimedia = null!, Playlist = null!},playlistMultimedia);
+    }
+
+    [Fact]
+    public async Task GetAll_PlaylistMedia_IncludingMultiMedia_ForPlaylist()
+    {
+        //Act
+        var playlistMultimedia = await PlaylistManagerDbContextSUT.PlaylistMultimedia
+            .Where(i => i.PlaylistId == PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody.PlaylistId)
+            .Include(i => i.Multimedia)
+            .ToArrayAsync();
+
+        //Assert
+        Assert.Contains(PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody with {Playlist = null!}, playlistMultimedia);
+        Assert.Contains(PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot with {Playlist = null!}, playlistMultimedia);
+    }
+
+    [Fact]
+    public async Task Update_PlaylistMultiMedia_Persisted()
+    {
+        //Arrange
+        var baseEntity = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsodyUpdate;
+        var entity =
+            baseEntity with
+            {
+                Playlist = null!,
+                Multimedia = null!
+            };
+
+        //Act
+        PlaylistManagerDbContextSUT.PlaylistMultimedia.Update(entity);
+        await PlaylistManagerDbContextSUT.SaveChangesAsync();
+
+        //Assert
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var actualEntity = await dbx.PlaylistMultimedia.SingleAsync(i => i.Id == entity.Id);
+        Assert.Equal(entity, actualEntity);
+    }
+
+    [Fact]
+    public async Task Delete_PlaylistMultiMedia_Deleted()
+    {
+        //Arrange
+        var baseEntity = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsodyDelete;
+
+        //Act
+        PlaylistManagerDbContextSUT.PlaylistMultimedia.Remove(baseEntity);
+        await PlaylistManagerDbContextSUT.SaveChangesAsync();
+
+        //Assert
+        Assert.False(await PlaylistManagerDbContextSUT.PlaylistMultimedia.AnyAsync(i => i.Id == baseEntity.Id));
+    }
+
+    [Fact]
+    public async Task DeleteById_PlaylistMultiMedia_Deleted()
+    {
+        //Arrange
+        var baseEntity = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsodyDelete;
+
+        //Act
+        PlaylistManagerDbContextSUT.Remove(
+            PlaylistManagerDbContextSUT.PlaylistMultimedia.Single(i => i.Id == baseEntity.Id));
+        await PlaylistManagerDbContextSUT.SaveChangesAsync();
+
+        //Assert
+        Assert.False(await PlaylistManagerDbContextSUT.PlaylistMultimedia.AnyAsync(i => i.Id == baseEntity.Id));
+    }
+}
