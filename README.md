@@ -45,30 +45,19 @@ Feel free to explore the pages listed below for more details.
 
 - **[About the Project](/Home-Page/About-the-Project)**  
   (General info, deadlines, extra details)
-  - *
-    *[Conventions & General Requirements](/Home-Page/About-the-Project/Conventions-&-General-Requirements)
-    **  
+  - **[Conventions & General Requirements](/Home-Page/About-the-Project/Conventions-&-General-Requirements)** <br>
     (Coding standards, Clean Code, repository settings, Git branching)
-  - **[Minimal Data Model](/Home-Page/About-the-Project/Minimal-Data-Model)**  
+  - **[Minimal Data Model](/Home-Page/About-the-Project/Minimal-Data-Model)**  <br>
     (Entities, ER diagrams, relationships)
-  - *
-    *[Development Requirements](/Home-Page/About-the-Project/Development-Requirements)
-    **  
+  - **[Development Requirements](/Home-Page/About-the-Project/Development-Requirements)** <br>
     (Checklist for Azure DevOps, Git usage, layering, EF Core, etc.)
-  - **[Possible Extensions](/Home-Page/About-the-Project/Possible-Extensions)
-    **  
+  - **[Possible Extensions](/Home-Page/About-the-Project/Possible-Extensions)** <br>
     (Additional features beyond the core requirements)
-- *
-  *[1st Project Phase – Object Design, Database](/Home-Page/1st-Project-Phase-–-Object-Design,-Database)
-  **  
+- **[1st Project Phase – Object Design, Database](/Home-Page/1st-Project-Phase-–-Object-Design,-Database)** <br>
   (Focus on entity design, initial migrations, etc.)
-- *
-  *[2nd Project Phase – Repositories and Mapping](/Home-Page/2nd-Project-Phase-–-Repositories-and-Mapping)
-  **  
+- **[2nd Project Phase – Repositories and Mapping](/Home-Page/2nd-Project-Phase-–-Repositories-and-Mapping)** <br>
   (Repository layer, facades, DTOs, integration tests)
-- *
-  *[3rd Project Phase – MAUI Frontend, Data Binding](/Home-Page/3rd-Project-Phase-–-MAUI-Frontend,-Data-Binding)
-  **  
+- **[3rd Project Phase – MAUI Frontend, Data Binding](/Home-Page/3rd-Project-Phase-–-MAUI-Frontend,-Data-Binding)** <br>
   (UI with MAUI, data binding, final integration)
 
 ---
@@ -95,16 +84,14 @@ include them and document them in the `README.md`.
 | **Kacálek Jakub**  | `xkacalj00` |         ---         | [xkacalj00@stud.fit.vutbr.cz)](mailto:xkacalj0000@stud.fit.vutbr.cz) |
 | **Kalina Jan**     | `xkalinj00` |     Honziksick      | [xkalinj00@stud.fit.vutbr.cz)](mailto:xkalinj00@stud.fit.vutbr.cz)   |
 | **Krejčí David**   | `xkrejcd00` |     DJmDavidus      | [xkrejcd00@stud.fit.vutbr.cz](mailto:xkrejcd00@stud.fit.vutbr.cz)    |
-| **Liškařová Hana** | `xliskah00` |         ---         | [xliskah00@stud.fit.vutbr.cz)](mailto:xliskah00@stud.fit.vutbr.cz)   |
+| **Liškařová Hana** | `xliskah00` |      liskarovh      | [xliskah00@stud.fit.vutbr.cz)](mailto:xliskah00@stud.fit.vutbr.cz)   |
 
 ---
 
 ## Where to Find the Repository & Pipelines
 
-- **Git Repository
-  **: [Link](https://dev.azure.com/ics-2025-xkalinj00/_git/ics-team-project?path=%2F&version=GBmain&_a=contents)
-- **Azure DevOps Pipeline
-  **: [azure-pipelines.yml](https://dev.azure.com/ics-2025-xkalinj00/_git/ics-team-project?path=/azure-pipelines.yml&version=GBmain&_a=contents)
+- **Git Repository**: [Link](https://dev.azure.com/ics-2025-xkalinj00/_git/ics-team-project?path=%2F&version=GBmain&_a=contents)
+- **Azure DevOps Pipeline**: [azure-pipelines.yml](https://dev.azure.com/ics-2025-xkalinj00/_git/ics-team-project?path=/azure-pipelines.yml&version=GBmain&_a=contents)
   or [DevOps Pipeline Link](https://dev.azure.com/ics-2025-xkalinj00/ics-team-project/_build)
 
 <p align="center">
@@ -122,15 +109,12 @@ include them and document them in the `README.md`.
 
 ### Questions or Issues?
 
-Feel free
-to [create an Issue](https://dev.azure.com/ics-2025-xkalinj00/ics-team-project/_workitems/create/Impediment)
+Feel free to [create an Issue](https://dev.azure.com/ics-2025-xkalinj00/ics-team-project/_workitems/create/Impediment)
 or [open a Pull Request](https://dev.azure.com/ics-2025-xkalinj00/ics-team-project/_git/ics-team-project/pullrequests?_a=mine)
-in the repository if you have suggestions or find bugs. Please follow
-our [Conventions & General Requirements](/Home-Page/About-the-Project/Conventions-&-General-Requirements)
+in the repository if you have suggestions or find bugs. Please follow our [Conventions & General Requirements](/Home-Page/About-the-Project/Conventions-&-General-Requirements)
 to keep the project consistent.
 
 ---
 
-> **Tip:** For any deeper details (deadlines, specific technical requirements),
-> see the [About the Project](/Home-Page/About-the-Project) page or other pages in
-> the Quick Links above!
+> **Tip:** For any deeper details (deadlines, specific technical requirements), see the
+> [About the Project](/Home-Page/About-the-Project) page or other pages in the [Quick Links](#Quick-Links) above!
