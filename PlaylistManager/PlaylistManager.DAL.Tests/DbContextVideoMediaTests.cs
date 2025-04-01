@@ -6,12 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PlaylistManager.DAL.Tests;
 
-/// <summary>
-/// Test class verifies CRUD operations on the `VideoMediaEntity` within the `PlaylistManagerDbContext`.
-/// Ensures that VideoMedia can be created, retrieved, updated, and deleted correctly.
-/// Verifies constraints such as preventing the deletion of VideoMedia used in Playlist.
-/// </summary>
-///
 public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
     /// <summary>
@@ -23,7 +17,6 @@ public class DbContextVideoMediaTests(ITestOutputHelper output) : DbContextTests
         // Arrange
         VideoMediaEntity entity = new()
         {
-            // Made up Video, Guid is random
             Id = Guid.Parse("80fcf7ad-f2d5-481a-a830-d5fefb5db616"),
             Title = "A very nice movie",
             Description = "A very good movie about a very nice guy.",

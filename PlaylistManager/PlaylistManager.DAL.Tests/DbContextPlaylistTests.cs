@@ -1,15 +1,12 @@
+using Microsoft.EntityFrameworkCore;
 using PlaylistManager.Common.Enums;
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
 using PlaylistManager.DAL.Entities;
-using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace PlaylistManager.DAL.Tests;
 
-/// <summary>
-/// Test class for DbContext operations related to playlists.
-/// </summary>
 public class DbContextPlaylistTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
     /// <summary>
@@ -21,8 +18,7 @@ public class DbContextPlaylistTests(ITestOutputHelper output) : DbContextTestsBa
         // Arrange
         var entity = PlaylistSeeds.EmptyPlaylist with
         {
-            Title = "Favourites",
-            Description = "My liked music.",
+            Title = "Favourites", Description = "My liked music."
         };
 
         // Act

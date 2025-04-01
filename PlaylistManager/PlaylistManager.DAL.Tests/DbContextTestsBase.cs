@@ -6,10 +6,6 @@ using Xunit.Abstractions;
 
 namespace PlaylistManager.DAL.Tests;
 
-/// <summary>
-/// Base class for database-related tests
-/// Provides a structured setup and teardown process for tests involving the `PlaylistManagerDbContext`.
-/// </summary>
 public class DbContextTestsBase : IAsyncLifetime
 {
     /// <summary>

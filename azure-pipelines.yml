@@ -4,9 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 trigger:
-  branches:
-    include:
-      - '*'
+  - 'main'
 
 pr:
   branches:
@@ -36,6 +34,7 @@ steps:
   - task: SonarCloudPrepare@3
     displayName: 'Prepare SonarQube Cloud analysis configuration - Main'
     continueOnError: true
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     inputs:
       SonarQube: 'SonarQube Cloud'
       organization: 'ics-2025-xkalinj00'
@@ -76,11 +75,12 @@ steps:
 
   - task: SonarCloudAnalyze@3
     continueOnError: true
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     displayName: 'Analyze solution with SonarQube Cloud'
 
   - task: SonarCloudPublish@3
     continueOnError: true
-    condition: always()
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
     displayName: 'Publish SonarQube Cloud analysis result'
     inputs:
       pollingTimeoutSec: '300'

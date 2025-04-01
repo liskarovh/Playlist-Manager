@@ -3,14 +3,8 @@ using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.Common.Tests.Seeds;
 
-/// <summary>
-/// Provides seed data for PlaylistMultimedia entities.
-/// </summary>
 public static class PlaylistMultimediaSeeds
 {
-    /// <summary>
-    /// Represents an empty PlaylistMultimedia entity.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity EmptyPlaylistMultimedia = new()
     {
         Id = default,
@@ -20,9 +14,6 @@ public static class PlaylistMultimediaSeeds
         Multimedia = default!
     };
 
-    /// <summary>
-    /// Represents the Bohemian Rhapsody multimedia in the Music playlist.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsody = new()
     {
         Id = Guid.Parse(input: "40b4f1e8-5605-4c3e-8f4c-c3cb105094a7"),
@@ -32,9 +23,6 @@ public static class PlaylistMultimediaSeeds
         Multimedia = MusicSeeds.BohemianRhapsody
     };
 
-    /// <summary>
-    /// Represents the American Idiot multimedia in the Music playlist.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_AmericanIdiot = new()
     {
         Id = Guid.Parse(input: "77e70961-178e-4ce6-b6a3-94bb9f7475ea"),
@@ -44,9 +32,6 @@ public static class PlaylistMultimediaSeeds
         Multimedia = MusicSeeds.AmericanIdiot
     };
 
-    /// <summary>
-    /// Represents The Matrix multimedia in the Video playlist.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity VideoPlaylist_TheMatrix = new()
     {
         Id = Guid.Parse(input: "a77defd1-8bc4-455e-bc4f-4a3add1ae820"),
@@ -56,9 +41,6 @@ public static class PlaylistMultimediaSeeds
         Multimedia = VideoMediaSeeds.Matrix
     };
 
-    /// <summary>
-    /// Represents the Dune audiobook in the Audiobook playlist.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity AudioBookPlaylist_Dune = new()
     {
         Id = Guid.Parse(input: "8b09152d-a5ad-4cc6-a5da-7f8f3e1784cc"),
@@ -68,9 +50,6 @@ public static class PlaylistMultimediaSeeds
         Multimedia = AudioBookSeeds.Dune
     };
 
-    /// <summary>
-    /// Represents an updated Bohemian Rhapsody multimedia in the Music playlist.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyUpdate = new()
     {
         Id = Guid.Parse(input: "87f6a5cf-519b-462d-9872-3d17f1c1b67b"),
@@ -80,9 +59,6 @@ public static class PlaylistMultimediaSeeds
         Multimedia = MusicSeeds.BohemianRhapsody
     };
 
-    /// <summary>
-    /// Represents a deleted Bohemian Rhapsody multimedia in the Music playlist.
-    /// </summary>
     public static readonly PlaylistMultimediaEntity MusicPlaylist_BohemianRhapsodyDelete =
         MusicPlaylist_BohemianRhapsody with
         {
@@ -91,10 +67,6 @@ public static class PlaylistMultimediaSeeds
             Playlist = PlaylistSeeds.MusicPlaylistForMultimediaDelete
         };
 
-    /// <summary>
-    /// Static constructor to initialize the PlaylistMultimediaSeeds class.
-    /// Adds predefined PlaylistMultimedia entities to their respective playlists.
-    /// </summary>
     static PlaylistMultimediaSeeds()
     {
         PlaylistSeeds.MusicPlaylist
@@ -116,11 +88,6 @@ public static class PlaylistMultimediaSeeds
                      .PlaylistMultimedia.Add(AudioBookPlaylist_Dune);
     }
 
-    /// <summary>
-    /// Seeds the PlaylistMultimedia entities into the specified DbContext.
-    /// </summary>
-    /// <param name="dbContext">The DbContext to seed.</param>
-    /// <returns>The seeded DbContext.</returns>
     public static DbContext SeedPlaylistMultimedia(this DbContext dbContext)
     {
         dbContext.Set<PlaylistMultimediaEntity>()
@@ -130,7 +97,6 @@ public static class PlaylistMultimediaSeeds
                            AudioBookPlaylist_Dune,
                            MusicPlaylist_BohemianRhapsodyUpdate,
                            MusicPlaylist_BohemianRhapsodyDelete
-                           // EmptyPlaylistMultimedia,
                           );
         return dbContext;
     }

@@ -6,11 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PlaylistManager.DAL.Tests;
 
-/// <summary>
-/// Test class verifies CRUD operations on the `MusicEntity` within the `PlaylistManagerDbContext`.
-/// Ensures that Music can be created, retrieved, updated, and deleted correctly.
-/// Verifies constraints such as preventing the deletion of Music used in Playlist.
-/// </summary>
 public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
     /// <summary>
@@ -22,7 +17,6 @@ public class DbContextMusicTests(ITestOutputHelper output) : DbContextTestsBase(
         // Arrange
         MusicEntity entity = new()
         {
-            // Made up Music, Guid is random
             Id = Guid.Parse(input: "80fcf7ad-f2d5-481a-a830-d5fefb5db616"),
             Title = "What A Wonderful World",
             Description = "Flowy calming jazz song.",
