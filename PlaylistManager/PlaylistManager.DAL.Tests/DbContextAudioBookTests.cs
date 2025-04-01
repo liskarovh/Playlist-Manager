@@ -6,11 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PlaylistManager.DAL.Tests;
 
-/// <summary>
-/// Test class verifies CRUD operations on the `AudioBookEntity` within the `PlaylistManagerDbContext`.
-/// Ensures that AudioBooks can be created, retrieved, updated, and deleted correctly.
-/// Verifies constraints such as preventing the deletion of AudioBook used in Playlist.
-/// </summary>
 public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
     /// <summary>
@@ -22,7 +17,6 @@ public class DbContextAudiobookTests(ITestOutputHelper output) : DbContextTestsB
         // Arrange
         AudioBookEntity entity = new()
         {
-            // Made up AudioBook, Guid is random
             Id = Guid.Parse("ddf0fc90-4e4e-47a3-ad1c-aa931e1b4b77"),
             Title = "Audiobook Title",
             Description = "A detailed and useful description of the AudioBook.",

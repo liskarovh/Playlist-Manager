@@ -4,14 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PlaylistManager.Common.Tests.Seeds;
 
-/// <summary>
-/// Provides seed data for VideoMedia entities for testing purposes.
-/// </summary>
 public static class VideoMediaSeeds
 {
-    /// <summary>
-    /// Represents an empty VideoMedia entity.
-    /// </summary>
     public static readonly VideoMediaEntity EmptyVideoMedia = new()
     {
         Id = default,
@@ -26,9 +20,6 @@ public static class VideoMediaSeeds
         Resolution = default
     };
 
-    /// <summary>
-    /// Represents the VideoMedia entity for "The Matrix".
-    /// </summary>
     public static readonly VideoMediaEntity Matrix = new()
     {
         Id = Guid.Parse(input: "6dccdfa6-feab-403a-a6ad-b14b774cdee5"),
@@ -42,9 +33,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Mkv
     };
 
-    /// <summary>
-    /// Represents an updated copy of the "The Matrix" entity.
-    /// </summary>
     public static readonly VideoMediaEntity MatrixUpdate = new()
     {
         Id = Guid.Parse(input: "8a029d15-ac27-4723-8cc7-6e2448838f4b"),
@@ -58,9 +46,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Mkv
     };
 
-    /// <summary>
-    /// Represents a copy of the "The Matrix" entity for deletion.
-    /// </summary>
     public static readonly VideoMediaEntity MatrixDelete = new()
     {
         Id = Guid.Parse(input: "deb291a5-5af0-416c-909a-f06af798458c"),
@@ -74,9 +59,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Mkv
     };
 
-    /// <summary>
-    /// Represents the VideoMedia entity for "The Lord of the Rings: The Fellowship of the Ring".
-    /// </summary>
     public static readonly VideoMediaEntity LordOfTheRings = new()
     {
         Id = Guid.Parse(input: "d0f2afc0-a42f-4c6a-ab52-54dbe0a04b7c"),
@@ -90,9 +72,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Mkv
     };
 
-    /// <summary>
-    /// Represents the VideoMedia entity for "The Shining".
-    /// </summary>
     public static readonly VideoMediaEntity Shining = new()
     {
         Id = Guid.Parse(input: "8252d7e2-584e-4ab6-bb57-c015c921b92d"),
@@ -106,9 +85,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Mp4
     };
 
-    /// <summary>
-    /// Represents the VideoMedia entity for "Conclave".
-    /// </summary>
     public static readonly VideoMediaEntity Conclave = new()
     {
         Id = Guid.Parse(input: "80bce8f8-ba34-4845-8377-f85d883c9040"),
@@ -122,9 +98,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Mov
     };
 
-    /// <summary>
-    /// Represents the VideoMedia entity for "Monty Python and the Holy Grail".
-    /// </summary>
     public static readonly VideoMediaEntity MontyPythonHolyGrail = new()
     {
         Id = Guid.Parse(input: "92523359-8d7e-403f-aa02-cfbe6504c6c2"),
@@ -138,11 +111,6 @@ public static class VideoMediaSeeds
         Format = VideoFormat.Avi
     };
 
-    /// <summary>
-    /// Seeds the database context with VideoMedia entities.
-    /// </summary>
-    /// <param name="dbx">The database context to seed.</param>
-    /// <returns>The seeded database context.</returns>
     public static DbContext SeedVideoMedia(this DbContext dbx)
     {
         dbx.Set<VideoMediaEntity>()

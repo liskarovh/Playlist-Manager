@@ -4,9 +4,6 @@ using Xunit.Abstractions;
 
 namespace PlaylistManager.DAL.Tests;
 
-/// <summary>
-/// Test class for DbContext operations related to playlist multimedia.
-/// </summary>
 public class DbContextPlaylistMultimediaTests(ITestOutputHelper output) : DbContextTestsBase(output)
 {
     /// <summary>

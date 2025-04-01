@@ -4,14 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PlaylistManager.Common.Tests.Seeds;
 
-/// <summary>
-/// Provides seed data for Music entities for testing purposes.
-/// </summary>
 public static class MusicSeeds
 {
-    /// <summary>
-    /// Represents an empty Music entity.
-    /// </summary>
     public static readonly MusicEntity EmptyMusic = new()
     {
         Id = default,
@@ -25,9 +19,6 @@ public static class MusicSeeds
         Format = default
     };
 
-    /// <summary>
-    /// Represents the Music entity for "Bohemian Rhapsody".
-    /// </summary>
     public static readonly MusicEntity BohemianRhapsody = new()
     {
         Id = Guid.Parse(input: "621863f8-82f7-4628-9864-46c8efa604f7"),
@@ -41,9 +32,6 @@ public static class MusicSeeds
         Format = AudioFormat.Mp3
     };
 
-    /// <summary>
-    /// Represents an updated copy of the "Bohemian Rhapsody" entity.
-    /// </summary>
     public static readonly MusicEntity BohemianRhapsodyUpdate = new()
     {
         Id = Guid.Parse(input: "88f2f2d5-b9b9-4fcb-953a-66d9d7043803"),
@@ -57,9 +45,6 @@ public static class MusicSeeds
         Format = AudioFormat.Mp3
     };
 
-    /// <summary>
-    /// Represents a copy of the "Bohemian Rhapsody" entity for deletion.
-    /// </summary>
     public static readonly MusicEntity BohemianRhapsodyDelete = new()
     {
         Id = Guid.Parse(input: "f1e41bc6-f074-4b38-b7d8-40e7cc937b4b"),
@@ -73,9 +58,6 @@ public static class MusicSeeds
         Format = AudioFormat.Mp3
     };
 
-    /// <summary>
-    /// Represents the Music entity for "Shape of You".
-    /// </summary>
     public static readonly MusicEntity ShapeOfYou = new()
     {
         Id = Guid.Parse(input: "2f468c5e-6323-42ec-adb8-d3074ffe59d5"),
@@ -89,9 +71,6 @@ public static class MusicSeeds
         Format = AudioFormat.Flac
     };
 
-    /// <summary>
-    /// Represents the Music entity for "American Idiot".
-    /// </summary>
     public static readonly MusicEntity AmericanIdiot = new()
     {
         Id = Guid.Parse(input: "4223db81-2941-4db2-b927-45cb904ccec5"),
@@ -105,9 +84,6 @@ public static class MusicSeeds
         Format = AudioFormat.Aac
     };
 
-    /// <summary>
-    /// Represents the Music entity for "A Cruel Angel's Thesis".
-    /// </summary>
     public static readonly MusicEntity CruelAngelsThesis = new()
     {
         Id = Guid.Parse(input: "b3b21744-951c-4bb5-83c7-540a12c9b770"),
@@ -121,9 +97,6 @@ public static class MusicSeeds
         Format = AudioFormat.Wav
     };
 
-    /// <summary>
-    /// Represents the Music entity for "Vltava".
-    /// </summary>
     public static readonly MusicEntity Vltava = new()
     {
         Id = Guid.Parse(input: "bb918866-b1f3-4eee-b030-12c82dc33623"),
@@ -137,11 +110,6 @@ public static class MusicSeeds
         Format = AudioFormat.Mp3
     };
 
-    /// <summary>
-    /// Seeds the database context with Music entities.
-    /// </summary>
-    /// <param name="dbx">The database context to seed.</param>
-    /// <returns>The seeded database context.</returns>
     public static DbContext SeedMusic(this DbContext dbx)
     {
         dbx.Set<MusicEntity>()
