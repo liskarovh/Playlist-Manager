@@ -1,3 +1,5 @@
+using PlaylistManager.Common.Enums;
+
 namespace PlaylistManager.BL.Models;
 
 public record PlaylistSummaryModel : ModelBase
@@ -7,6 +9,7 @@ public record PlaylistSummaryModel : ModelBase
     public string? Description { get; set; }
     public double? TotalDuration { get; set; }
     public uint MediaCount { get; set; }
+    public PlaylistType? PlaylistType { get; set; }
 
     public static PlaylistSummaryModel Empty => new()
     {
