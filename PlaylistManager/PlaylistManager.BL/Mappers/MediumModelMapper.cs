@@ -91,10 +91,9 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
         // Create the appropriate multimedia entity based on the format and genre.
         MultimediaBaseEntity multimedia;
 
-        if (Enum.TryParse(model.Format, out AudioFormat audioFormat) && audioFormat != AudioFormat.None)
+        if (playlistEntity.Type == PlaylistType.AudioBook)
         {
-            if (Enum.TryParse(model.Genre, out AudioBookGenre audioBookGenre) && audioBookGenre != AudioBookGenre.None)
-            {
+
                 multimedia = new AudioBookEntity
                 {
                     Id = model.MediumId,
@@ -104,34 +103,35 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                     Url = model.Url,
                     Duration = model.Duration,
                     ReleaseYear = model.ReleaseYear,
-                    Format = audioFormat,
-                    Genre = audioBookGenre
+                    Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
+                                 ? audioFormat
+                                 : AudioFormat.None,
+                    Genre = Enum.TryParse(model.Genre, out AudioBookGenre audioBookGenre)
+                                ? audioBookGenre
+                                : AudioBookGenre.None
                 };
-            }
-            else if (Enum.TryParse(model.Genre, out MusicGenre musicGenre) && musicGenre != MusicGenre.None)
-            {
-                multimedia = new MusicEntity
-                {
-                    Id = model.MediumId,
-                    Title = model.Title,
-                    Author = model.Author,
-                    Description = model.Description,
-                    Url = model.Url,
-                    Duration = model.Duration,
-                    ReleaseYear = model.ReleaseYear,
-                    Format = audioFormat,
-                    Genre = musicGenre
-                };
-            }
-            else
-            {
-                throw new ArgumentException("Invalid genre of audio media.");
-            }
         }
-        else if (Enum.TryParse(model.Format, out VideoFormat videoFormat) && videoFormat != VideoFormat.None)
+        else if (playlistEntity.Type == PlaylistType.Music)
         {
-            if (Enum.TryParse(model.Genre, out VideoGenre videoGenre) && videoGenre != VideoGenre.None)
-            {
+            multimedia = new MusicEntity
+                         {
+                             Id = model.MediumId,
+                             Title = model.Title,
+                             Author = model.Author,
+                             Description = model.Description,
+                             Url = model.Url,
+                             Duration = model.Duration,
+                             ReleaseYear = model.ReleaseYear,
+                             Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
+                                          ? audioFormat
+                                          : AudioFormat.None,
+                             Genre = Enum.TryParse(model.Genre, out MusicGenre musicGenre)
+                                         ? musicGenre
+                                         : MusicGenre.None
+                         };
+        }
+        else // playlistEntity.Type == PlaylistType.Video
+        {
                 multimedia = new VideoMediaEntity
                 {
                     Id = model.MediumId,
@@ -141,18 +141,13 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                     Url = model.Url,
                     Duration = model.Duration,
                     ReleaseYear = model.ReleaseYear,
-                    Format = videoFormat,
-                    Genre = videoGenre
+                    Format = Enum.TryParse(model.Format, out VideoFormat videoFormat)
+                                 ? videoFormat
+                                 : VideoFormat.None,
+                    Genre = Enum.TryParse(model.Genre, out VideoGenre videoGenre)
+                                ? videoGenre
+                                : VideoGenre.None
                 };
-            }
-            else
-            {
-                throw new ArgumentException("Invalid genre of video media.");
-            }
-        }
-        else
-        {
-            throw new ArgumentException("Invalid format of multimedia.");
         }
 
         // Binds the multimedia entity to the playlist entity.
