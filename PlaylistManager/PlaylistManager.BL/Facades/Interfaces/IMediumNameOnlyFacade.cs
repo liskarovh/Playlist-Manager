@@ -3,9 +3,9 @@
 
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.BL.Models;
-namespace PlaylistManager.BL.Facades;
+namespace PlaylistManager.BL.Facades.Interfaces;
 
-public interface IMediumOnlyFacade
+public interface IMediumNameOnlyFacade
 {
     Task SaveAsync(MediumNameOnlyModel model);
     Task SaveAsync(MediumNameOnlyModel model, Guid relatedEntityId); // např. PlaylistId

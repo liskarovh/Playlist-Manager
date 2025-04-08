@@ -3,7 +3,7 @@
 
 using PlaylistManager.BL.Models;
 using PlaylistManager.DAL.Entities;
-namespace PlaylistManager.BL.Facades;
+namespace PlaylistManager.BL.Facades.Interfaces;
 
 //playlist summarry model should be detailed enough for both listing and editing
 //POSSIBLE ISSUE - idk how to fix
