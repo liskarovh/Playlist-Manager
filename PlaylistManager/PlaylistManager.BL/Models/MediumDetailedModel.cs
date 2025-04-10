@@ -9,13 +9,17 @@ public record MediumDetailedModel : ModelBase
     public string? Url { get; set; }
     public double? Duration { get; set; }
     public int? ReleaseYear { get; set; }
-    public  string? Format { get; set; }
-    public string? Genre { get; set; } = string.Empty;
+    public required string Format { get; set; }
+    public required string Genre { get; set; }
+    public DateTime AddedDate { get; set; }
 
     public static MediumDetailedModel Empty => new()
     {
         Id = Guid.NewGuid(),
         MediumId = Guid.Empty,
-        Title = string.Empty
+        Title = string.Empty,
+        AddedDate = DateTime.MinValue,
+        Format = string.Empty,
+        Genre = string.Empty,
     };
 }
