@@ -1,9 +1,10 @@
-﻿using PlaylistManager.BL.Models;
+﻿using System.Collections.ObjectModel;
+using PlaylistManager.BL.Models;
 using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.BL.Mappers;
 
-public class PlaylistModelMapper : ModelMapperBase<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel>
+public class PlaylistModelMapper(MediumModelMapper mediumModelMapper) : ModelMapperBase<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel>
 {
     public override PlaylistNameOnlyModel MapToNameOnly(PlaylistEntity? entity)
         => entity == null
@@ -31,6 +32,17 @@ public class PlaylistModelMapper : ModelMapperBase<PlaylistEntity, PlaylistNameO
                                      .Sum(pm => pm.Multimedia?.Duration ?? 0.0)
                                ?? 0.0;
 
+        ObservableCollection<MediumDetailedModel> m = new ObservableCollection<MediumDetailedModel>();
+
+        if (entity.PlaylistMultimedia != null)
+        {
+            foreach (var medium in entity.PlaylistMultimedia)
+            {
+                var newMedium = mediumModelMapper.MapToDetailModel(medium);
+                m.Add(newMedium);
+            }
+        }
+
         return new PlaylistSummaryModel
         {
             Id = entity.Id,
@@ -38,7 +50,8 @@ public class PlaylistModelMapper : ModelMapperBase<PlaylistEntity, PlaylistNameO
             Title = entity.Title,
             Description = entity.Description,
             MediaCount = mediaCount,
-            TotalDuration = totalDuration
+            TotalDuration = totalDuration,
+            Medias = m
         };
     }
 
