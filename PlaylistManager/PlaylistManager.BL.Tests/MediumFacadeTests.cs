@@ -151,8 +151,9 @@ public class MediumFacadeTests : FacadeTestsBase
 
         // Assert
         await using var dbxAssert = await DbContextFactory.CreateDbContextAsync();
-        var mediumFromDb = await dbxAssert.PlaylistMultimedia.SingleAsync(i => i.Id == medium.Id);
-        DeepAssert.Equal(medium, MediumModelMapper.MapToDetailModel(mediumFromDb));
+        var mediumFromDb = await dbxAssert.PlaylistMultimedia.Include(m => m.Multimedia).SingleAsync(i => i.Id == medium.Id);
+        var detailModel = MediumModelMapper.MapToDetailModel(mediumFromDb);
+        DeepAssert.Equal(medium, detailModel);
     }
 
     [Fact]
@@ -183,7 +184,7 @@ public class MediumFacadeTests : FacadeTestsBase
 
         // Assert
         await using var dbxAssert = await DbContextFactory.CreateDbContextAsync();
-        var mediumFromDb = await dbxAssert.PlaylistMultimedia.SingleAsync(i => i.Id == medium.Id);
+        var mediumFromDb = await dbxAssert.PlaylistMultimedia.Include(m => m.Multimedia).SingleAsync(i => i.Id == medium.Id);
         DeepAssert.Equal(medium, MediumModelMapper.MapToDetailModel(mediumFromDb));
     }
 }

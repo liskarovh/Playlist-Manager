@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Mappers;
 using PlaylistManager.BL.Models;
@@ -107,7 +108,9 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory,
         // Pokud entita již existuje (update), provedeme update, jinak insert
         if (await repository.ExistsAsync(entity).ConfigureAwait(false))
         {
-            PlaylistMultimediaEntity updatedEntity = await repository.UpdateAsync(entity).ConfigureAwait(false);
+            Func<IQueryable<PlaylistMultimediaEntity>, IIncludableQueryable<PlaylistMultimediaEntity, object>> include =
+                query => query.Include(e => e.Multimedia);
+            PlaylistMultimediaEntity updatedEntity = await repository.UpdateAsync(entity, include).ConfigureAwait(false);
             model = ModelMapper.MapToDetailModel(updatedEntity);
         }
         else
@@ -117,7 +120,9 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory,
             {
                 entity.Id = Guid.NewGuid();
             }
-            PlaylistMultimediaEntity insertedEntity = repository.Insert(entity);
+            Func<IQueryable<PlaylistMultimediaEntity>, IIncludableQueryable<PlaylistMultimediaEntity, object>> include =
+                query => query.Include(e => e.Multimedia);
+            PlaylistMultimediaEntity insertedEntity = repository.Insert(entity, include);
             model = ModelMapper.MapToDetailModel(insertedEntity);
         }
 
