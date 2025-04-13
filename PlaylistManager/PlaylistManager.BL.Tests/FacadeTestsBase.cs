@@ -19,7 +19,7 @@ public class FacadeTestsBase : IAsyncLifetime
         DbContextFactory = new DbContextSqLiteFactory($"{GetType().FullName}.db");
 
         MediumModelMapper = new MediumModelMapper();
-        PlaylistModelMapper = new PlaylistModelMapper();
+        PlaylistModelMapper = new PlaylistModelMapper(MediumModelMapper);
 
         UnitOfWorkFactory = new UnitOfWorkFactory(DbContextFactory);
     }
