@@ -1,16 +1,12 @@
-// Copyright (c).NET Foundation and contributors.All rights reserved.
-// Licensed under the MIT license.See LICENSE file in the project root for full license information.
-
-using PlaylistManager.DAL.Entities;
-using PlaylistManager.DAL.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using PlaylistManager.DAL.Entities;
+using PlaylistManager.DAL.Mappers;
 
 namespace PlaylistManager.DAL.Repositories;
 
-public class Repository <TEntity> (
-    DbContext dbContext,
-    IEntityMapper<TEntity> entityMapper) : IRepository<TEntity> where TEntity : class, IEntity
+public class Repository<TEntity>(DbContext dbContext, IEntityMapper<TEntity> entityMapper)
+    : IRepository<TEntity> where TEntity : class, IEntity
 {
     private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
 
@@ -27,12 +23,9 @@ public class Repository <TEntity> (
     }
 
     public async ValueTask<bool> ExistsAsync(TEntity entity)
-        => entity.Id != Guid.Empty
-           && await _dbSet.AnyAsync(e => e.Id == entity.Id).ConfigureAwait(false);
+        => (entity.Id != Guid.Empty) && await _dbSet.AnyAsync(e => e.Id == entity.Id).ConfigureAwait(false);
 
-    public TEntity Insert(
-        TEntity entity,
-        Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
+    public TEntity Insert(TEntity entity, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
     {
         _dbSet.Add(entity);
 
@@ -43,7 +36,7 @@ public class Repository <TEntity> (
         IQueryable<TEntity> query = _dbSet;
         query = include(query);
 
-        // We assume entity.Id is set correctly either before or after Add (e.g., with GUIDs or after SaveChanges)
+        // We assume 'entity.Id' is set correctly either before or after Add() (e.g., with GUIDs or after SaveChanges)
         return query.First(e => e.Id == entity.Id);
     }
     public async Task<TEntity> UpdateAsync(TEntity entity, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
@@ -57,6 +50,7 @@ public class Repository <TEntity> (
 
         TEntity existingEntity = await query.SingleAsync(e => e.Id == entity.Id).ConfigureAwait(false);
         entityMapper.MapToExistingEntity(existingEntity, entity);
+
         return existingEntity;
     }
 
