@@ -2,9 +2,9 @@ using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.DAL.Mappers;
 
-public class MusicEntityMapper
+public class MusicEntityMapper : IEntityMapper<MusicEntity>
 {
-    public void MapToExistingEntity(AudioBookEntity existingEntity, AudioBookEntity newEntity)
+    public void MapToExistingEntity(MusicEntity existingEntity, MusicEntity newEntity)
     {
         existingEntity.Title = newEntity.Title;
         existingEntity.Description = newEntity.Description;

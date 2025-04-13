@@ -6,13 +6,16 @@ using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.BL.Facades.Interfaces;
 
-public interface IFacade<TEntity, TListModel, TDetailModel>
+public interface IFacade<TEntity, TNameOnlyModel ,TSummaryModel, TDetailModel>
     where TEntity : class, IEntity
-    where TListModel : IModel
+    where TNameOnlyModel :  IModel
+    where TSummaryModel :  IModel
     where TDetailModel : class, IModel
 {
     Task DeleteAsync(Guid id);
     Task<TDetailModel?> GetAsync(Guid id);
-    Task<IEnumerable<TListModel>> GetAsync();
+    Task<IEnumerable<TNameOnlyModel>> GetAsync();
+    Task<IEnumerable<TSummaryModel>> GetAsyncSummary();
+
     Task<TDetailModel> SaveAsync(TDetailModel model);
 }

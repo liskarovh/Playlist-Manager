@@ -2,7 +2,7 @@ using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.DAL.Mappers;
 
-public class VideoMediaEntityMapper
+public class VideoMediaEntityMapper : IEntityMapper<VideoMediaEntity>
 {
     public void MapToExistingEntity(VideoMediaEntity existingEntity, VideoMediaEntity newEntity)
     {
