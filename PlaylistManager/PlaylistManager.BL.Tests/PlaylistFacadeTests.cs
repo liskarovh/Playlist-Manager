@@ -1,18 +1,16 @@
 ﻿using System.Collections.ObjectModel;
-
-using PlaylistManager.Common.Tests;
-using PlaylistManager.Common.Tests.Seeds;
-using PlaylistManager.BL.Facades;
+using Xunit.Abstractions;
 using PlaylistManager.BL.Facades.Interfaces;
+using PlaylistManager.BL.Facades;
 using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Enums;
-using Xunit.Abstractions;
+using PlaylistManager.Common.Tests;
+using PlaylistManager.Common.Tests.Seeds;
 
 namespace PlaylistManager.BL.Tests;
 
 public class PlaylistFacadeTests : FacadeTestsBase
 {
-
     private readonly IPlaylistFacade _facadeSUT;
 
     public PlaylistFacadeTests(ITestOutputHelper output) : base(output)
@@ -23,12 +21,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
     [Fact]
     public async Task Create_WithWithoutMedia_EqualsCreated()
     {
-        //Arrange
-        // var model = PlaylistSummaryModel.Empty;
-        // model.PlaylistId = Guid.NewGuid();
-        // model.Title = "Test Title";
-        // model.Description = "Test Description";
-
+        // Arrange
         var model = new PlaylistSummaryModel()
         {
             Id = Guid.NewGuid(),
@@ -39,10 +32,10 @@ public class PlaylistFacadeTests : FacadeTestsBase
             Description = "Test Description"
         };
 
-        //Act
+        // Act
         var returnedModel = await _facadeSUT.SaveAsync(model);
 
-        //Assert
+        // Assert
         FixIds(model, returnedModel);
         DeepAssert.Equal(model, returnedModel);
     }
@@ -50,14 +43,14 @@ public class PlaylistFacadeTests : FacadeTestsBase
     [Fact]
     public async Task Create_WithNonExistingIngredient_Throws()
     {
-        //Arrange
+        // Arrange
         var model = new PlaylistSummaryModel()
         {
             Id = Guid.NewGuid(),
             PlaylistId = Guid.NewGuid(),
             Title = "Test Title",
             Description = "Test Description",
-            Medias = new ObservableCollection<MediumDetailedModel>()
+            Medias = new ObservableCollection<MediumDetailedModel>
             {
                 new()
                 {
@@ -71,21 +64,21 @@ public class PlaylistFacadeTests : FacadeTestsBase
             }
         };
 
-        //Act & Assert
+        // Act & Assert
         await Assert.ThrowsAnyAsync<InvalidOperationException>(() => _facadeSUT.SaveAsync(model));
     }
 
     [Fact]
     public async Task Create_WithExistingIngredient_Throws()
     {
-        //Arrange
-        var model = new PlaylistSummaryModel()
+        // Arrange
+        var model = new PlaylistSummaryModel
         {
             Id = Guid.NewGuid(),
             PlaylistId = Guid.NewGuid(),
             Title = "Test Title",
             Description = "Test Description",
-            Medias = new ObservableCollection<MediumDetailedModel>()
+            Medias = new ObservableCollection<MediumDetailedModel>
             {
                 new()
                 {
@@ -99,21 +92,21 @@ public class PlaylistFacadeTests : FacadeTestsBase
             }
         };
 
-        //Act && Assert
+        // Act & Assert
         await Assert.ThrowsAnyAsync<InvalidOperationException>(() => _facadeSUT.SaveAsync(model));
     }
 
     [Fact]
     public async Task Create_WithExistingAndNotExistingIngredient_Throws()
     {
-        //Arrange
-        var model = new PlaylistSummaryModel()
+        // Arrange
+        var model = new PlaylistSummaryModel
         {
             Id = Guid.NewGuid(),
             PlaylistId = Guid.NewGuid(),
             Title = "Test Title",
             Description = "Test Description",
-            Medias = new ObservableCollection<MediumDetailedModel>()
+            Medias = new ObservableCollection<MediumDetailedModel>
             {
                 new()
                 {
@@ -128,59 +121,58 @@ public class PlaylistFacadeTests : FacadeTestsBase
             }
         };
 
-        //Act & Assert
+        // Act & Assert
         await Assert.ThrowsAnyAsync<InvalidOperationException>(() => _facadeSUT.SaveAsync(model));
     }
-
 
     [Fact]
     public async Task GetById_FromSeeded_EqualsSeeded()
     {
-        //Arrange
+        // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
 
-        //Act
+        // Act
         var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
 
-        //Assert
+        // Assert
         DeepAssert.Equal(detailModel, returnedModel);
     }
 
     [Fact]
     public async Task GetAll_FromSeeded_ContainsSeeded()
     {
-        //Arrange
+        // Arrange
         var listModel = PlaylistModelMapper.MapToNameOnly(PlaylistSeeds.MusicPlaylist);
 
-        //Act
+        // Act
         var returnedModel = await _facadeSUT.GetAsync();
 
-        //Assert
+        // Assert
         Assert.Contains(listModel, returnedModel);
     }
 
     [Fact]
     public async Task Update_FromSeeded_DoesNotThrow()
     {
-        //Arrange
+        // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
         detailModel.Title = "Changed playlist title";
 
-        //Act & Assert
-        await _facadeSUT.SaveAsync(detailModel with {Medias = default!});
+        // Act & Assert
+        await _facadeSUT.SaveAsync(detailModel with { Medias = default! });
     }
 
     [Fact]
     public async Task Update_Name_FromSeeded_Updated()
     {
-        //Arrange
+        // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
         detailModel.Title = "Changed playlist title";
 
-        //Act
-        await _facadeSUT.SaveAsync(detailModel with { Medias = default!});
+        // Act
+        await _facadeSUT.SaveAsync(detailModel with { Medias = default! });
 
-        //Assert
+        // Assert
         var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
         DeepAssert.Equal(detailModel, returnedModel);
     }
@@ -188,14 +180,14 @@ public class PlaylistFacadeTests : FacadeTestsBase
     [Fact]
     public async Task Update_RemoveIngredients_FromSeeded_NotUpdated()
     {
-        //Arrange
+        // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
         detailModel.Medias.Clear();
 
-        //Act
+        // Act
         await _facadeSUT.SaveAsync(detailModel);
 
-        //Assert
+        // Assert
         var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
         DeepAssert.Equal(PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist), returnedModel);
     }
@@ -203,14 +195,14 @@ public class PlaylistFacadeTests : FacadeTestsBase
     [Fact]
     public async Task Update_RemoveOneOfIngredients_FromSeeded_Updated()
     {
-        //Arrange
+        // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
         detailModel.Medias.Remove(detailModel.Medias.First());
 
-        //Act
-        await Assert.ThrowsAnyAsync<InvalidOperationException>(() =>  _facadeSUT.SaveAsync(detailModel));
+        // Act
+        await Assert.ThrowsAnyAsync<InvalidOperationException>(() => _facadeSUT.SaveAsync(detailModel));
 
-        //Assert
+        // Assert
         var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
         DeepAssert.Equal(PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist), returnedModel);
     }
@@ -218,10 +210,9 @@ public class PlaylistFacadeTests : FacadeTestsBase
     [Fact]
     public async Task DeleteById_FromSeeded_DoesNotThrow()
     {
-        //Arrange & Act & Assert
+        // Arrange & Act & Assert
         await _facadeSUT.DeleteAsync(PlaylistSeeds.MusicPlaylist.Id);
     }
-
 
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
     {
@@ -230,12 +221,13 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         foreach (var mediumModel in returnedModel.Medias)
         {
-            var mediumDetailModel = expectedModel.Medias.FirstOrDefault(m =>
-                m.Title == mediumModel.Title
-                && m.Url == mediumModel.Url
-                && m.Format == mediumModel.Format
-                && m.Description == mediumModel.Description);
-
+            var mediumDetailModel =
+                expectedModel.Medias.FirstOrDefault(m =>
+                                                        m.Title == mediumModel.Title
+                                                        && m.Url == mediumModel.Url
+                                                        && m.Format == mediumModel.Format
+                                                        && m.Description == mediumModel.Description
+                                                   );
             if (mediumDetailModel != null)
             {
                 mediumModel.Id = mediumDetailModel.Id;

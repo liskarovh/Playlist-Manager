@@ -1,22 +1,21 @@
-﻿using PlaylistManager.BL.Facades.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
+using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Facades;
 using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
-using Microsoft.EntityFrameworkCore;
-using Xunit.Abstractions;
 
 namespace PlaylistManager.BL.Tests;
 
 public class MediumFacadeTests : FacadeTestsBase
 {
-    private readonly IMediumFacade _mediumFacade;
+    private readonly IMediumFacade _mediumFacadeSUT;
 
     public MediumFacadeTests(ITestOutputHelper output) : base(output)
     {
-        _mediumFacade = new MediumFacade(UnitOfWorkFactory, MediumModelMapper);
+        _mediumFacadeSUT = new MediumFacade(UnitOfWorkFactory, MediumModelMapper);
     }
-
 
     [Fact]
     public async Task GetById_NonExistentMedium_ReturnsNull()
@@ -25,7 +24,7 @@ public class MediumFacadeTests : FacadeTestsBase
         var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.EmptyPlaylistMultimedia;
 
         // Act
-        var result = await _mediumFacade.GetAsync(seededMediumInsidePlaylist.Id);
+        var result = await _mediumFacadeSUT.GetAsync(seededMediumInsidePlaylist.Id);
 
         // Assert
         Assert.Null(result);
@@ -38,7 +37,7 @@ public class MediumFacadeTests : FacadeTestsBase
         var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
 
         // Act
-        var media = await _mediumFacade.GetAsync();
+        var media = await _mediumFacadeSUT.GetAsync();
         var medium = media.SingleOrDefault(m => m.Id == seededMediumInsidePlaylist.Id);
 
         // Assert
@@ -52,7 +51,7 @@ public class MediumFacadeTests : FacadeTestsBase
         var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
 
         // Act
-        var result = await _mediumFacade.GetAsync(seededMediumInsidePlaylist.Id);
+        var result = await _mediumFacadeSUT.GetAsync(seededMediumInsidePlaylist.Id);
 
         // Assert
         DeepAssert.Equal(MediumModelMapper.MapToDetailModel(seededMediumInsidePlaylist), result);
@@ -65,7 +64,7 @@ public class MediumFacadeTests : FacadeTestsBase
         var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
 
         // Act
-        await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id);
+        await _mediumFacadeSUT.DeleteAsync(seededMediumInsidePlaylist.Id);
 
         // Assert
         await using var dbxAssert = await DbContextFactory.CreateDbContextAsync();
@@ -79,7 +78,7 @@ public class MediumFacadeTests : FacadeTestsBase
         var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
 
         // Act & Assert
-        var exception = await Record.ExceptionAsync(async () => await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id));
+        var exception = await Record.ExceptionAsync(async () => await _mediumFacadeSUT.DeleteAsync(seededMediumInsidePlaylist.Id));
         Assert.Null(exception);
     }
 
@@ -88,10 +87,10 @@ public class MediumFacadeTests : FacadeTestsBase
     {
         // Arrange
         var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
-        await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id);
+        await _mediumFacadeSUT.DeleteAsync(seededMediumInsidePlaylist.Id);
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id));
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _mediumFacadeSUT.DeleteAsync(seededMediumInsidePlaylist.Id));
     }
 
     [Fact]
@@ -114,11 +113,13 @@ public class MediumFacadeTests : FacadeTestsBase
         };
 
         // Act
-        medium = await _mediumFacade.SaveAsync(medium);
+        medium = await _mediumFacadeSUT.SaveAsync(medium);
 
         // Assert
         await using var dbxAssert = await DbContextFactory.CreateDbContextAsync();
-        var mediumFromDb = await dbxAssert.PlaylistMultimedia.Include(m => m.Multimedia).SingleAsync(i => i.Id == medium.Id);
+        var mediumFromDb = await dbxAssert.PlaylistMultimedia
+                                          .Include(m => m.Multimedia)
+                                          .SingleAsync(i => i.Id == medium.Id);
         var detailModel = MediumModelMapper.MapToDetailModel(mediumFromDb);
         DeepAssert.Equal(medium, detailModel);
     }
@@ -147,11 +148,13 @@ public class MediumFacadeTests : FacadeTestsBase
         medium.Description += " Updated";
 
         // Act
-        await _mediumFacade.SaveAsync(medium);
+        await _mediumFacadeSUT.SaveAsync(medium);
 
         // Assert
         await using var dbxAssert = await DbContextFactory.CreateDbContextAsync();
-        var mediumFromDb = await dbxAssert.PlaylistMultimedia.Include(m => m.Multimedia).SingleAsync(i => i.Id == medium.Id);
+        var mediumFromDb = await dbxAssert.PlaylistMultimedia
+                                          .Include(m => m.Multimedia)
+                                          .SingleAsync(i => i.Id == medium.Id);
         DeepAssert.Equal(medium, MediumModelMapper.MapToDetailModel(mediumFromDb));
     }
 }
