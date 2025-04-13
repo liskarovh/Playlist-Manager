@@ -1,11 +1,11 @@
-﻿using PlaylistManager.DAL;
+﻿using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
+using PlaylistManager.DAL;
 using PlaylistManager.DAL.Factories;
 using PlaylistManager.DAL.UnitOfWork;
 using PlaylistManager.BL.Mappers;
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
-using Microsoft.EntityFrameworkCore;
-using Xunit.Abstractions;
 
 namespace PlaylistManager.BL.Tests;
 
@@ -25,7 +25,6 @@ public class FacadeTestsBase : IAsyncLifetime
     }
 
     protected IDbContextFactory<PlaylistManagerDbContext> DbContextFactory { get; }
-
     protected MediumModelMapper MediumModelMapper { get; }
     protected PlaylistModelMapper PlaylistModelMapper { get; }
     protected UnitOfWorkFactory UnitOfWorkFactory { get; }

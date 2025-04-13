@@ -4,7 +4,8 @@ using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.BL.Mappers;
 
-public class PlaylistModelMapper(MediumModelMapper mediumModelMapper) : ModelMapperBase<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel>
+public class PlaylistModelMapper(MediumModelMapper mediumModelMapper)
+    : ModelMapperBase<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel>
 {
     public override PlaylistNameOnlyModel MapToNameOnly(PlaylistEntity? entity)
         => entity == null
@@ -32,14 +33,14 @@ public class PlaylistModelMapper(MediumModelMapper mediumModelMapper) : ModelMap
                                      .Sum(pm => pm.Multimedia?.Duration ?? 0.0)
                                ?? 0.0;
 
-        ObservableCollection<MediumDetailedModel> m = new ObservableCollection<MediumDetailedModel>();
+        ObservableCollection<MediumDetailedModel> mediumDetailedModels = new ObservableCollection<MediumDetailedModel>();
 
         if (entity.PlaylistMultimedia != null)
         {
             foreach (var medium in entity.PlaylistMultimedia)
             {
                 var newMedium = mediumModelMapper.MapToDetailModel(medium);
-                m.Add(newMedium);
+                mediumDetailedModels.Add(newMedium);
             }
         }
 
@@ -51,11 +52,12 @@ public class PlaylistModelMapper(MediumModelMapper mediumModelMapper) : ModelMap
             Description = entity.Description,
             MediaCount = mediaCount,
             TotalDuration = totalDuration,
-            Medias = m
+            Medias = mediumDetailedModels
         };
     }
 
-    public override PlaylistSummaryModel MapToDetailModel(PlaylistEntity? entity) => MapToSummary(entity); // We'll use the same mapping as for SummaryModel.
+    public override PlaylistSummaryModel MapToDetailModel(PlaylistEntity? entity)
+        => MapToSummary(entity); // We'll use the same mapping as for SummaryModel.
 
     public override PlaylistEntity MapToEntity(PlaylistSummaryModel model)
     {
@@ -75,7 +77,7 @@ public class PlaylistModelMapper(MediumModelMapper mediumModelMapper) : ModelMap
             Title = model.Title,
             Description = model.Description,
             Type = model.Type,
-            PlaylistMultimedia = new List<PlaylistMultimediaEntity>() // Doesn't need to worry about possible null dereferencing.
+            PlaylistMultimedia = new List<PlaylistMultimediaEntity>() // Don't need to worry about possible null dereferencing.
         };
     }
 }

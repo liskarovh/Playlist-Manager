@@ -1,28 +1,28 @@
 using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using PlaylistManager.BL.Facades.Interfaces;
-using PlaylistManager.BL.Models;
-using PlaylistManager.BL.Mappers;
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.DAL.Mappers;
 using PlaylistManager.DAL.Repositories;
 using PlaylistManager.DAL.UnitOfWork;
+using PlaylistManager.BL.Facades.Interfaces;
+using PlaylistManager.BL.Models;
+using PlaylistManager.BL.Mappers;
 
 namespace PlaylistManager.BL.Facades;
 
 public abstract class
-    FacadeBase<TEntity, TNameOnlyModel ,TSummaryModel, TDetailModel, TEntityMapper>(
+    FacadeBase<TEntity, TNameOnlyModel, TSummaryModel, TDetailModel, TEntityMapper>(
         IUnitOfWorkFactory unitOfWorkFactory,
-        IModelMapper<TEntity,TNameOnlyModel ,TSummaryModel, TDetailModel> modelMapper)
-    : IFacade<TEntity, TNameOnlyModel ,TSummaryModel, TDetailModel>
+        IModelMapper<TEntity, TNameOnlyModel, TSummaryModel, TDetailModel> modelMapper)
+    : IFacade<TEntity, TNameOnlyModel, TSummaryModel, TDetailModel>
     where TEntity : class, IEntity
     where TNameOnlyModel : IModel
-    where TSummaryModel :  IModel
+    where TSummaryModel : IModel
     where TDetailModel : class, IModel
     where TEntityMapper : IEntityMapper<TEntity>, new()
 {
-    protected readonly IModelMapper<TEntity, TNameOnlyModel ,TSummaryModel, TDetailModel> ModelMapper = modelMapper;
+    protected readonly IModelMapper<TEntity, TNameOnlyModel, TSummaryModel, TDetailModel> ModelMapper = modelMapper;
     protected readonly IUnitOfWorkFactory UnitOfWorkFactory = unitOfWorkFactory;
 
     protected virtual ICollection<string> IncludesNavigationPathDetail => new List<string>();
@@ -30,6 +30,7 @@ public abstract class
     public async Task DeleteAsync(Guid id)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+
         try
         {
             await uow.GetRepository<TEntity, TEntityMapper>().DeleteAsync(id).ConfigureAwait(false);
@@ -47,25 +48,21 @@ public abstract class
 
         IQueryable<TEntity> query = uow.GetRepository<TEntity, TEntityMapper>().Get();
 
-        foreach (string includePath in IncludesNavigationPathDetail)
-        {
-            query = query.Include(includePath);
-        }
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
 
         TEntity? entity = await query.SingleOrDefaultAsync(e => e.Id == id).ConfigureAwait(false);
 
-        return entity is null
-            ? null
-            : ModelMapper.MapToDetailModel(entity);
+        return entity is null ? null : ModelMapper.MapToDetailModel(entity);
     }
 
     public virtual async Task<IEnumerable<TSummaryModel>> GetAsyncSummary()
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+
         List<TEntity> entities = await uow
-            .GetRepository<TEntity, TEntityMapper>()
-            .Get()
-            .ToListAsync().ConfigureAwait(false);
+                                       .GetRepository<TEntity, TEntityMapper>()
+                                       .Get()
+                                       .ToListAsync().ConfigureAwait(false);
 
         return ModelMapper.MapToSummary(entities);
     }
@@ -74,9 +71,9 @@ public abstract class
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         List<TEntity> entities = await uow
-            .GetRepository<TEntity, TEntityMapper>()
-            .Get()
-            .ToListAsync().ConfigureAwait(false);
+                                       .GetRepository<TEntity, TEntityMapper>()
+                                       .Get()
+                                       .ToListAsync().ConfigureAwait(false);
 
         return ModelMapper.MapToNameOnly(entities);
     }
@@ -88,7 +85,6 @@ public abstract class
         GuardCollectionsAreNotSet(model);
 
         TEntity entity = ModelMapper.MapToEntity(model);
-
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IRepository<TEntity> repository = uow.GetRepository<TEntity, TEntityMapper>();
 
@@ -109,27 +105,16 @@ public abstract class
         return result;
     }
 
-    /// <summary>
-    /// This Guard ensures that there is a clear understanding of current infrastructure limitations.
-    /// This version of BL/DAL infrastructure does not support insertion or update of adjacent entities.
-    /// WARN: Does not guard navigation properties.
-    /// </summary>
-    /// <param name="model">Model to be inserted or updated</param>
-    /// <exception cref="InvalidOperationException"></exception>
     private static void GuardCollectionsAreNotSet(TDetailModel model)
     {
         IEnumerable<PropertyInfo> collectionProperties = model
-            .GetType()
-            .GetProperties()
-            .Where(i => typeof(ICollection).IsAssignableFrom(i.PropertyType));
+                                                         .GetType()
+                                                         .GetProperties()
+                                                         .Where(i => typeof(ICollection).IsAssignableFrom(i.PropertyType));
 
-        foreach (PropertyInfo collectionProperty in collectionProperties)
+        if (collectionProperties.Any(collectionProperty => collectionProperty.GetValue(model) is ICollection { Count: > 0 }))
         {
-            if (collectionProperty.GetValue(model) is ICollection { Count: > 0 })
-            {
-                throw new InvalidOperationException(
-                    "Current BL and DAL infrastructure disallows insert or update of models with adjacent collections.");
-            }
+            throw new InvalidOperationException("Current BL and DAL infrastructure disallows insert or update of models with adjacent collections.");
         }
     }
 }

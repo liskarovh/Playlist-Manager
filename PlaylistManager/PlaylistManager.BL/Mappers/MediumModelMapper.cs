@@ -1,6 +1,6 @@
-﻿using PlaylistManager.BL.Models;
+﻿using PlaylistManager.DAL.Entities;
+using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Enums;
-using PlaylistManager.DAL.Entities;
 
 namespace PlaylistManager.BL.Mappers;
 
@@ -17,7 +17,6 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                    Title = entity.Multimedia.Title,
                    AddedDate = entity.AddedDate
                };
-
 
     public override MediumSummaryModel MapToSummary(PlaylistMultimediaEntity? entity)
         => entity?.Multimedia == null
@@ -77,7 +76,8 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
         return model;
     }
 
-    public override PlaylistMultimediaEntity MapToEntity(MediumDetailedModel model) => throw new InvalidOperationException("This method is unsupported. Use the other overload.");
+    public override PlaylistMultimediaEntity MapToEntity(MediumDetailedModel model)
+        => throw new InvalidOperationException("This method is unsupported. Use the other overload.");
 
     public PlaylistMultimediaEntity MapToEntity(MediumDetailedModel model, PlaylistEntity playlistEntity)
     {
@@ -91,13 +91,9 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
             throw new ArgumentException("Medium Id cannot be empty.", nameof(model.MediumId));
         }
 
-        // Create the appropriate multimedia entity based on the format and genre.
-        MultimediaBaseEntity multimedia;
-
-        if (playlistEntity.Type == PlaylistType.AudioBook)
+        MultimediaBaseEntity multimedia = playlistEntity.Type switch
         {
-
-            multimedia = new AudioBookEntity
+            PlaylistType.AudioBook => new AudioBookEntity
             {
                 Id = model.MediumId,
                 Title = model.Title,
@@ -106,17 +102,10 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                 Url = model.Url,
                 Duration = model.Duration,
                 ReleaseYear = model.ReleaseYear,
-                Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
-                             ? audioFormat
-                             : AudioFormat.None,
-                Genre = Enum.TryParse(model.Genre, out AudioBookGenre audioBookGenre)
-                            ? audioBookGenre
-                            : AudioBookGenre.None
-            };
-        }
-        else if (playlistEntity.Type == PlaylistType.Music)
-        {
-            multimedia = new MusicEntity
+                Format = Enum.TryParse(model.Format, out AudioFormat audioFormat) ? audioFormat : AudioFormat.None,
+                Genre = Enum.TryParse(model.Genre, out AudioBookGenre audioBookGenre) ? audioBookGenre : AudioBookGenre.None
+            },
+            PlaylistType.Music => new MusicEntity
             {
                 Id = model.MediumId,
                 Title = model.Title,
@@ -125,17 +114,10 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                 Url = model.Url,
                 Duration = model.Duration,
                 ReleaseYear = model.ReleaseYear,
-                Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
-                             ? audioFormat
-                             : AudioFormat.None,
-                Genre = Enum.TryParse(model.Genre, out MusicGenre musicGenre)
-                            ? musicGenre
-                            : MusicGenre.None
-            };
-        }
-        else // playlistEntity.Type == PlaylistType.Video
-        {
-            multimedia = new VideoMediaEntity
+                Format = Enum.TryParse(model.Format, out AudioFormat audioFormat) ? audioFormat : AudioFormat.None,
+                Genre = Enum.TryParse(model.Genre, out MusicGenre musicGenre) ? musicGenre : MusicGenre.None
+            },
+            _ => new VideoMediaEntity
             {
                 Id = model.MediumId,
                 Title = model.Title,
@@ -144,14 +126,10 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                 Url = model.Url,
                 Duration = model.Duration,
                 ReleaseYear = model.ReleaseYear,
-                Format = Enum.TryParse(model.Format, out VideoFormat videoFormat)
-                             ? videoFormat
-                             : VideoFormat.None,
-                Genre = Enum.TryParse(model.Genre, out VideoGenre videoGenre)
-                            ? videoGenre
-                            : VideoGenre.None
-            };
-        }
+                Format = Enum.TryParse(model.Format, out VideoFormat videoFormat) ? videoFormat : VideoFormat.None,
+                Genre = Enum.TryParse(model.Genre, out VideoGenre videoGenre) ? videoGenre : VideoGenre.None
+            }
+        };
 
         // Binds the multimedia entity to the playlist entity.
         return new PlaylistMultimediaEntity

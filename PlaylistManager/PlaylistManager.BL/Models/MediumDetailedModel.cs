@@ -5,7 +5,7 @@ public record MediumDetailedModel : ModelBase
     public required Guid MediumId { get; set; }
     public required Guid PlaylistId { get; set; }
     public required string Title { get; set; }
-    public string? Author  { get; set; }
+    public string? Author { get; set; }
     public string? Description { get; set; }
     public string? Url { get; set; }
     public double? Duration { get; set; }
