@@ -1,5 +1,4 @@
-﻿using System;
-using PlaylistManager.Common.Enums;
+﻿using PlaylistManager.Common.Enums;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Facades;
 using PlaylistManager.BL.Mappers;
@@ -126,6 +125,17 @@ public class MediumFacadeTests : FacadeTestsBase
         // Act & Assert
         var exception = await Record.ExceptionAsync(async () => await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id));
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task TryToDeleteAlreadyDeleted_SeededMusicBohemianRhapsody_Throw()
+    {
+        // Arrange
+        var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
+        await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(async () => await _mediumFacade.DeleteAsync(seededMediumInsidePlaylist.Id));
     }
 
     [Fact]
