@@ -157,4 +157,62 @@ public class MediumFacadeTests : FacadeTestsBase
                                           .SingleAsync(i => i.Id == medium.Id);
         DeepAssert.Equal(medium, MediumModelMapper.MapToDetailModel(mediumFromDb));
     }
+
+    [Fact]
+    public async Task GetAsyncSummary_NoEntities_ReturnsEmptyCollection()
+    {
+        // Arrange
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        dbx.PlaylistMultimedia.RemoveRange(dbx.PlaylistMultimedia);
+        await dbx.SaveChangesAsync();
+
+        // Act
+        var result = await _mediumFacadeSUT.GetAsyncSummary();
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetAsyncSummary_SeededMusicBohemianRhapsody_ReturnsCorrectSummary()
+    {
+        // Arrange
+        var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
+
+        // Act
+        var result = await _mediumFacadeSUT.GetAsyncSummary();
+
+        // Assert
+        Assert.NotNull(result);
+        var summary = result.SingleOrDefault(m => m.Id == seededMediumInsidePlaylist.Id);
+        Assert.NotNull(summary);
+        DeepAssert.Equal(MediumModelMapper.MapToSummary(seededMediumInsidePlaylist), summary);
+    }
+
+    [Fact]
+    public async Task GetAsyncSummary_MultipleSeededEntities_ReturnsAllSummaries()
+    {
+        // Arrange
+        var expectedEntities = new[]
+        {
+            PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody, PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsodyDelete, PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsodyUpdate,
+            PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot, PlaylistMultimediaSeeds.AudioBookPlaylist_Dune, PlaylistMultimediaSeeds.VideoPlaylist_TheMatrix
+        };
+
+        // Act
+        var result = await _mediumFacadeSUT.GetAsyncSummary();
+
+        // Assert
+        Assert.NotNull(result);
+        IEnumerable<MediumSummaryModel> mediumSummaryModels = result.ToList();
+        Assert.Equal(expectedEntities.Length, mediumSummaryModels.Count());
+
+        foreach (var expectedEntity in expectedEntities)
+        {
+            var summary = mediumSummaryModels.SingleOrDefault(m => m.Id == expectedEntity.Id);
+            Assert.NotNull(summary);
+            DeepAssert.Equal(MediumModelMapper.MapToSummary(expectedEntity), summary);
+        }
+    }
 }
