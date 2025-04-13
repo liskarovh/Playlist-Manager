@@ -4,6 +4,7 @@
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.DAL.Mappers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace PlaylistManager.DAL.Repositories;
 
@@ -13,7 +14,17 @@ public class Repository <TEntity> (
 {
     private readonly DbSet<TEntity> _dbSet = dbContext.Set<TEntity>();
 
-    public IQueryable<TEntity> Get() => _dbSet;
+    public IQueryable<TEntity> Get(Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
+    {
+        IQueryable<TEntity> query = _dbSet;
+
+        if (include != null)
+        {
+            query = include(query);
+        }
+
+        return query;
+    }
 
     public async ValueTask<bool> ExistsAsync(TEntity entity)
         => entity.Id != Guid.Empty
