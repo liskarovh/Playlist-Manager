@@ -1,24 +1,19 @@
-﻿using PlaylistManager.Common.Enums;
-using PlaylistManager.BL.Facades.Interfaces;
+﻿using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Facades;
-using PlaylistManager.BL.Mappers;
 using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace PlaylistManager.BL.Tests;
 
 public class MediumFacadeTests : FacadeTestsBase
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly IMediumFacade _mediumFacade;
 
     public MediumFacadeTests(ITestOutputHelper output) : base(output)
     {
-        _testOutputHelper = output;
         _mediumFacade = new MediumFacade(UnitOfWorkFactory, MediumModelMapper);
     }
 
@@ -48,45 +43,6 @@ public class MediumFacadeTests : FacadeTestsBase
 
         // Assert
         DeepAssert.Equal(MediumModelMapper.MapToNameOnly(seededMediumInsidePlaylist), medium);
-    }
-
-    [Fact]
-    public async Task Debug_GetAll_Single_SeededMusicBohemianRhapsodyNameOnly()
-    {
-        // Arrange
-        var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
-
-        // Act
-        var media = await _mediumFacade.GetAsync();
-
-        // Debugging: ověříme, že seznam není null a obsahuje položky.
-        Assert.NotNull(media);
-        Assert.NotEmpty(media);
-
-        // Přidání logování: vypiš informace o každém vráceném modelu.
-        foreach (var m in media)
-        {
-            _testOutputHelper.WriteLine($"Found medium: Id={m.Id},MediumId={m.MediumId}, Title={m.Title}, AddedDate={m.AddedDate}");
-        }
-
-        // Hledáme seedovanou entitu podle jejího Id.
-        var medium = media.SingleOrDefault(m => m.Id == seededMediumInsidePlaylist.Id);
-
-        // Debug: log výsledek hledání
-        if (medium == null)
-        {
-            _testOutputHelper.WriteLine($"Seeded medium with Id {seededMediumInsidePlaylist.Id} not found in returned collection!");
-        }
-        else
-        {
-            _testOutputHelper.WriteLine($"Seeded medium found: Id={medium.Id}, Title={medium.Title}");
-        }
-
-        Assert.NotNull(medium); // Ověříme, že medium není null
-
-        // Assert: porovnáme očekávaný model s výsledkem (DeepAssert předpokládá, že kontroluje všechny klíčové vlastnosti)
-        DeepAssert.Equal(MediumModelMapper.MapToNameOnly(seededMediumInsidePlaylist), medium);
-
     }
 
     [Fact]
