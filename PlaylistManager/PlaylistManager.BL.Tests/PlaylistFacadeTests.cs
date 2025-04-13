@@ -1,11 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using PlaylistManager.DAL;
-using PlaylistManager.DAL.Factories;
-using PlaylistManager.DAL.UnitOfWork;
-using PlaylistManager.BL.Mappers;
+
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
-using Microsoft.EntityFrameworkCore;
 using PlaylistManager.BL.Facades;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Models;
@@ -67,6 +63,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
                 {
                     Id = Guid.Empty,
                     MediumId = Guid.Empty,
+                    PlaylistId = Guid.Empty,
                     Title = "Title 1",
                     Format = AudioFormat.Mp3.ToString(),
                     Genre = MusicGenre.Pop.ToString(),
@@ -94,6 +91,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
                 {
                     Id = Guid.NewGuid(),
                     MediumId = MusicSeeds.AmericanIdiot.Id,
+                    PlaylistId = Guid.Empty,
                     Title = MusicSeeds.AmericanIdiot.Title,
                     Format = MusicSeeds.AmericanIdiot.Format.ToString(),
                     Genre = MusicSeeds.AmericanIdiot.Genre.ToString(),
@@ -121,6 +119,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
                 {
                     Id = Guid.Empty,
                     MediumId = Guid.Empty,
+                    PlaylistId = Guid.Empty,
                     Title = "Title 1",
                     Format = AudioFormat.Mp3.ToString(),
                     Genre = MusicGenre.Pop.ToString(),

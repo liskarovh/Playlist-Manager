@@ -135,6 +135,7 @@ public class MediumFacadeTests : FacadeTestsBase
         {
             Id = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody.Id,
             MediumId = MusicSeeds.BohemianRhapsody.Id,
+            PlaylistId = PlaylistSeeds.MusicPlaylist.Id,
             Title = MusicSeeds.BohemianRhapsody.Title,
             Author = MusicSeeds.BohemianRhapsody.Author,
             Description = MusicSeeds.BohemianRhapsody.Description,
@@ -163,6 +164,7 @@ public class MediumFacadeTests : FacadeTestsBase
             Id = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody.Id,
             MediumId = MusicSeeds.BohemianRhapsody.Id,
             Title = MusicSeeds.BohemianRhapsody.Title,
+            PlaylistId = PlaylistSeeds.MusicPlaylist.Id,
             Author = MusicSeeds.BohemianRhapsody.Author,
             Description = MusicSeeds.BohemianRhapsody.Description,
             Url = MusicSeeds.BohemianRhapsody.Url,

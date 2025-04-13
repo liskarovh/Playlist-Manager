@@ -13,6 +13,7 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                {
                    Id = entity.Id,
                    MediumId = entity.MultimediaId,
+                   PlaylistId = entity.PlaylistId,
                    Title = entity.Multimedia.Title,
                    AddedDate = entity.AddedDate
                };
@@ -25,6 +26,7 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
                {
                    Id = entity.Id,
                    MediumId = entity.MultimediaId,
+                   PlaylistId = entity.PlaylistId,
                    Title = entity.Multimedia.Title,
                    Author = entity.Multimedia.Author,
                    Duration = entity.Multimedia.Duration,
@@ -42,6 +44,7 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
         {
             Id = entity.Id,
             MediumId = entity.MultimediaId,
+            PlaylistId = entity.PlaylistId,
             Title = entity.Multimedia.Title,
             Author = entity.Multimedia.Author,
             Description = entity.Multimedia.Description,
@@ -94,60 +97,60 @@ public class MediumModelMapper : ModelMapperBase<PlaylistMultimediaEntity, Mediu
         if (playlistEntity.Type == PlaylistType.AudioBook)
         {
 
-                multimedia = new AudioBookEntity
-                {
-                    Id = model.MediumId,
-                    Title = model.Title,
-                    Author = model.Author,
-                    Description = model.Description,
-                    Url = model.Url,
-                    Duration = model.Duration,
-                    ReleaseYear = model.ReleaseYear,
-                    Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
-                                 ? audioFormat
-                                 : AudioFormat.None,
-                    Genre = Enum.TryParse(model.Genre, out AudioBookGenre audioBookGenre)
-                                ? audioBookGenre
-                                : AudioBookGenre.None
-                };
+            multimedia = new AudioBookEntity
+            {
+                Id = model.MediumId,
+                Title = model.Title,
+                Author = model.Author,
+                Description = model.Description,
+                Url = model.Url,
+                Duration = model.Duration,
+                ReleaseYear = model.ReleaseYear,
+                Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
+                             ? audioFormat
+                             : AudioFormat.None,
+                Genre = Enum.TryParse(model.Genre, out AudioBookGenre audioBookGenre)
+                            ? audioBookGenre
+                            : AudioBookGenre.None
+            };
         }
         else if (playlistEntity.Type == PlaylistType.Music)
         {
             multimedia = new MusicEntity
-                         {
-                             Id = model.MediumId,
-                             Title = model.Title,
-                             Author = model.Author,
-                             Description = model.Description,
-                             Url = model.Url,
-                             Duration = model.Duration,
-                             ReleaseYear = model.ReleaseYear,
-                             Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
-                                          ? audioFormat
-                                          : AudioFormat.None,
-                             Genre = Enum.TryParse(model.Genre, out MusicGenre musicGenre)
-                                         ? musicGenre
-                                         : MusicGenre.None
-                         };
+            {
+                Id = model.MediumId,
+                Title = model.Title,
+                Author = model.Author,
+                Description = model.Description,
+                Url = model.Url,
+                Duration = model.Duration,
+                ReleaseYear = model.ReleaseYear,
+                Format = Enum.TryParse(model.Format, out AudioFormat audioFormat)
+                             ? audioFormat
+                             : AudioFormat.None,
+                Genre = Enum.TryParse(model.Genre, out MusicGenre musicGenre)
+                            ? musicGenre
+                            : MusicGenre.None
+            };
         }
         else // playlistEntity.Type == PlaylistType.Video
         {
-                multimedia = new VideoMediaEntity
-                {
-                    Id = model.MediumId,
-                    Title = model.Title,
-                    Author = model.Author,
-                    Description = model.Description,
-                    Url = model.Url,
-                    Duration = model.Duration,
-                    ReleaseYear = model.ReleaseYear,
-                    Format = Enum.TryParse(model.Format, out VideoFormat videoFormat)
-                                 ? videoFormat
-                                 : VideoFormat.None,
-                    Genre = Enum.TryParse(model.Genre, out VideoGenre videoGenre)
-                                ? videoGenre
-                                : VideoGenre.None
-                };
+            multimedia = new VideoMediaEntity
+            {
+                Id = model.MediumId,
+                Title = model.Title,
+                Author = model.Author,
+                Description = model.Description,
+                Url = model.Url,
+                Duration = model.Duration,
+                ReleaseYear = model.ReleaseYear,
+                Format = Enum.TryParse(model.Format, out VideoFormat videoFormat)
+                             ? videoFormat
+                             : VideoFormat.None,
+                Genre = Enum.TryParse(model.Genre, out VideoGenre videoGenre)
+                            ? videoGenre
+                            : VideoGenre.None
+            };
         }
 
         // Binds the multimedia entity to the playlist entity.
