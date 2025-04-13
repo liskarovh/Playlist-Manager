@@ -3,6 +3,7 @@ namespace PlaylistManager.BL.Models;
 public record MediumDetailedModel : ModelBase
 {
     public required Guid MediumId { get; set; }
+    public required Guid PlaylistId { get; set; }
     public required string Title { get; set; }
     public string? Author  { get; set; }
     public string? Description { get; set; }
@@ -17,6 +18,7 @@ public record MediumDetailedModel : ModelBase
     {
         Id = Guid.NewGuid(),
         MediumId = Guid.Empty,
+        PlaylistId = Guid.Empty,
         Title = string.Empty,
         AddedDate = DateTime.MinValue,
         Format = string.Empty,
