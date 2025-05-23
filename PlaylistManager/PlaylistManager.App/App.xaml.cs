@@ -1,4 +1,4 @@
-﻿namespace PlaylistManager.App;
+namespace PlaylistManager.App;
 
 public partial class App : Application
 {

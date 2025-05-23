@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             x:Class="PlaylistManager.App.Views.PlaylistSelected">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto" 
+      ColumnDefinitions="*">
+
+        <!-- Top Bar -->
+        <Grid Grid.Row="0"
+          
+          Padding="10"
+          ColumnDefinitions="Auto, Auto, Auto, *, *, Auto"
+          VerticalOptions="Start"
+          ColumnSpacing="10">
+
+            <ImageButton Grid.Column="0" Source="settings_icon.png" />
+            <Picker Grid.Column="1" Title="Sort playlists by" />
+            <Button Grid.Column="2" Text="New Playlist" />
+            <SearchBar Grid.Column="3" Placeholder="Medium search in all playlists" />
+            <Grid Grid.Column="4"
+                  ColumnDefinitions="*, *, *">
+                <Picker Grid.Column="0" Title="Sort mediums by:" />
+                <Picker Grid.Column="1" Title="Filter mediums by:" />
+                <Button Grid.Column="2" Text="New Medium" />
+            </Grid>
+            <ImageButton Grid.Column="5" Source="app_logo.png" />
+        </Grid>
+
+        <!-- Second Bar -->
+        <Grid Grid.Row="1"
+  
+          Padding="10"
+          ColumnDefinitions="Auto, Auto, Auto, *, *, Auto, Auto"
+          VerticalOptions="Start"
+          ColumnSpacing="10">
+
+            <SearchBar Grid.Column="0" Placeholder="Search playlists" />
+            <ImageButton Grid.Column="1" Source="back_arrow.png" />
+            
+            <Label Grid.Column="2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"  Text="Playlist description" />
+            
+        </Grid>
+
+        <!-- List of playlists -->
+        <CollectionView Grid.Row="2">
+            <!-- Need ViewModel for binding -->
+        </CollectionView>
+
+        <!-- Add background images later -->
+
+        <!-- Back button -->
+        <Button Grid.Row="3" Text="Go back to select screen" HorizontalOptions="Start"/>
+    </Grid>
+</views:ContentPageBase>

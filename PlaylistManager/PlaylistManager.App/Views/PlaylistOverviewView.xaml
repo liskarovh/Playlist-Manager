@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             x:Class="PlaylistManager.App.Views.PlaylistOverview">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto" 
+          ColumnDefinitions="*">
+
+        <!-- Top Bar -->
+        <Border Grid.Row="0" Stroke="Black">
+            <Grid  Padding="10"
+                  ColumnDefinitions="Auto, Auto, Auto, *, *, Auto"
+                  VerticalOptions="Start"
+                  ColumnSpacing="10">
+
+                <ImageButton Grid.Column="0" Source="settings_icon.png" />
+                <Picker Grid.Column="1" Title="Sort playlists by" />
+                <!-- TODO Bind picker to sort values and command -->
+                <Button Grid.Column="2" Text="New Playlist" />
+                <!-- TODO Bind button to command -->
+                <SearchBar Grid.Column="3" Placeholder="Medium search in all playlists" />
+                <!-- Optional: bind or delete later -->
+                <ImageButton Grid.Column="5" Source="app_logo.png" />
+            </Grid>
+        </Border>
+
+        <!-- Second Bar -->
+        <Border Grid.Row="1" Stroke="Black">
+            <Grid Padding="10"
+                  ColumnDefinitions="Auto, Auto, *, Auto"
+                  VerticalOptions="Start"
+                  ColumnSpacing="10">
+
+                <SearchBar Grid.Column="0" Placeholder="Search playlists" />
+                <!-- TODO Bind search to something-->
+                <Label Grid.Column="2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"  Text="Playlist description" />
+                <Grid Grid.Column="3"
+                      RowDefinitions="Auto, Auto">
+                    <Label Grid.Row="0"  Text="Playlist media count" />
+                    <Label Grid.Row="1" Text="Playlist media duration" />
+                </Grid>
+            </Grid>
+        </Border>
+        
+        <!-- List of playlists -->
+        <CollectionView Grid.Row="2">
+            <!-- TODO Bind to viewmodel collection -->
+        </CollectionView>
+                  
+        <!-- Back button -->
+        <Button Grid.Row="3" Text="Go back to select screen" HorizontalOptions="Start"/>
+            <!-- TODO Bind to command -->
+    </Grid>
+
+</views:ContentPageBase>

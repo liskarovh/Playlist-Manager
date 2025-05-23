@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             x:Class="PlaylistManager.App.Views.SelectManagerView">
+    <Grid RowDefinitions="*"
+          ColumnDefinitions="*, *, *"
+          Padding="0"
+          RowSpacing="0"
+          ColumnSpacing="0">
+
+        <Border Grid.Column="0"
+                BackgroundColor="#FFDDDD"
+                Stroke="Black"
+                StrokeThickness="1">
+            <Grid>
+                <Label Text="Manager 1"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"/>
+                        <!-- TODO add command binding and change to button-->
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="1"
+                BackgroundColor="#DDFFDD"
+                Stroke="Black"
+                StrokeThickness="1">
+            <Grid>
+                <Label Text="Manager 2"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"/>
+                        <!-- TODO add command binding and change to button-->
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="2"
+                BackgroundColor="#DDDDFF"
+                Stroke="Black"
+                StrokeThickness="1">
+            <Grid>
+                <Label Text="Manager 3"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"/>
+                        <!-- TODO add command binding and change to button-->
+            </Grid>
+        </Border>
+
+    </Grid>
+          
+</views:ContentPageBase>
