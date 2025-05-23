@@ -19,10 +19,6 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
   testResultsDir: '$(Agent.TempDirectory)/TestResults'
-  configuration: 'Release'
-  projectPath: 'PlaylistManager.App/PlaylistManager.App.csproj'
-  windowsFramework: 'net9.0-windows10.0.19041.0'
-  windowsRuntime: 'win-x64'
 
 steps:
   - checkout: self
@@ -58,6 +54,7 @@ steps:
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
       msbuildArgs: >
+        /restore
         /p:TargetFramework=net9.0-windows10.0.19041.0
         /p:RuntimeIdentifier=win-x64
         /p:UseMaui=true
@@ -73,7 +70,6 @@ steps:
         --logger trx `
         --results-directory "$(testResultsDir)"
     displayName: 'Run Tests with Code Coverage'
-
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
