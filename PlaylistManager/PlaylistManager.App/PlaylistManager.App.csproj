@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net9.0-maccatalyst</TargetFrameworks>
@@ -19,7 +19,6 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
       
         <!-- Display name -->
         <ApplicationTitle>PlaylistManager.App</ApplicationTitle>
