@@ -53,11 +53,22 @@ steps:
       solution: '$(solution)'
       platform: '$(buildPlatform)'
       configuration: '$(buildConfiguration)'
+      msbuildArgs: >
+        /restore
+        /p:TargetFramework=net9.0-windows10.0.19041.0
+        /p:RuntimeIdentifier=win-x64
+        /p:UseMaui=true
 
   - powershell: |
       $solution = Get-ChildItem -Path $(Build.SourcesDirectory) -Filter "*.sln" -Recurse | Select-Object -First 1
       Write-Host "Using solution: $solution"
-      dotnet test "$($solution.FullName)" --configuration $(buildConfiguration) --collect:"XPlat Code Coverage" --logger trx --results-directory "$(testResultsDir)"
+      dotnet test "$($solution.FullName)" `
+        --configuration $(buildConfiguration) `
+        --framework net9.0-windows10.0.19041.0 `
+        --runtime win-x64 `
+        --collect:"XPlat Code Coverage" `
+        --logger trx `
+        --results-directory "$(testResultsDir)"
     displayName: 'Run Tests with Code Coverage'
 
   - task: PublishTestResults@2
