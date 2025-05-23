@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Facades;
@@ -19,7 +20,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
-    public async Task Create_WithWithoutMedia_EqualsCreated()
+    public async Task Create_WithWithoutMedium_EqualsCreated()
     {
         // Arrange
         var model = new PlaylistSummaryModel()
@@ -41,7 +42,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
-    public async Task Create_WithNonExistingIngredient_Throws()
+    public async Task Create_WithNonExistingMedium_Throws()
     {
         // Arrange
         var model = new PlaylistSummaryModel()
@@ -69,7 +70,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
-    public async Task Create_WithExistingIngredient_Throws()
+    public async Task Create_WithExistingMedium_Throws()
     {
         // Arrange
         var model = new PlaylistSummaryModel
@@ -97,7 +98,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
-    public async Task Create_WithExistingAndNotExistingIngredient_Throws()
+    public async Task Create_WithExistingAndNotExistingMedium_Throws()
     {
         // Arrange
         var model = new PlaylistSummaryModel
@@ -152,17 +153,6 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
-    public async Task Update_FromSeeded_DoesNotThrow()
-    {
-        // Arrange
-        var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
-        detailModel.Title = "Changed playlist title";
-
-        // Act & Assert
-        await _facadeSUT.SaveAsync(detailModel with { Medias = default! });
-    }
-
-    [Fact]
     public async Task Update_Name_FromSeeded_Updated()
     {
         // Arrange
@@ -173,12 +163,19 @@ public class PlaylistFacadeTests : FacadeTestsBase
         await _facadeSUT.SaveAsync(detailModel with { Medias = default! });
 
         // Assert
-        var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
+        await using var dbContext = await DbContextFactory.CreateDbContextAsync();
+        var entity = await dbContext.Playlists
+            .Include(p => p.PlaylistMultimedia)
+            .ThenInclude(pm => pm.Multimedia)
+            .SingleAsync(p => p.Id == detailModel.Id);
+
+        var returnedModel = PlaylistModelMapper.MapToDetailModel(entity);
+
         DeepAssert.Equal(detailModel, returnedModel);
     }
 
     [Fact]
-    public async Task Update_RemoveIngredients_FromSeeded_NotUpdated()
+    public async Task Update_RemoveMedium_FromSeeded_NotUpdated()
     {
         // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
@@ -188,12 +185,18 @@ public class PlaylistFacadeTests : FacadeTestsBase
         await _facadeSUT.SaveAsync(detailModel);
 
         // Assert
-        var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
+        await using var dbContext = await DbContextFactory.CreateDbContextAsync();
+        var entity = await dbContext.Playlists
+            .Include(p => p.PlaylistMultimedia)
+            .ThenInclude(pm => pm.Multimedia)
+            .SingleAsync(p => p.Id == detailModel.Id);
+
+        var returnedModel = PlaylistModelMapper.MapToDetailModel(entity);
         DeepAssert.Equal(PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist), returnedModel);
     }
 
     [Fact]
-    public async Task Update_RemoveOneOfIngredients_FromSeeded_Updated()
+    public async Task Update_RemoveOneOfMedium_FromSeeded_Updated()
     {
         // Arrange
         var detailModel = PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist);
@@ -203,7 +206,13 @@ public class PlaylistFacadeTests : FacadeTestsBase
         await Assert.ThrowsAnyAsync<InvalidOperationException>(() => _facadeSUT.SaveAsync(detailModel));
 
         // Assert
-        var returnedModel = await _facadeSUT.GetAsync(detailModel.Id);
+        await using var dbContext = await DbContextFactory.CreateDbContextAsync();
+        var entity = await dbContext.Playlists
+            .Include(p => p.PlaylistMultimedia)
+            .ThenInclude(pm => pm.Multimedia)
+            .SingleAsync(p => p.Id == detailModel.Id);
+
+        var returnedModel = PlaylistModelMapper.MapToDetailModel(entity);
         DeepAssert.Equal(PlaylistModelMapper.MapToDetailModel(PlaylistSeeds.MusicPlaylist), returnedModel);
     }
 
