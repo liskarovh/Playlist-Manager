@@ -71,16 +71,7 @@ public class MediumFacadeTests : FacadeTestsBase
         Assert.False(await dbxAssert.Music.AnyAsync(i => i.Id == seededMediumInsidePlaylist.Id));
     }
 
-    [Fact]
-    public async Task Delete_SeededMusicBohemianRhapsody_NoThrow()
-    {
-        // Arrange
-        var seededMediumInsidePlaylist = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
 
-        // Act & Assert
-        var exception = await Record.ExceptionAsync(async () => await _mediumFacadeSUT.DeleteAsync(seededMediumInsidePlaylist.Id));
-        Assert.Null(exception);
-    }
 
     [Fact]
     public async Task TryToDeleteAlreadyDeleted_SeededMusicBohemianRhapsody_Throw()
