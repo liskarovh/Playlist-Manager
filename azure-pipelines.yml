@@ -30,12 +30,10 @@ steps:
 
   - task: NuGetToolInstaller@1
 
-  - task: DotNetCoreCLI@2
-    displayName: 'Restore dependencies (win-x64)'
+  - task: NuGetCommand@2
+    displayName: 'NuGet restore'
     inputs:
-      command: 'restore'
-      projects: '$(projectPath)'
-      arguments: '--runtime $(windowsRuntime)'
+      restoreSolution: '$(solution)'
 
   - task: SonarCloudPrepare@3
     displayName: 'Prepare SonarQube Cloud analysis configuration - Main'
@@ -53,29 +51,29 @@ steps:
         sonar.cs.vstest.reportsPaths="$(testResultsDir)/**/*.trx"
         sonar.exclusions="**/Migrations/**"
 
-  - task: DotNetCoreCLI@2
+  - task: VSBuild@1
     displayName: 'Build solution'
     inputs:
-      command: 'build'
-      projects: '$(projectPath)'
-      arguments: >
-        --configuration $(configuration)
-        --framework $(windowsFramework)
-        --runtime $(windowsRuntime)
+      solution: '$(solution)'
+      platform: '$(buildPlatform)'
+      configuration: '$(buildConfiguration)'
+      msbuildArgs: >
+        /p:TargetFramework=net9.0-windows10.0.19041.0
+        /p:RuntimeIdentifier=win-x64
         /p:UseMaui=true
 
-  - task: DotNetCoreCLI@2
-    displayName: 'Run Windows-only Tests with Code Coverage'
-    inputs:
-      command: 'test'
-      projects: '$(projectPath)'
-      arguments: >
-        --configuration $(buildConfiguration)
-        --framework net9.0-windows10.0.19041.0
-        --runtime win-x64
-        --collect:"XPlat Code Coverage"
-        --logger trx
+  - powershell: |
+      $solution = Get-ChildItem -Path $(Build.SourcesDirectory) -Filter "*.sln" -Recurse | Select-Object -First 1
+      Write-Host "Using solution: $solution"
+      dotnet test "$($solution.FullName)" `
+        --configuration $(buildConfiguration) `
+        --framework net9.0-windows10.0.19041.0 `
+        --runtime win-x64 `
+        --collect:"XPlat Code Coverage" `
+        --logger trx `
         --results-directory "$(testResultsDir)"
+    displayName: 'Run Tests with Code Coverage'
+
 
   - task: PublishTestResults@2
     displayName: 'Publish Test Results'
