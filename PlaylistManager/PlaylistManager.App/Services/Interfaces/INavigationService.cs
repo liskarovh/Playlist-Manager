@@ -1,4 +1,4 @@
-﻿using PlaylistManager.App.Models;
+using PlaylistManager.App.Models;
 using PlaylistManager.App.ViewModels;
 
 namespace PlaylistManager.App.Services;
@@ -8,7 +8,7 @@ public interface INavigationService
     IEnumerable<RouteModel> Routes { get; }
 
     Task GoToAsync<TViewModel>(IDictionary<string, object?> parameters)
-        where TViewModel : IViewModel;
+        where TViewModel : ViewModelBase;
 
     Task GoToAsync(string route);
 
@@ -17,5 +17,5 @@ public interface INavigationService
     Task GoToAsync(string route, IDictionary<string, object?> parameters);
 
     Task GoToAsync<TViewModel>()
-        where TViewModel : IViewModel;
+        where TViewModel : ViewModelBase;
 }

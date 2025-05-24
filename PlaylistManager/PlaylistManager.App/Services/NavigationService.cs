@@ -1,4 +1,4 @@
-﻿using PlaylistManager.App.Models;
+using PlaylistManager.App.Models;
 using PlaylistManager.App.ViewModels;
 using PlaylistManager.App.Views;
 
@@ -15,14 +15,14 @@ public class NavigationService : INavigationService
     };
 
     public async Task GoToAsync<TViewModel>()
-        where TViewModel : IViewModel
+        where TViewModel : ViewModelBase
     {
         var route = GetRouteByViewModel<TViewModel>();
         await Shell.Current.GoToAsync(route);
     }
 
     public async Task GoToAsync<TViewModel>(IDictionary<string, object?> parameters)
-        where TViewModel : IViewModel
+        where TViewModel : ViewModelBase
     {
         var route = GetRouteByViewModel<TViewModel>();
         await Shell.Current.GoToAsync(route, parameters);
@@ -38,6 +38,6 @@ public class NavigationService : INavigationService
         => Shell.Current.SendBackButtonPressed();
 
     private string GetRouteByViewModel<TViewModel>()
-        where TViewModel : IViewModel
+        where TViewModel : ViewModelBase
         => Routes.First(route => route.ViewModelType == typeof(TViewModel)).Route;
 }
