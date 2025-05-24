@@ -2,9 +2,11 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
              x:Class="PlaylistManager.App.Views.SelectManagerView"
-             xmlns:vm="clr-namespace:PlaylistManager.App.ViewModels"
-             x:DataType="vm:SelectManagerViewModel">
+             xmlns:enums="clr-namespace:PlaylistManager.Common.Enums;assembly=PlaylistManager.Common"
+             x:DataType="viewModels:SelectManagerViewModel">
+
     <Grid RowDefinitions="*, auto"
           ColumnDefinitions="*, *, *"
           Padding="0"
@@ -18,7 +20,7 @@
             <Grid>
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
-                                          CommandParameter="Video" />
+                                          CommandParameter="{x:Static enums:ManagerType.Video}" />
                 </Grid.GestureRecognizers>
 
                 <Label Text="Video"
@@ -37,7 +39,7 @@
             <Grid>
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
-                                          CommandParameter="Music" />
+                                          CommandParameter="{x:Static enums:ManagerType.Music}" />
                 </Grid.GestureRecognizers>
 
                 <Label Text="Music"
@@ -56,7 +58,7 @@
             <Grid>
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
-                                          CommandParameter="Audiobook" />
+                                          CommandParameter="{x:Static enums:ManagerType.AudioBook}" />
                 </Grid.GestureRecognizers>
 
                 <Label Text="Audiobook"
@@ -67,15 +69,6 @@
             </Grid>
 
         </Border>
-        <Label Grid.Row="1"
-               Grid.ColumnSpan="3"
-               Text="{Binding SelectedManager}"
-               FontSize="18"
-               HorizontalOptions="Center"
-               Margin="0,20,0,0"
-               TextColor="DarkSlateGray" />
-
-
     </Grid>
 
 </views:ContentPageBase>

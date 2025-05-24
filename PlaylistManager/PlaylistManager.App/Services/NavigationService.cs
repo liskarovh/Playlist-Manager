@@ -9,7 +9,7 @@ public class NavigationService : INavigationService
     public IEnumerable<RouteModel> Routes { get; } = new List<RouteModel>
     {
         new("//select", typeof(SelectManagerView), typeof(SelectManagerViewModel)),
-        new("//select/manager", typeof(PlaylistOverview), typeof(PlaylistOverviewViewModel)),
+        new("//playlists", typeof(PlaylistOverview), typeof(PlaylistOverviewViewModel))
     };
 
     public async Task GoToAsync<TViewModel>()
