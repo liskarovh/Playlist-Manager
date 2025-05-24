@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using PlaylistManager.App.Services;
 
-namespace PlaylistManager.App.ViewModels;
+namespace CookBook.App.ViewModels;
 
 public abstract class ViewModelBase : ObservableRecipient
 {
