@@ -2,7 +2,7 @@ namespace PlaylistManager.DAL.Options;
 
 public class DALOptions
 {
-    private string DatabaseDirectory { get; init; } = string.Empty;
+    public string DatabaseDirectory { get; init; } = string.Empty;
     private string DatabaseName { get; init; } = string.Empty;
     public string DatabaseFilePath => Path.Combine(DatabaseDirectory, DatabaseName);
 
