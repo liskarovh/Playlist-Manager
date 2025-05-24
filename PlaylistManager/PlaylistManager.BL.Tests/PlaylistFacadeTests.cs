@@ -692,6 +692,89 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         return orderedSummaries.ToList();
     }
+
+    [Theory]
+    [InlineData(MediaSortBy.Title, SortOrder.Ascending, "Bohemian", 1)] // "Bohemian Rhapsody"
+    [InlineData(MediaSortBy.Title, SortOrder.Descending, "Bohemian", 1)]
+    [InlineData(MediaSortBy.Title, SortOrder.Ascending, "B", 1)] // Should still be "Bohemian Rhapsody"
+    [InlineData(MediaSortBy.Title, SortOrder.Ascending, null, 2)]      // All 4 media in MusicPlaylist
+    [InlineData(MediaSortBy.Author, SortOrder.Ascending, null, 2)]
+    [InlineData(MediaSortBy.Duration, SortOrder.Descending, null, 2)]
+    [InlineData(MediaSortBy.AddedDate, SortOrder.Ascending, null, 2)]
+    public async Task GetMediaInPlaylistSortedAsync_MusicPlaylist_ReturnsFilteredAndSortedCorrectly(
+        MediaSortBy sortBy, SortOrder sortOrder, string? titlePrefix, int expectedCount)
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id; // Has 4 diverse media items
+
+        // Get all media for the playlist to manually filter and sort for expected result
+        var allMediaInPlaylist = await GetExpectedMediaSummariesForPlaylistAsync(playlistId);
+
+        IEnumerable<MediumSummaryModel> expectedFilteredMedia = allMediaInPlaylist;
+        if (!string.IsNullOrEmpty(titlePrefix))
+        {
+            expectedFilteredMedia = expectedFilteredMedia.Where(m => m.Title.StartsWith(titlePrefix, StringComparison.OrdinalIgnoreCase));
+        }
+
+        IOrderedEnumerable<MediumSummaryModel> expectedSortedMedia;
+        switch (sortBy)
+        {
+            case MediaSortBy.Title:
+                expectedSortedMedia = sortOrder == SortOrder.Ascending
+                    ? expectedFilteredMedia.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
+                    : expectedFilteredMedia.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                break;
+            case MediaSortBy.Author:
+                expectedSortedMedia = sortOrder == SortOrder.Ascending
+                    ? expectedFilteredMedia.OrderBy(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                    : expectedFilteredMedia.OrderByDescending(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+                break;
+            case MediaSortBy.Duration:
+                expectedSortedMedia = sortOrder == SortOrder.Ascending
+                    ? expectedFilteredMedia.OrderBy(m => m.Duration ?? 0)
+                    : expectedFilteredMedia.OrderByDescending(m => m.Duration ?? 0);
+                break;
+            case MediaSortBy.AddedDate:
+                expectedSortedMedia = sortOrder == SortOrder.Ascending
+                    ? expectedFilteredMedia.OrderBy(m => m.AddedDate)
+                    : expectedFilteredMedia.OrderByDescending(m => m.AddedDate);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(sortBy));
+        }
+        var expectedResultList = expectedSortedMedia.ToList();
+
+        // Act
+        var results = (await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, titlePrefix, sortBy, sortOrder)).ToList();
+
+        // Assert
+        Assert.Equal(expectedCount, results.Count);
+        Assert.Equal(expectedResultList.Count, results.Count); // Double check count from manual filter/sort
+
+        for (int i = 0; i < expectedResultList.Count; i++)
+        {
+            Assert.Equal(expectedResultList[i].Id, results[i].Id);
+            // For debugging:
+            // Console.WriteLine($"Expected: {expectedResultList[i].Title} ({GetSortValue(expectedResultList[i], sortBy)}), Actual: {results[i].Title} ({GetSortValue(results[i], sortBy)})");
+        }
+    }
+
+    private async Task<List<MediumSummaryModel>> GetExpectedMediaSummariesForPlaylistAsync(Guid playlistId)
+    {
+        var summaries = new List<MediumSummaryModel>();
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var pmEntities = await dbx.PlaylistMultimedia
+            .Where(pm => pm.PlaylistId == playlistId)
+            .Include(pm => pm.Multimedia)
+            .AsNoTracking()
+            .ToListAsync();
+
+        foreach (var pmEntity in pmEntities)
+        {
+            summaries.Add(MediumModelMapper.MapToSummary(pmEntity));
+        }
+        return summaries;
+    }
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
     {
         returnedModel.Id = expectedModel.Id;

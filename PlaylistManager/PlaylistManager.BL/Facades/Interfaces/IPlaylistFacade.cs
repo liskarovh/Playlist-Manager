@@ -11,4 +11,10 @@ public interface
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistByTitleAsync(Guid playlistId, string mediaTitlePrefix);
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder);
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(Guid playlistId, MediaSortBy sortBy, SortOrder sortOrder);
+
+    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
+        Guid playlistId,
+        string? mediaTitlePrefix,
+        MediaSortBy sortBy,
+        SortOrder sortOrder);
 }

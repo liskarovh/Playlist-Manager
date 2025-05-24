@@ -56,8 +56,6 @@ public class PlaylistFacade
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
 
-        // Apply includes necessary for PlaylistSummaryModel mapping,
-        // as PlaylistModelMapper.MapToSummary depends on PlaylistMultimedia and its Multimedia.
         query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
 
         List<PlaylistEntity> entities = await query.ToListAsync().ConfigureAwait(false);
@@ -66,25 +64,8 @@ public class PlaylistFacade
 
     public async Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistByTitleAsync(Guid playlistId, string mediaTitlePrefix)
     {
-        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
-
-        IQueryable<PlaylistMultimediaEntity> query = uow
-            .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
-            .Get()
-            .Where(pm => pm.PlaylistId == playlistId)
-            .Include(pm => pm.Multimedia);
-
-        if (!string.IsNullOrEmpty(mediaTitlePrefix))
-        {
-            query = query.Where(pm => pm.Multimedia != null && pm.Multimedia.Title.StartsWith(mediaTitlePrefix));
-        }
-
-        List<PlaylistMultimediaEntity> mediaEntities = await query
-            .OrderBy(pm => pm.Multimedia!.Title)
-            .ToListAsync().ConfigureAwait(false);
-
-        // Use the injected _mediumModelMapper
-        return _mediumModelMapper.MapToSummary(mediaEntities);
+        // This method can now be a specific case of the new more general sorted method
+        return await GetMediaInPlaylistSortedAsync(playlistId, mediaTitlePrefix, MediaSortBy.Title, SortOrder.Ascending);
     }
 
     // New method implementation
@@ -123,7 +104,15 @@ public class PlaylistFacade
         }
         return playlistSummaries.ToList(); // ToList to execute the ordering
     }
-    public async Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(Guid playlistId, MediaSortBy sortBy, SortOrder sortOrder)
+
+    public Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(Guid playlistId, MediaSortBy sortBy, SortOrder sortOrder) => GetMediaInPlaylistSortedAsync(playlistId, null, sortBy, sortOrder);
+
+    // New method implementation
+    public async Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
+        Guid playlistId,
+        string? mediaTitlePrefix,
+        MediaSortBy sortBy,
+        SortOrder sortOrder)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
 
@@ -131,44 +120,49 @@ public class PlaylistFacade
             .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
             .Get()
             .Where(pm => pm.PlaylistId == playlistId)
-            .Include(pm => pm.Multimedia); // Ensure Multimedia is included for sorting
+            .Include(pm => pm.Multimedia); // Crucial for filtering and mapping
+
+        // Apply title prefix filter if provided
+        if (!string.IsNullOrEmpty(mediaTitlePrefix))
+        {
+            query = query.Where(pm => pm.Multimedia != null && pm.Multimedia.Title.StartsWith(mediaTitlePrefix));
+        }
 
         List<PlaylistMultimediaEntity> mediaEntities = await query.ToListAsync().ConfigureAwait(false);
 
-        IEnumerable<MediumSummaryModel> mediaSummaries = _mediumModelMapper.MapToSummary(mediaEntities);
+        // Map to MediumSummaryModel before sorting, as sorting properties are on the model
+        IEnumerable<MediumSummaryModel> mediumSummaries = _mediumModelMapper.MapToSummary(mediaEntities);
 
-        // Apply sorting on the mapped models
+        // Perform sorting on the IEnumerable<MediumSummaryModel>
         switch (sortBy)
         {
             case MediaSortBy.Title:
-                mediaSummaries = sortOrder == SortOrder.Ascending
-                    ? mediaSummaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
-                    : mediaSummaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                mediumSummaries = sortOrder == SortOrder.Ascending
+                    ? mediumSummaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
+                    : mediumSummaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
                 break;
             case MediaSortBy.Author:
-                mediaSummaries = sortOrder == SortOrder.Ascending
-                    ? mediaSummaries.OrderBy(m => m.Author, StringComparer.OrdinalIgnoreCase)
-                    : mediaSummaries.OrderByDescending(m => m.Author, StringComparer.OrdinalIgnoreCase);
+                mediumSummaries = sortOrder == SortOrder.Ascending
+                    ? mediumSummaries.OrderBy(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase) // Handle null author
+                    : mediumSummaries.OrderByDescending(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase);
                 break;
             case MediaSortBy.Duration:
-                mediaSummaries = sortOrder == SortOrder.Ascending
-                    ? mediaSummaries.OrderBy(m => m.Duration ?? 0) // Handle potential nulls
-                    : mediaSummaries.OrderByDescending(m => m.Duration ?? 0);
+                mediumSummaries = sortOrder == SortOrder.Ascending
+                    ? mediumSummaries.OrderBy(m => m.Duration ?? 0) // Handle null duration
+                    : mediumSummaries.OrderByDescending(m => m.Duration ?? 0);
                 break;
             case MediaSortBy.AddedDate:
-                mediaSummaries = sortOrder == SortOrder.Ascending
-                    ? mediaSummaries.OrderBy(m => m.AddedDate)
-                    : mediaSummaries.OrderByDescending(m => m.AddedDate);
+                mediumSummaries = sortOrder == SortOrder.Ascending
+                    ? mediumSummaries.OrderBy(m => m.AddedDate)
+                    : mediumSummaries.OrderByDescending(m => m.AddedDate);
                 break;
             default:
-                // Default sort if sortBy is not recognized
-                mediaSummaries = sortOrder == SortOrder.Ascending
-                    ? mediaSummaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
-                    : mediaSummaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                // Default to sorting by title ascending if an unknown sort option is provided
+                mediumSummaries = mediumSummaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase);
                 break;
         }
 
-        return mediaSummaries.ToList(); // Execute the ordering and return as a list
+        return mediumSummaries.ToList(); // ToList to execute the ordering
     }
 }
 
