@@ -36,7 +36,15 @@
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
     </PropertyGroup>
-
+  
+  <PropertyGroup>
+    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\PlaylistManager.BL\PlaylistManager.BL.csproj"/>
+  </ItemGroup>
+  
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -69,11 +77,21 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.14" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+      <PackageReference Include="CommunityToolkit.Maui" Version="11.2.0"/>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
+      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.70" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5"/>
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.5"/>
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5"/>
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5"/>
+      <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="all" />
+      <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" privateAssets="All" />
+      <PackageReference Include="Scrutor" Version="6.0.1"/>
     </ItemGroup>
 
+ 
     <ItemGroup>
       <Compile Update="Views\ContentPageBase.xaml.cs">
         <DependentUpon>ContentPageBase.xaml</DependentUpon>

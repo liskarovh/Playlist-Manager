@@ -10,10 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
-    <PackageReference Include="Fody" Version="6.9.2"/>
-    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="all" />
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" privateAssets="All" />
     <PackageReference Include="Scrutor" Version="6.0.1"/>
   </ItemGroup>
 </Project>
