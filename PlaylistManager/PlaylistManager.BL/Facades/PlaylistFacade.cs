@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PlaylistManager.Common.Enums;
 using PlaylistManager.BL.Enums;
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.DAL.Mappers;
@@ -18,6 +19,19 @@ public class PlaylistFacade
 
     protected override ICollection<string> IncludesNavigationPathDetail
         => [$"{nameof(PlaylistEntity.PlaylistMultimedia)}.{nameof(PlaylistMultimediaEntity.Multimedia)}"];
+
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByTypeAsync(PlaylistType playlistType)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
+
+        query = query.Where(p => p.Type == playlistType);
+
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
+
+        List<PlaylistEntity> entities = await query.ToListAsync().ConfigureAwait(false);
+        return ModelMapper.MapToSummary(entities);
+    }
 
     public PlaylistFacade(
         IUnitOfWorkFactory unitOfWorkFactory,

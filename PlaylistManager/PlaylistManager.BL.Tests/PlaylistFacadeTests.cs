@@ -8,6 +8,8 @@ using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Enums;
 using PlaylistManager.Common.Tests;
 using PlaylistManager.Common.Tests.Seeds;
+using PlaylistManager.DAL;
+
 
 namespace PlaylistManager.BL.Tests;
 
@@ -225,6 +227,43 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
+    public async Task GetPlaylistsByType_Music_ReturnsOnlyMusicPlaylists()
+    {
+        // Arrange
+        PlaylistType playlistType = PlaylistType.Music;
+
+        await using PlaylistManagerDbContext dbContext = await DbContextFactory.CreateDbContextAsync();
+        int expectedCount = await dbContext.Playlists
+                                           .CountAsync(p => p.Type == playlistType);
+
+        // Act
+        IEnumerable<PlaylistSummaryModel> returnedPlaylists = await _facadeSUT.GetPlaylistsByTypeAsync(playlistType);
+
+        // Assert
+        IEnumerable<PlaylistSummaryModel> playlistSummaryModels = returnedPlaylists.ToList();
+        Assert.Equal(expectedCount, playlistSummaryModels.Count());
+        Assert.All(playlistSummaryModels, playlist => Assert.Equal(playlistType, playlist.Type));
+
+        var musicPlaylistModel = PlaylistModelMapper.MapToSummary(PlaylistSeeds.MusicPlaylist);
+        Assert.Contains(playlistSummaryModels, p => p.PlaylistId == musicPlaylistModel.PlaylistId);
+    }
+
+    [Fact]
+    public async Task GetPlaylistsByType_NoPlaylists_ReturnsEmptyCollection()
+    {
+        // Arrange
+        await _facadeSUT.DeleteAsync(PlaylistSeeds.AudioBookPlaylist.Id);
+
+        const PlaylistType playlistType = PlaylistType.AudioBook;
+
+        // Act
+        IEnumerable<PlaylistSummaryModel> returnedPlaylists = await _facadeSUT.GetPlaylistsByTypeAsync(playlistType);
+
+        // Assert
+        Assert.Empty(returnedPlaylists);
+    }
+
+    [Fact]
     public async Task GetPlaylistsByNameAsync_NoMatch_ReturnsEmptyCollection()
     {
         // Arrange
@@ -237,8 +276,6 @@ public class PlaylistFacadeTests : FacadeTestsBase
         Assert.NotNull(results);
         Assert.Empty(results);
     }
-
-
 
     [Fact]
     public async Task GetPlaylistsByNameAsync_PrefixMatchSpecific_ReturnsMusicPlaylist()
@@ -775,6 +812,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
         return summaries;
     }
+
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
     {
         returnedModel.Id = expectedModel.Id;
@@ -796,6 +834,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
             }
         }
     }
+
     private async Task<MediumSummaryModel?> GetExpectedMediumSummaryFromPmIdAsync(Guid playlistMultimediaId)
     {
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
