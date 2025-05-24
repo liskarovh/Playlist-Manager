@@ -48,11 +48,12 @@ public class PlaylistFacade
     /// </summary>
     /// <param name="namePrefix">The prefix to filter playlist names by.</param>
     /// <returns>A collection of playlist summaries matching the criteria.</returns>
-    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix)
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix, PlaylistType playlistType)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
 
+        query = query.Where(p => p.Type == playlistType);
 
         // Apply includes necessary for PlaylistSummaryModel mapping
         query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
@@ -83,10 +84,12 @@ public class PlaylistFacade
     }
 
     // New method implementation
-    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder)
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder, PlaylistType playlistType)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
+
+        query = query.Where(p => p.Type == playlistType);
 
         query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
 
