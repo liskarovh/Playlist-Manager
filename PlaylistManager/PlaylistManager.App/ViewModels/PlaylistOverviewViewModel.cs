@@ -188,6 +188,6 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     [RelayCommand]
     private void GoBack()
     {
-        _navigationService.GoToAsync("//select/manager");
+        _navigationService.GoToAsync("//select");
     }
 }
