@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PlaylistManager.BL.Enums;
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.DAL.Mappers;
 using PlaylistManager.DAL.UnitOfWork;
@@ -85,4 +86,42 @@ public class PlaylistFacade
         // Use the injected _mediumModelMapper
         return _mediumModelMapper.MapToSummary(mediaEntities);
     }
+
+    // New method implementation
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
+
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
+
+        List<PlaylistEntity> entities = await query.ToListAsync().ConfigureAwait(false);
+
+        IEnumerable<PlaylistSummaryModel> playlistSummaries = ModelMapper.MapToSummary(entities);
+
+        switch (sortBy)
+        {
+            case PlaylistSortBy.Title:
+                playlistSummaries = sortOrder == SortOrder.Ascending
+                    ? playlistSummaries.OrderBy(p => p.Title, StringComparer.OrdinalIgnoreCase) // Case-insensitive title sort
+                    : playlistSummaries.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase);
+                break;
+            case PlaylistSortBy.TotalDuration:
+                playlistSummaries = sortOrder == SortOrder.Ascending
+                    ? playlistSummaries.OrderBy(p => p.TotalDuration ?? 0) // Handle potential nulls
+                    : playlistSummaries.OrderByDescending(p => p.TotalDuration ?? 0);
+                break;
+            case PlaylistSortBy.MediaCount:
+                playlistSummaries = sortOrder == SortOrder.Ascending
+                    ? playlistSummaries.OrderBy(p => p.MediaCount)
+                    : playlistSummaries.OrderByDescending(p => p.MediaCount);
+                break;
+            default:
+                // Optional: default to a sort or throw an exception for unhandled enum
+                playlistSummaries = playlistSummaries.OrderBy(p => p.Title);
+                break;
+        }
+        return playlistSummaries.ToList(); // ToList to execute the ordering
+    }
 }
+

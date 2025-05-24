@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using PlaylistManager.BL.Enums;
 using Xunit.Abstractions;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Facades;
@@ -494,6 +495,47 @@ public class PlaylistFacadeTests : FacadeTestsBase
         // Assert
         Assert.NotNull(results);
         Assert.Empty(results);
+    }
+
+    [Theory]
+    [InlineData(PlaylistSortBy.Title, SortOrder.Ascending)]
+    [InlineData(PlaylistSortBy.Title, SortOrder.Descending)]
+    public async Task GetPlaylistsSortedAsync_ByTitle_ReturnsSortedCorrectly(PlaylistSortBy sortBy, SortOrder sortOrder)
+    {
+        // Arrange
+        // Expected order based on PlaylistSeeds titles:
+        // "AudioBook Playlist", "Empty Playlist", "Music Playlist", "Playlist For Delete", "Playlist For Update", "Video Playlist"
+        var allPlaylists = new List<PlaylistSummaryModel>
+        {
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.VideoPlaylist.Id),
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylist.Id),
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistForMultimediaUpdate.Id),
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistUpdate.Id),
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistForMultimediaDelete.Id),
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistDelete.Id),
+            await GetExpectedSummaryModelAsync(PlaylistSeeds.AudioBookPlaylist.Id),
+        };
+
+        List<PlaylistSummaryModel> expectedOrderedPlaylists;
+        if (sortOrder == SortOrder.Ascending)
+        {
+            expectedOrderedPlaylists = allPlaylists.OrderBy(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        else
+        {
+            expectedOrderedPlaylists = allPlaylists.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // Act
+        var results = (await _facadeSUT.GetPlaylistsSortedAsync(sortBy, sortOrder)).ToList();
+
+        // Assert
+        Assert.Equal(expectedOrderedPlaylists.Count, results.Count);
+        for (int i = 0; i < expectedOrderedPlaylists.Count; i++)
+        {
+            Assert.Equal(expectedOrderedPlaylists[i].Id, results[i].Id);
+            Assert.Equal(expectedOrderedPlaylists[i].Title, results[i].Title);
+        }
     }
 
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)

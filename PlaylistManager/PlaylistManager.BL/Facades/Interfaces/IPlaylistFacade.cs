@@ -1,3 +1,4 @@
+using PlaylistManager.BL.Enums;
 using PlaylistManager.BL.Models;
 using PlaylistManager.DAL.Entities;
 
@@ -8,4 +9,5 @@ public interface
 {
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix);
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistByTitleAsync(Guid playlistId, string mediaTitlePrefix);
+    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder);
 }
