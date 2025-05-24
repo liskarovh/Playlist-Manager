@@ -7,7 +7,7 @@ using PlaylistManager.Common.Enums;
 
 namespace PlaylistManager.App.ViewModels;
 
-public partial class SelectManagerViewModel(IMessengerService messengerService)
+public partial class SelectManagerViewModel(IMessengerService messengerService, INavigationService navigationService)
     : ViewModelBase(messengerService)
 {
     [ObservableProperty]
@@ -26,7 +26,7 @@ public partial class SelectManagerViewModel(IMessengerService messengerService)
             });
         }
 
-        await Task.CompletedTask;
+        await navigationService.GoToAsync("//select/manager");
     }
 }
 

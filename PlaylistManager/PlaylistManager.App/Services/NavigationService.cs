@@ -8,11 +8,8 @@ public class NavigationService : INavigationService
 {
     public IEnumerable<RouteModel> Routes { get; } = new List<RouteModel>
     {
-        // TODO: Add  routes here
-        // TODO: new("//select/music", typeof(SelectManagerView), typeof(XXX)),
-        // TODO: new("//select/videos", typeof(SelectManagerView), typeof(XXX)),
-        // TODO: new("//select/audioBooks", typeof(SelectManagerView), typeof(XXX)),
-        new("SelectManager", typeof(SelectManagerView), typeof(SelectManagerViewModel)),
+        new("//select", typeof(SelectManagerView), typeof(SelectManagerViewModel)),
+        new("//select/manager", typeof(PlaylistOverview), typeof(PlaylistOverviewViewModel)),
     };
 
     public async Task GoToAsync<TViewModel>()
