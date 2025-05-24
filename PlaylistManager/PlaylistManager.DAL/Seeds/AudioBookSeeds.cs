@@ -1,0 +1,84 @@
+﻿using PlaylistManager.DAL.Entities;
+using PlaylistManager.Common.Enums;
+using Microsoft.EntityFrameworkCore;
+
+namespace PlaylistManager.DAL.Seeds;
+
+public static class AudioBookSeeds
+{
+    public static readonly AudioBookEntity ReadyPlayerOne = new()
+    {
+        Id = Guid.Parse(input: "7e78f4a0-b6bf-4816-854b-176359f22ff3"),
+        Title = "Ready Player One",
+        Description = "Dystopian sci-fi novel set in a virtual reality world.",
+        Duration = 49680,
+        Author = "Ernest Cline",
+        ReleaseYear = 2011,
+        Url = "https://isbnsearch.org/isbn/9780307887443",
+        Genre = AudioBookGenre.SciFi,
+        Format = AudioFormat.Mp3
+    };
+
+    public static readonly AudioBookEntity AnimalFarm = new()
+    {
+        Id = Guid.Parse(input: "242ac26b-9b12-4312-a589-f444bbd3c53d"),
+        Title = "Animal Farm",
+        Description = "Allegorical novella reflecting events leading up to the Russian Revolution.",
+        Duration = 37500,
+        Author = "George Orwell",
+        ReleaseYear = 1945,
+        Url = "https://isbnsearch.org/isbn/9780679420392",
+        Genre = AudioBookGenre.Dystopia,
+        Format = AudioFormat.Wav
+    };
+
+    public static readonly AudioBookEntity PrideAndPrejudice = new()
+    {
+        Id = Guid.Parse(input: "e6851b7d-2b46-4a2d-b5b4-a9c0701c2495"),
+        Title = "Pride and Prejudice",
+        Description = "A classic romance novel about love, society, and manners.",
+        Duration = 43500,
+        Author = "Jane Austen",
+        ReleaseYear = 1813,
+        Url = "https://isbnsearch.org/isbn/9780141439518",
+        Genre = AudioBookGenre.Romance,
+        Format = AudioFormat.Flac
+    };
+
+    public static readonly AudioBookEntity Dune = new()
+    {
+        Id = Guid.Parse(input: "2cb8f9fa-3d38-4156-9d40-0d5f86930916"),
+        Title = "Dune",
+        Description = "Epic sci-fi saga about politics, religion, and ecology.",
+        Duration = 75600,
+        Author = "Frank Herbert",
+        ReleaseYear = 1965,
+        Url = "https://isbnsearch.org/isbn/9780441013593",
+        Genre = AudioBookGenre.SciFi,
+        Format = AudioFormat.Mp3
+    };
+
+    public static readonly AudioBookEntity HarryPotter = new()
+    {
+        Id = Guid.Parse(input: "c701f707-3e8f-4393-b8ec-9b9e4f26038c"),
+        Title = "Harry Potter and the Sorcerer's Stone",
+        Description = "The first book in the Harry Potter series, a modern fantasy classic.",
+        Duration = 505,
+        Author = "J.K. Rowling",
+        ReleaseYear = 1997,
+        Url = "https://isbnsearch.org/isbn/9781338878929",
+        Genre = AudioBookGenre.Fantasy,
+        Format = AudioFormat.Aac
+    };
+
+    public static DbContext SeedAudioBook(this DbContext dbx)
+    {
+        dbx.Set<AudioBookEntity>()
+           .AddRange(HarryPotter,
+                     Dune,
+                     PrideAndPrejudice,
+                     AnimalFarm,
+                     ReadyPlayerOne);
+        return dbx;
+    }
+}
