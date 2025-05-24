@@ -538,6 +538,160 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
     }
 
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_PlaylistExists_SortByTitleAscending_ReturnsSortedMedia()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expectedSortedMedia = await GetExpectedSortedMediaInPlaylistAsync(
+            playlistId,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(results);
+        DeepAssert.Equal(expectedSortedMedia, results.ToList());
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_PlaylistExists_SortByAuthorDescending_ReturnsSortedMedia()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expectedSortedMedia = await GetExpectedSortedMediaInPlaylistAsync(
+            playlistId,
+            MediaSortBy.Author,
+            SortOrder.Descending
+        );
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            MediaSortBy.Author,
+            SortOrder.Descending
+        );
+
+        // Assert
+        Assert.NotNull(results);
+        DeepAssert.Equal(expectedSortedMedia, results.ToList());
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_PlaylistExists_SortByDurationAscending_ReturnsSortedMedia()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expectedSortedMedia = await GetExpectedSortedMediaInPlaylistAsync(
+            playlistId,
+            MediaSortBy.Duration,
+            SortOrder.Ascending
+        );
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            MediaSortBy.Duration,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(results);
+        DeepAssert.Equal(expectedSortedMedia, results.ToList());
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_PlaylistDoesNotExist_ReturnsEmpty()
+    {
+        // Arrange
+        var nonExistentPlaylistId = Guid.NewGuid();
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            nonExistentPlaylistId,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_PlaylistExistsButEmpty_ReturnsEmpty()
+    {
+        // Arrange
+        var emptyPlaylistId = PlaylistSeeds.EmptyPlaylist.Id;
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            emptyPlaylistId,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    private async Task<List<MediumSummaryModel>> GetExpectedSortedMediaInPlaylistAsync(
+        Guid playlistId,
+        MediaSortBy sortBy,
+        SortOrder sortOrder
+    )
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var pmEntities = await dbx.PlaylistMultimedia
+            .Include(pm => pm.Multimedia)
+            .AsNoTracking()
+            .Where(pm => pm.PlaylistId == playlistId)
+            .ToListAsync();
+
+        var summaries = MediumModelMapper.MapToSummary(pmEntities).ToList();
+
+        IEnumerable<MediumSummaryModel> orderedSummaries = summaries;
+
+        switch (sortBy)
+        {
+            case MediaSortBy.Title:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
+                    : summaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                break;
+            case MediaSortBy.Author:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Author, StringComparer.OrdinalIgnoreCase)
+                    : summaries.OrderByDescending(m => m.Author, StringComparer.OrdinalIgnoreCase);
+                break;
+            case MediaSortBy.Duration:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Duration ?? 0) // Match facade's null handling
+                    : summaries.OrderByDescending(m => m.Duration ?? 0); // Match facade's null handling
+                break;
+            case MediaSortBy.AddedDate:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.AddedDate)
+                    : summaries.OrderByDescending(m => m.AddedDate);
+                break;
+            default:
+                // Replicate facade's default sort
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                     ? summaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
+                     : summaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                break;
+        }
+
+        return orderedSummaries.ToList();
+    }
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
     {
         returnedModel.Id = expectedModel.Id;
@@ -570,9 +724,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         return pmEntity == null ? null : MediumModelMapper.MapToSummary(pmEntity);
     }
 
-    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(
-        Guid playlistId
-    )
+    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(Guid playlistId)
     {
         await using var dbx = await DbContextFactory.CreateDbContextAsync();
         var playlistEntity = await dbx.Playlists.Include(
