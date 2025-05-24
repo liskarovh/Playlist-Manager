@@ -16,7 +16,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
     public PlaylistFacadeTests(ITestOutputHelper output) : base(output)
     {
-        _facadeSUT = new PlaylistFacade(UnitOfWorkFactory, PlaylistModelMapper);
+        _facadeSUT = new PlaylistFacade(UnitOfWorkFactory, PlaylistModelMapper, MediumModelMapper);
     }
 
     [Fact]
@@ -237,19 +237,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         Assert.Empty(results);
     }
 
-    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(
-        Guid playlistId
-    )
-    {
-        await using var dbx = await DbContextFactory.CreateDbContextAsync();
-        var playlistEntity = await dbx.Playlists.Include(
-                p => p.PlaylistMultimedia
-            )!
-            .ThenInclude(pm => pm.Multimedia)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(p => p.Id == playlistId);
-        return PlaylistModelMapper.MapToSummary(playlistEntity);
-    }
+
 
     [Fact]
     public async Task GetPlaylistsByNameAsync_PrefixMatchSpecific_ReturnsMusicPlaylist()
@@ -384,6 +372,130 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
     }
 
+    [Fact]
+    public async Task GetMediaInPlaylistByTitleAsync_PlaylistExists_PrefixMatches_ReturnsFilteredMedia()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var bohemianRhapsodyPmSeed = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
+        var expectedMediumSummary = await GetExpectedMediumSummaryFromPmIdAsync(bohemianRhapsodyPmSeed.Id);
+        var prefix = "Bohemian";
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        Assert.Single(resultList);
+        DeepAssert.Equal(expectedMediumSummary, resultList.First());
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistByTitleAsync_PlaylistExists_PrefixNoMatch_ReturnsEmpty()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var prefix = "NonExistentMediaTitleInThisPlaylist";
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistByTitleAsync_PlaylistExists_EmptyPrefix_ReturnsAllMediaInPlaylist()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expectedMediaSeeds = new[]
+        {
+            PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot, // Titles: "American Idiot", "Bohemian Rhapsody"
+            PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody
+        };
+        var expectedSummaries = new List<MediumSummaryModel>();
+        foreach (var seed in expectedMediaSeeds)
+        {
+            var summary = await GetExpectedMediumSummaryFromPmIdAsync(seed.Id);
+            if(summary != null) expectedSummaries.Add(summary);
+        }
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, string.Empty);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        Assert.Equal(expectedMediaSeeds.Length, resultList.Count);
+        foreach (var expectedSummary in expectedSummaries.OrderBy(s => s.Title)) // Order to match facade's OrderBy
+        {
+            Assert.Contains(resultList, r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title);
+        }
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistByTitleAsync_PlaylistExists_NullPrefix_ReturnsAllMediaInPlaylist()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expectedMediaSeeds = new[]
+        {
+            PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot,
+            PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody
+        };
+        var expectedSummaries = new List<MediumSummaryModel>();
+        foreach (var seed in expectedMediaSeeds)
+        {
+            var summary = await GetExpectedMediumSummaryFromPmIdAsync(seed.Id);
+            if(summary != null) expectedSummaries.Add(summary);
+        }
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, null);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        Assert.Equal(expectedMediaSeeds.Length, resultList.Count);
+        foreach (var expectedSummary in expectedSummaries.OrderBy(s => s.Title))
+        {
+            Assert.Contains(resultList, r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title);
+        }
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistByTitleAsync_PlaylistDoesNotExist_ReturnsEmpty()
+    {
+        // Arrange
+        var nonExistentPlaylistId = Guid.NewGuid();
+        var prefix = "AnyTitle";
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(nonExistentPlaylistId, prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistByTitleAsync_PlaylistExistsButEmpty_ReturnsEmpty()
+    {
+        // Arrange
+        var emptyPlaylistId = PlaylistSeeds.EmptyPlaylist.Id;
+        var prefix = "AnyTitle";
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(emptyPlaylistId, prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
     {
         returnedModel.Id = expectedModel.Id;
@@ -404,5 +516,29 @@ public class PlaylistFacadeTests : FacadeTestsBase
                 mediumModel.MediumId = mediumDetailModel.MediumId;
             }
         }
+    }
+    private async Task<MediumSummaryModel?> GetExpectedMediumSummaryFromPmIdAsync(Guid playlistMultimediaId)
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var pmEntity = await dbx.PlaylistMultimedia
+            .Include(pm => pm.Multimedia)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(pm => pm.Id == playlistMultimediaId);
+
+        return pmEntity == null ? null : MediumModelMapper.MapToSummary(pmEntity);
+    }
+
+    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(
+        Guid playlistId
+    )
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var playlistEntity = await dbx.Playlists.Include(
+                p => p.PlaylistMultimedia
+            )!
+            .ThenInclude(pm => pm.Multimedia)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == playlistId);
+        return PlaylistModelMapper.MapToSummary(playlistEntity);
     }
 }
