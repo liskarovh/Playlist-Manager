@@ -58,11 +58,11 @@
                Margin="10,0"/>
             <!-- Optional: bind or delete later -->
         </Border>
-        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="4*, *, *, 40" Margin="0,5">
-            <Label Grid.Column="0" FontSize="18" Text="Playlist description" VerticalOptions="End" HorizontalOptions="Center"/>
-            <Label Grid.Column="1" FontSize="18" Text="Media count" VerticalOptions="End" HorizontalOptions="Center"/>
-            <Label Grid.Column="2" FontSize="18" Text="Total duration" VerticalOptions="End" HorizontalOptions="Center"/>
-            <!-- TODO Bind  -->
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60">
+            <Label Grid.Column="0" Text="Medium name" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="1" Text="Author" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="2" Text="Duration" FontSize="14" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <!-- TODO Bind button -->
         </Grid>
 
 
@@ -91,7 +91,7 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Stroke="Black" HeightRequest="50">
-                        <Grid ColumnDefinitions="3*, 2*, *, 40">
+                        <Grid ColumnDefinitions="3*, 2*, *, 60">
                             <Label Text="Name of medium to bind" FontSize="18"/>
                             <Label Text="Author of medium to bind" FontSize="18"/>
                             <Label Text="Duration" FontSize="14"/>
