@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             x:Class="PlaylistManager.App.Views.PlaylistOverview">
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:views="clr-namespace:PlaylistManager.App.Views"
+                       xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
+                       xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
+                       x:Class="PlaylistManager.App.Views.PlaylistOverview"
+                       x:DataType="viewModels:PlaylistOverviewViewModel"
+                       x:Name="PlaylistOverviewViewRoot">
 
-    <Grid RowDefinitions="Auto, Auto, *, Auto" 
+    <Grid RowDefinitions="Auto, Auto, *, Auto"
           ColumnDefinitions="400, *">
 
         <!-- Top Bar left -->
@@ -63,13 +67,13 @@
                         Grid.ColumnSpan="2"
                         ItemsSource="{Binding Playlists}"
                         SelectionMode="Single">
-            
+
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
             </CollectionView.ItemsLayout>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:PlaylistSummaryModel">
                     <Border Stroke="Black" HeightRequest="50" BackgroundColor="Transparent">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
@@ -107,7 +111,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-                  
+
         <!-- Back button -->
         <Button Grid.Row="3"
                 Text="Go back to select screen"
