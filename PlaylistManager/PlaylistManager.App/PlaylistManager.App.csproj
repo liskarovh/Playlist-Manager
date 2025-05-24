@@ -19,7 +19,7 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-      
+
         <!-- Display name -->
         <ApplicationTitle>PlaylistManager.App</ApplicationTitle>
 
@@ -36,15 +36,15 @@
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
     </PropertyGroup>
-  
+
   <PropertyGroup>
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\PlaylistManager.BL\PlaylistManager.BL.csproj"/>
   </ItemGroup>
-  
+
     <ItemGroup>
         <!-- App Icon -->
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
@@ -91,7 +91,6 @@
       <PackageReference Include="Scrutor" Version="6.0.1"/>
     </ItemGroup>
 
- 
     <ItemGroup>
       <Compile Update="Views\ContentPageBase.xaml.cs">
         <DependentUpon>ContentPageBase.xaml</DependentUpon>
