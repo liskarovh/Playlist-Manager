@@ -223,6 +223,167 @@ public class PlaylistFacadeTests : FacadeTestsBase
         await _facadeSUT.DeleteAsync(PlaylistSeeds.MusicPlaylist.Id);
     }
 
+    [Fact]
+    public async Task GetPlaylistsByNameAsync_NoMatch_ReturnsEmptyCollection()
+    {
+        // Arrange
+        var prefix = "NonExistentNameXYZ123";
+
+        // Act
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(
+        Guid playlistId
+    )
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var playlistEntity = await dbx.Playlists.Include(
+                p => p.PlaylistMultimedia
+            )!
+            .ThenInclude(pm => pm.Multimedia)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == playlistId);
+        return PlaylistModelMapper.MapToSummary(playlistEntity);
+    }
+
+    [Fact]
+    public async Task GetPlaylistsByNameAsync_PrefixMatchSpecific_ReturnsMusicPlaylist()
+    {
+        // Arrange
+        var prefix = "Favorite Movies";
+        var expectedPlaylistSeed = PlaylistSeeds.VideoPlaylist;
+        var expectedSummary = await GetExpectedSummaryModelAsync(expectedPlaylistSeed.Id);
+
+        // Act
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        // Assert.Single(resultList);
+        DeepAssert.Equal(expectedSummary, resultList.First());
+    }
+
+    [Fact]
+    public async Task GetPlaylistsByNameAsync_PrefixMatch_ReturnsMatchingPlaylists()
+    {
+        // Arrange
+        // Seeded titles: "Music Playlist", "AudioBook Playlist", "Video Playlist", "Empty Playlist", "Playlist For Delete", "Playlist For Update"
+        var prefix = "Music"; // This prefix should match "Playlist For Delete" and "Playlist For Update"
+        var expectedPlaylistsSeeds = new[]
+            {
+                PlaylistSeeds.MusicPlaylist,
+                PlaylistSeeds.MusicPlaylistDelete,
+                PlaylistSeeds.MusicPlaylistForMultimediaDelete,
+                PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+                PlaylistSeeds.MusicPlaylistUpdate
+            }
+            .Where(p => p.Title.StartsWith(prefix)) // Redundant here as manually selected, but good for clarity
+            .ToList();
+
+
+        var expectedSummaries = new List<PlaylistSummaryModel>();
+        foreach (var seed in expectedPlaylistsSeeds)
+        {
+            expectedSummaries.Add(await GetExpectedSummaryModelAsync(seed.Id));
+        }
+
+        // Act
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        Assert.Equal(expectedPlaylistsSeeds.Count, resultList.Count);
+
+        foreach (var expectedSummary in expectedSummaries)
+        {
+            Assert.Contains(
+                resultList,
+                r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title
+            );
+            var actualSummary = resultList.Single(r => r.Id == expectedSummary.Id);
+            DeepAssert.Equal(expectedSummary, actualSummary);
+        }
+    }
+
+    [Fact]
+    public async Task GetPlaylistsByNameAsync_EmptyPrefix_ReturnsAllPlaylists()
+    {
+        // Arrange
+        var allSeededPlaylists = new[]
+        {
+
+            PlaylistSeeds.VideoPlaylist,
+            PlaylistSeeds.MusicPlaylist,
+            PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+            PlaylistSeeds.MusicPlaylistUpdate,
+            PlaylistSeeds.MusicPlaylistForMultimediaDelete,
+            PlaylistSeeds.MusicPlaylistDelete,
+            PlaylistSeeds.AudioBookPlaylist,
+        };
+        var expectedSummaries = new List<PlaylistSummaryModel>();
+        foreach (var seed in allSeededPlaylists)
+        {
+            expectedSummaries.Add(await GetExpectedSummaryModelAsync(seed.Id));
+        }
+
+        // Act
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(string.Empty);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        Assert.Equal(allSeededPlaylists.Length, resultList.Count);
+
+        foreach (var expectedSummary in expectedSummaries)
+        {
+            Assert.Contains(resultList, r => r.Id == expectedSummary.Id);
+            var actualSummary = resultList.Single(r => r.Id == expectedSummary.Id);
+            DeepAssert.Equal(expectedSummary, actualSummary);
+        }
+    }
+
+    [Fact]
+    public async Task GetPlaylistsByNameAsync_NullPrefix_ReturnsAllPlaylists()
+    {
+        // Arrange
+        var allSeededPlaylists = new[]
+        {
+            PlaylistSeeds.VideoPlaylist,
+            PlaylistSeeds.MusicPlaylist,
+            PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+            PlaylistSeeds.MusicPlaylistUpdate,
+            PlaylistSeeds.MusicPlaylistForMultimediaDelete,
+            PlaylistSeeds.MusicPlaylistDelete,
+            PlaylistSeeds.AudioBookPlaylist,
+        };
+        var expectedSummaries = new List<PlaylistSummaryModel>();
+        foreach (var seed in allSeededPlaylists)
+        {
+            expectedSummaries.Add(await GetExpectedSummaryModelAsync(seed.Id));
+        }
+
+        // Act
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(null);
+
+        // Assert
+        Assert.NotNull(results);
+        var resultList = results.ToList();
+        Assert.Equal(allSeededPlaylists.Length, resultList.Count);
+        foreach (var expectedSummary in expectedSummaries)
+        {
+            Assert.Contains(resultList, r => r.Id == expectedSummary.Id);
+            var actualSummary = resultList.Single(r => r.Id == expectedSummary.Id);
+            DeepAssert.Equal(expectedSummary, actualSummary);
+        }
+    }
+
     private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
     {
         returnedModel.Id = expectedModel.Id;
