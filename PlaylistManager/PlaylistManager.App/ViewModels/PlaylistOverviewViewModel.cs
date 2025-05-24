@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PlaylistManager.App.Messages;
 using PlaylistManager.App.Services;
-using PlaylistManager.App.Views;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Enums;
@@ -29,6 +28,10 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     public string SelectedSortOption { get; set; } = "Name";
     public SortOrder CurrentSortOrder { get; set; } = SortOrder.Ascending;
     public ObservableCollection<string> SortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
+
+    public bool IsEditMode { get; set; } = false;
+    public PlaylistSummaryModel? CurrentlyEditedPlaylist { get; set; }
+    public string EditedPlaylistTitle { get; set; } = string.Empty;
 
     public PlaylistOverviewViewModel(IPlaylistFacade playlistFacade, INavigationService navigationService, IMessengerService messengerService)
         : base(messengerService)
@@ -125,7 +128,6 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     [RelayCommand]
     private void ToggleSortOrder()
     {
-        // Přepnutí směru řazení
         CurrentSortOrder = CurrentSortOrder == SortOrder.Ascending
                                ? SortOrder.Descending
                                : SortOrder.Ascending;
@@ -177,10 +179,90 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     {
         if (playlist == null) return;
 
-        MessengerService.Send(new PlaylistSelectedMessage(playlist));
+        if (IsEditMode && CurrentlyEditedPlaylist != null && CurrentlyEditedPlaylist != playlist)
+        {
+            await FinishCurrentEditingAsync();
+        }
 
-        await _navigationService.GoToAsync("//playlist");
+        if (IsEditMode)
+        {
+            CurrentlyEditedPlaylist = playlist;
+            EditedPlaylistTitle = playlist.Title;
+        }
+        else
+        {
+            MessengerService.Send(new PlaylistSelectedMessage(playlist));
+            await _navigationService.GoToAsync("//playlist");
+        }
+    }
 
+    [RelayCommand]
+    private async Task ToggleEditMode()
+    {
+        if (IsEditMode && CurrentlyEditedPlaylist != null)
+        {
+            await FinishCurrentEditingAsync();
+        }
+
+        IsEditMode = !IsEditMode;
+
+        if (!IsEditMode)
+        {
+            CurrentlyEditedPlaylist = null;
+            EditedPlaylistTitle = string.Empty;
+        }
+    }
+
+    [RelayCommand]
+    private async Task BackgroundTapped()
+    {
+        if (IsEditMode && CurrentlyEditedPlaylist != null)
+        {
+            await FinishCurrentEditingAsync();
+        }
+    }
+
+    private async Task FinishCurrentEditingAsync()
+    {
+        if (CurrentlyEditedPlaylist == null) return;
+
+        if (!string.IsNullOrWhiteSpace(EditedPlaylistTitle))
+        {
+            if (CurrentlyEditedPlaylist.Title != EditedPlaylistTitle)
+            {
+                await SaveEditedPlaylistAsync();
+            }
+        }
+
+        CurrentlyEditedPlaylist = null;
+        EditedPlaylistTitle = string.Empty;
+    }
+
+    [RelayCommand]
+    private async Task SaveEditedPlaylistAsync()
+    {
+        if (CurrentlyEditedPlaylist == null || string.IsNullOrWhiteSpace(EditedPlaylistTitle))
+            return;
+
+        var updatedPlaylist = CurrentlyEditedPlaylist with
+        {
+            Title = EditedPlaylistTitle
+        };
+
+        var savedPlaylist = await _playlistFacade.SaveAsync(updatedPlaylist);
+
+        var index = Playlists.ToList().FindIndex(p => p.PlaylistId == savedPlaylist.PlaylistId);
+        if (index >= 0)
+            Playlists[index] = savedPlaylist;
+
+        MessengerService.Send(new PlaylistEditMessage(savedPlaylist));
+    }
+
+    [RelayCommand]
+    private void CancelEdit()
+    {
+        CurrentlyEditedPlaylist = null;
+        EditedPlaylistTitle = string.Empty;
     }
 
     [RelayCommand]
