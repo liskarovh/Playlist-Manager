@@ -8,22 +8,22 @@
     <Grid RowDefinitions="Auto, Auto, *, Auto" 
           ColumnDefinitions="400, *">
 
-        <!-- Top Bar -->
+        <!-- Top Bar left -->
         <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
-            <ImageButton Grid.Column="0"
-                         Source="setting.png"
+            <ImageButton Source="setting.png"
                          Margin="10,0"
                          WidthRequest="40"
                          HeightRequest="40"
                          HorizontalOptions="Fill"
                          VerticalOptions="Fill"/>
-            <Picker Grid.Column="1" Title="Sort playlists by" Margin="10,0" HorizontalOptions="Start" WidthRequest="150"/>
+            <Picker Grid.Column="1" Title="Sort playlists by" Margin="10,0"/>
             <!-- TODO Bind picker to sort values and command -->
-            <Button Grid.Column="2" Text="New Playlist"  HorizontalOptions="Fill" />
+            <Button Grid.Column="2" Text="New Playlist"  HorizontalOptions="Fill"/>
             <!-- TODO Bind button to command -->
         </Grid>
 
-        <Grid Grid.Column="1" ColumnDefinitions="*, Auto, Auto, 50" Margin="10,0">
+        <!-- Top Bar right -->
+        <Grid Grid.Column="1" ColumnDefinitions="*, Auto, Auto, Auto, 50">
             <Border Grid.Column="0"
                 MinimumWidthRequest="40"
                 BackgroundColor="#f2f2f2"
@@ -37,15 +37,17 @@
                            FontSize="14"
                            Margin="10,0"
                            />
-                <!-- Optional: bind or delete later -->
             </Border>
-            <Picker Grid.Column="1" Title="Sort mediums by" Margin="10, 0"/>
-            <Picker Grid.Column="2" Title="Filter mediums by" Margin="10, 0"/>
-            <Image Grid.Column="3" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill" WidthRequest="40" HeightRequest="40"/>
+            <Button Grid.Column="1" Text="New Medium"  HorizontalOptions="Fill" Margin="10,5"/>
+            <Picker Grid.Column="2" Title="Sort mediums by" Margin="10, 5"/>
+            <Picker Grid.Column="3" Title="Filter mediums by" Margin="10, 5"/>
+            <Image Grid.Column="4" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill"/>
         </Grid>
 
         <!-- Second Bar -->
         <Border Grid.Row="1" Grid.ColumnSpan="2"  Stroke="Black"/>
+        
+        <!-- Second Bar left -->
         <Border Grid.Row="1" BackgroundColor="#f2f2f2" HorizontalOptions="Fill" Margin="10, 5"
                 Stroke="Black"
                 StrokeThickness="1"
@@ -53,20 +55,21 @@
                 VerticalOptions="Center"
                 StrokeShape="RoundRectangle 20">
             <SearchBar Placeholder="Search playlists"
-               BackgroundColor="Transparent"
-               FontSize="14"
-               Margin="10,0"/>
-            <!-- Optional: bind or delete later -->
+                       BackgroundColor="Transparent"
+                       FontSize="14"
+                       Margin="10,0"/>
         </Border>
-        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60">
+
+        <!-- Second Bar right -->
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">
             <Label Grid.Column="0" Text="Medium name" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
             <Label Grid.Column="1" Text="Author" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
-            <Label Grid.Column="2" Text="Duration" FontSize="14" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="2" Text="Duration" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
             <!-- TODO Bind button -->
         </Grid>
 
 
-        <!-- List of playlists -->
+        <!-- List of playlists (left) -->
         <CollectionView Grid.Row="2" Grid.Column="0">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
@@ -82,7 +85,7 @@
             <!-- TODO Bind to viewmodel collection -->
         </CollectionView>
 
-        <!-- List of media -->
+        <!-- List of media (right) -->
         <CollectionView Grid.Row="2" Grid.Column="1">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
@@ -92,10 +95,10 @@
                 <DataTemplate>
                     <Border Stroke="Black" HeightRequest="50">
                         <Grid ColumnDefinitions="3*, 2*, *, 60">
-                            <Label Text="Name of medium to bind" FontSize="18"/>
-                            <Label Text="Author of medium to bind" FontSize="18"/>
-                            <Label Text="Duration" FontSize="14"/>
-                            <ImageButton Source="delete.png" /> <!-- TODO delete button -->
+                            <Entry Grid.Column="0" Text="Name of medium to bind" FontSize="18"/>
+                            <Entry Grid.Column="1" Text="Author of medium to bind" FontSize="18"/>
+                            <Entry Grid.Column="2" Text="Duration" FontSize="14"/>
+                            <ImageButton Grid.Column="3" Source="delete.png" /> <!-- TODO delete button -->
                         </Grid>
                     </Border>
                 </DataTemplate>

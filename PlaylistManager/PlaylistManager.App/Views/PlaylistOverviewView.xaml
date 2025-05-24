@@ -2,104 +2,117 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
-             xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
-             x:Class="PlaylistManager.App.Views.PlaylistOverview"
-             x:DataType="viewModels:PlaylistOverviewViewModel"
-             x:Name="PlaylistOverviewViewRoot">
+             x:Class="PlaylistManager.App.Views.PlaylistOverview">
 
-    <Grid RowDefinitions="Auto, Auto, *, Auto"
-          ColumnDefinitions="*">
+    <Grid RowDefinitions="Auto, Auto, *, Auto" 
+          ColumnDefinitions="400, *">
 
-        <!-- Top Bar -->
-        <Border Grid.Row="0" Stroke="Black">
-            <Grid  Padding="10"
-                  ColumnDefinitions="Auto, Auto, Auto, *, *, Auto"
-                  VerticalOptions="Start"
-                  ColumnSpacing="10">
+        <!-- Top Bar left -->
+        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
+            <ImageButton Source="setting.png"
+                 Margin="10,0"
+                 WidthRequest="40"
+                 HeightRequest="40"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill"/>
+                <!-- TODO bind button to setting view -->
+            <Picker Grid.Column="1"
+                    Title="Sort playlists by"
+                    Margin="10,0"
+                    ItemsSource="{Binding SortOptions}"
+                    SelectedItem="{Binding SelectedSortOption}"/>
+            <Button Grid.Column="2"
+                    Text="New Playlist"
+                    HorizontalOptions="Fill"
+                    Command="{Binding CreatePlaylistCommand}"/>
+        </Grid>
 
-                <ImageButton Grid.Column="0" Source="settings_icon.png" />
-                <Picker Grid.Column="1"
-                        Title="Sort playlists by"
-                        ItemsSource="{Binding SortOptions}"
-                        SelectedItem="{Binding SelectedSortOption}" />
-                <Button Grid.Column="2"
-                        Text="New Playlist"
-                        Command="{Binding CreatePlaylistCommand}" />
-                <SearchBar Grid.Column="3"
-                           Placeholder="Medium search in all playlists"
-                           Text="{Binding MediumSearchQuery}" />
-                <ImageButton Grid.Column="5" Source="app_logo.png" />
-            </Grid>
-        </Border>
+        <!-- Top Bar right -->
+        <Grid Grid.Column="1" ColumnDefinitions="*, 50" Margin="10,0">
+            <Image Grid.Column="1" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+        </Grid>
 
         <!-- Second Bar -->
-        <Border Grid.Row="1" Stroke="Black">
-            <Grid Padding="10"
-                  ColumnDefinitions="Auto, Auto, *, Auto"
-                  VerticalOptions="Start"
-                  ColumnSpacing="10">
-
-                <SearchBar Grid.Column="0"
-                           Placeholder="Search playlists"
-                           Text="{Binding PlaylistSearchQuery}" />
-                <Label Grid.Column="2"
-                       HorizontalTextAlignment="Center"
-                       VerticalTextAlignment="Center"
-                       Text="Playlist description" />
-                <Grid Grid.Column="3"
-                      RowDefinitions="Auto, Auto">
-                    <Label Grid.Row="0" Text="Playlist media count" />
-                    <Label Grid.Row="1" Text="Playlist media duration" />
-                </Grid>
-            </Grid>
+        <Border Grid.Row="1" Grid.ColumnSpan="2"  Stroke="Black"/>
+        <!-- Second Bar left -->
+        <Border Grid.Row="1"
+                BackgroundColor="#f2f2f2"
+                HorizontalOptions="Fill"
+                Margin="10, 5"
+                Stroke="Black"
+                StrokeThickness="1"
+                HeightRequest="45"
+                VerticalOptions="Center"
+                StrokeShape="RoundRectangle 20">
+            <SearchBar Placeholder="Search playlists"
+                       Text="{Binding PlaylistSearchQuery}"
+                       BackgroundColor="Transparent"
+                       FontSize="14"
+                       Margin="10,0"/>
         </Border>
+
+        <!-- Second Bar right -->
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">
+            <Label Grid.Column="0" Text="Playlist description" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="1" Text="Count" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="2" Text="Duration" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+        </Grid>
 
         <!-- List of playlists -->
         <CollectionView Grid.Row="2"
+                        Grid.ColumnSpan="2"
                         ItemsSource="{Binding Playlists}"
                         SelectionMode="Single">
+            
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:PlaylistSummaryModel">
-                    <Grid Padding="10"
-                          ColumnDefinitions="*"
-                          RowDefinitions="Auto">
-
-                        <Border BackgroundColor="Transparent" Padding="10">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
-                                    CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
-
-                            <Grid ColumnDefinitions="*, Auto"
-                                  RowDefinitions="Auto, Auto">
-                                <Label Grid.Row="0"
-                                       Grid.Column="0"
-                                       Text="{Binding Title}"
-                                       FontAttributes="Bold" />
-                                <Label Grid.Row="1"
-                                       Grid.Column="0"
-                                       Text="{Binding Description}"
-                                       LineBreakMode="TailTruncation" />
-                                <Label Grid.Row="0"
-                                       Grid.Column="1"
-                                       Text="{Binding MediaCount, StringFormat='Media Count: {0}'}" />
-                                <Label Grid.Row="1"
-                                       Grid.Column="1"
-                                       Text="{Binding TotalDuration, StringFormat='Total Duration: {0} min'}" />
-                            </Grid>
-                        </Border>
-                    </Grid>
+                <DataTemplate>
+                    <Border Stroke="Black" HeightRequest="50" BackgroundColor="Transparent">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="400, 3*, 2*, *, 60"
+                              Margin="10,5">
+                            <Label Grid.Column="0"
+                                   Text="{Binding Title}"
+                                   VerticalTextAlignment="Center"
+                                   FontSize="16"
+                                   FontAttributes="Bold"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding Description}"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"
+                                   FontSize="12"/>
+                            <Label Grid.Column="2"
+                                   Text="{Binding MediaCount, StringFormat='Media Count: {0}'}"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"
+                                   FontSize="12"/>
+                            <Label Grid.Column="3"
+                                   Text="{Binding TotalDuration, StringFormat='Total Duration: {0} min'}"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"
+                                   FontSize="12"/>
+                            <ImageButton Grid.Column="4"
+                                         Source="delete.png"
+                                         HeightRequest="50"/>
+                            <!-- TODO Bind button to delete command -->
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
+                  
         <!-- Back button -->
         <Button Grid.Row="3"
                 Text="Go back to select screen"
-                HorizontalOptions="Start"
-                Command="{Binding GoBackCommand}" />
+                HorizontalOptions="Fill"
+                Command="{Binding GoBackCommand}"/>
     </Grid>
 
 </views:ContentPageBase>
