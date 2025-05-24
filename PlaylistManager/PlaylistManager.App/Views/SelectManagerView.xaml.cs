@@ -4,8 +4,8 @@ namespace PlaylistManager.App.Views;
 
 public partial class SelectManagerView : ContentPageBase
 {
-	public SelectManagerView(PlaylistOverviewViewModel viewModel) : base(viewModel)
-	{
-		InitializeComponent();
-	}
+    public SelectManagerView(SelectManagerViewModel viewModel) : base(viewModel)
+    {
+        InitializeComponent();
+    }
 }
