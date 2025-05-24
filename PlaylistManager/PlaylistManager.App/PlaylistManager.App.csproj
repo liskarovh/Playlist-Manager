@@ -118,4 +118,8 @@
       <PRIResource Remove="Resources\NováSložka1\**" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PlaylistManager.Common\PlaylistManager.Common.csproj" />
+    </ItemGroup>
+
 </Project>

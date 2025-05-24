@@ -2,8 +2,10 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             x:Class="PlaylistManager.App.Views.SelectManagerView">
-    <Grid RowDefinitions="*"
+             x:Class="PlaylistManager.App.Views.SelectManagerView"
+             xmlns:vm="clr-namespace:PlaylistManager.App.ViewModels"
+             x:DataType="vm:SelectManagerViewModel">
+    <Grid RowDefinitions="*, auto"
           ColumnDefinitions="*, *, *"
           Padding="0"
           RowSpacing="0"
@@ -14,13 +16,18 @@
                 Stroke="Black"
                 StrokeThickness="1">
             <Grid>
-                <Label Text="Manager 1"
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="Video" />
+                </Grid.GestureRecognizers>
+
+                <Label Text="Video"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"/>
-                        <!-- TODO add command binding and change to button-->
             </Grid>
+
         </Border>
 
         <Border Grid.Column="1"
@@ -28,13 +35,18 @@
                 Stroke="Black"
                 StrokeThickness="1">
             <Grid>
-                <Label Text="Manager 2"
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="Music" />
+                </Grid.GestureRecognizers>
+
+                <Label Text="Music"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"/>
-                        <!-- TODO add command binding and change to button-->
             </Grid>
+
         </Border>
 
         <Border Grid.Column="2"
@@ -42,15 +54,28 @@
                 Stroke="Black"
                 StrokeThickness="1">
             <Grid>
-                <Label Text="Manager 3"
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="Audiobook" />
+                </Grid.GestureRecognizers>
+
+                <Label Text="Audiobook"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"/>
-                        <!-- TODO add command binding and change to button-->
             </Grid>
+
         </Border>
+        <Label Grid.Row="1"
+               Grid.ColumnSpan="3"
+               Text="{Binding SelectedManager}"
+               FontSize="18"
+               HorizontalOptions="Center"
+               Margin="0,20,0,0"
+               TextColor="DarkSlateGray" />
+
 
     </Grid>
-          
+
 </views:ContentPageBase>

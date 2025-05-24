@@ -12,6 +12,7 @@ public class NavigationService : INavigationService
         // TODO: new("//select/music", typeof(SelectManagerView), typeof(XXX)),
         // TODO: new("//select/videos", typeof(SelectManagerView), typeof(XXX)),
         // TODO: new("//select/audioBooks", typeof(SelectManagerView), typeof(XXX)),
+        new("SelectManager", typeof(SelectManagerView), typeof(SelectManagerViewModel)),
     };
 
     public async Task GoToAsync<TViewModel>()
