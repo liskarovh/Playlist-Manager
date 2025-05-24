@@ -7,6 +7,7 @@ using PlaylistManager.App.Views;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Models;
 using PlaylistManager.Common.Enums;
+using PlaylistManager.BL.Enums;
 using PropertyChanged;
 
 namespace PlaylistManager.App.ViewModels;
@@ -24,9 +25,9 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
 
     public ObservableCollection<PlaylistSummaryModel> Playlists { get; set; } = new();
     public string PlaylistSearchQuery { get; set; } = string.Empty;
-    public string MediumSearchQuery { get; set; } = string.Empty;
-    public string SelectedSortOption { get; set; } = "Name";
 
+    public string SelectedSortOption { get; set; } = "Name";
+    public SortOrder CurrentSortOrder { get; set; } = SortOrder.Ascending;
     public ObservableCollection<string> SortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
 
     public PlaylistOverviewViewModel(IPlaylistFacade playlistFacade, INavigationService navigationService, IMessengerService messengerService)
@@ -42,11 +43,9 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
                                    case nameof(PlaylistSearchQuery):
                                        await SearchPlaylistsCommand.ExecuteAsync(PlaylistSearchQuery);
                                        break;
-                                   case nameof(MediumSearchQuery):
-                                       await SearchMediaCommand.ExecuteAsync(MediumSearchQuery);
-                                       break;
                                    case nameof(SelectedSortOption):
-                                       SortPlaylistsCommand.Execute(SelectedSortOption);
+                                   case nameof(CurrentSortOrder):
+                                       await SortPlaylistsCommand.ExecuteAsync(SelectedSortOption);
                                        break;
                                }
                            };
@@ -95,27 +94,41 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         {
             Playlists.Add(playlist);
         }
+
+        await SortPlaylistsCommand.ExecuteAsync(SelectedSortOption);
     }
 
     [RelayCommand]
-    private void SortPlaylists(string? sortOption)
+    private async Task SortPlaylists(string? sortOption)
     {
         if (string.IsNullOrEmpty(sortOption)) return;
 
-        IEnumerable<PlaylistSummaryModel> sortedPlaylists = sortOption switch
+        PlaylistSortBy sortBy = sortOption switch
         {
-            "Name"           => Playlists.OrderBy(p => p.Title),
-            "Media Count"    => Playlists.OrderByDescending(p => p.MediaCount),
-            "Total Duration" => Playlists.OrderByDescending(p => p.TotalDuration),
-            _                => Playlists
+            "Name"           => PlaylistSortBy.Title,
+            "Media Count"    => PlaylistSortBy.MediaCount,
+            "Total Duration" => PlaylistSortBy.TotalDuration,
+            _                => PlaylistSortBy.Title
         };
 
-        var newList = sortedPlaylists.ToList();
+        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
+
+        var sortedPlaylists = await _playlistFacade.GetPlaylistsSortedAsync(sortBy, CurrentSortOrder, playlistType);
+
         Playlists.Clear();
-        foreach (var item in newList)
+        foreach (var item in sortedPlaylists)
         {
             Playlists.Add(item);
         }
+    }
+
+    [RelayCommand]
+    private void ToggleSortOrder()
+    {
+        // Přepnutí směru řazení
+        CurrentSortOrder = CurrentSortOrder == SortOrder.Ascending
+                               ? SortOrder.Descending
+                               : SortOrder.Ascending;
     }
 
     [RelayCommand]
@@ -130,30 +143,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         }
         else
         {
-            //TODO: results = await _playlistFacade.GetPlaylistsByNameAsync(searchQuery);
-            results = await _playlistFacade.GetAsyncSummary(); // Placeholder
-        }
-
-        Playlists.Clear();
-        foreach (var playlist in results)
-        {
-            Playlists.Add(playlist);
-        }
-    }
-
-    [RelayCommand]
-    private async Task SearchMedia(string? searchQuery)
-    {
-        IEnumerable<PlaylistSummaryModel> results;
-
-        if (string.IsNullOrEmpty(searchQuery))
-        {
-            results = await _playlistFacade.GetAsyncSummary();
-        }
-        else
-        {
-           //TODO: results = await _playlistFacade.GetPlaylistsByMediaTitleAsync(searchQuery);
-           results = await _playlistFacade.GetAsyncSummary(); // Placeholder
+            results = await _playlistFacade.GetPlaylistsByNameAsync(searchQuery, playlistType);
         }
 
         Playlists.Clear();
@@ -180,18 +170,17 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         var savedPlaylist = await _playlistFacade.SaveAsync(newPlaylist);
 
         MessengerService.Send(new PlaylistAddMessage(savedPlaylist));
-
-        //TODO: await _navigationService.GoToAsync($"playlist?id={savedPlaylist.PlaylistId}");
     }
 
     [RelayCommand]
-    private void SelectPlaylist(PlaylistSummaryModel? playlist)
+    private async Task SelectPlaylist(PlaylistSummaryModel? playlist)
     {
         if (playlist == null) return;
 
         MessengerService.Send(new PlaylistSelectedMessage(playlist));
 
-        //TODO: _navigationService.GoToAsync($"playlist?id={playlist.PlaylistId}");
+        await _navigationService.GoToAsync("//playlist");
+
     }
 
     [RelayCommand]
@@ -207,7 +196,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
             ManagerType.Video     => PlaylistType.Video,
             ManagerType.Music     => PlaylistType.Music,
             ManagerType.AudioBook => PlaylistType.AudioBook,
-            _                     => PlaylistType.Music // Výchozí hodnota pro NotDecided
+            _                     => PlaylistType.Music
         };
     }
 }
