@@ -2,8 +2,12 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             x:Class="PlaylistManager.App.Views.SelectManagerView">
-    <Grid RowDefinitions="*"
+             xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
+             x:Class="PlaylistManager.App.Views.SelectManagerView"
+             xmlns:enums="clr-namespace:PlaylistManager.Common.Enums;assembly=PlaylistManager.Common"
+             x:DataType="viewModels:SelectManagerViewModel">
+
+    <Grid RowDefinitions="*, auto"
           ColumnDefinitions="*, *, *"
           Padding="0"
           RowSpacing="0"
@@ -14,13 +18,18 @@
                 Stroke="Black"
                 StrokeThickness="1">
             <Grid>
-                <Label Text="Manager 1"
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="{x:Static enums:ManagerType.Video}" />
+                </Grid.GestureRecognizers>
+
+                <Label Text="Video"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"/>
-                        <!-- TODO add command binding and change to button-->
             </Grid>
+
         </Border>
 
         <Border Grid.Column="1"
@@ -28,13 +37,18 @@
                 Stroke="Black"
                 StrokeThickness="1">
             <Grid>
-                <Label Text="Manager 2"
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="{x:Static enums:ManagerType.Music}" />
+                </Grid.GestureRecognizers>
+
+                <Label Text="Music"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"/>
-                        <!-- TODO add command binding and change to button-->
             </Grid>
+
         </Border>
 
         <Border Grid.Column="2"
@@ -42,15 +56,19 @@
                 Stroke="Black"
                 StrokeThickness="1">
             <Grid>
-                <Label Text="Manager 3"
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="{x:Static enums:ManagerType.AudioBook}" />
+                </Grid.GestureRecognizers>
+
+                <Label Text="Audiobook"
                        FontSize="24"
                        HorizontalOptions="Center"
                        VerticalOptions="Center"
                        TextColor="Black"/>
-                        <!-- TODO add command binding and change to button-->
             </Grid>
-        </Border>
 
+        </Border>
     </Grid>
-          
+
 </views:ContentPageBase>

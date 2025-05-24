@@ -2,9 +2,13 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             x:Class="PlaylistManager.App.Views.PlaylistOverview">
+             xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
+             xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
+             x:Class="PlaylistManager.App.Views.PlaylistOverview"
+             x:DataType="viewModels:PlaylistOverviewViewModel"
+             x:Name="PlaylistOverviewViewRoot">
 
-    <Grid RowDefinitions="Auto, Auto, *, Auto" 
+    <Grid RowDefinitions="Auto, Auto, *, Auto"
           ColumnDefinitions="*">
 
         <!-- Top Bar -->
@@ -15,12 +19,16 @@
                   ColumnSpacing="10">
 
                 <ImageButton Grid.Column="0" Source="settings_icon.png" />
-                <Picker Grid.Column="1" Title="Sort playlists by" />
-                <!-- TODO Bind picker to sort values and command -->
-                <Button Grid.Column="2" Text="New Playlist" />
-                <!-- TODO Bind button to command -->
-                <SearchBar Grid.Column="3" Placeholder="Medium search in all playlists" />
-                <!-- Optional: bind or delete later -->
+                <Picker Grid.Column="1"
+                        Title="Sort playlists by"
+                        ItemsSource="{Binding SortOptions}"
+                        SelectedItem="{Binding SelectedSortOption}" />
+                <Button Grid.Column="2"
+                        Text="New Playlist"
+                        Command="{Binding CreatePlaylistCommand}" />
+                <SearchBar Grid.Column="3"
+                           Placeholder="Medium search in all playlists"
+                           Text="{Binding MediumSearchQuery}" />
                 <ImageButton Grid.Column="5" Source="app_logo.png" />
             </Grid>
         </Border>
@@ -32,25 +40,66 @@
                   VerticalOptions="Start"
                   ColumnSpacing="10">
 
-                <SearchBar Grid.Column="0" Placeholder="Search playlists" />
-                <!-- TODO Bind search to something-->
-                <Label Grid.Column="2" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"  Text="Playlist description" />
+                <SearchBar Grid.Column="0"
+                           Placeholder="Search playlists"
+                           Text="{Binding PlaylistSearchQuery}" />
+                <Label Grid.Column="2"
+                       HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       Text="Playlist description" />
                 <Grid Grid.Column="3"
                       RowDefinitions="Auto, Auto">
-                    <Label Grid.Row="0"  Text="Playlist media count" />
+                    <Label Grid.Row="0" Text="Playlist media count" />
                     <Label Grid.Row="1" Text="Playlist media duration" />
                 </Grid>
             </Grid>
         </Border>
-        
+
         <!-- List of playlists -->
-        <CollectionView Grid.Row="2">
-            <!-- TODO Bind to viewmodel collection -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Playlists}"
+                        SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PlaylistSummaryModel">
+                    <Grid Padding="10"
+                          ColumnDefinitions="*"
+                          RowDefinitions="Auto">
+
+                        <Border BackgroundColor="Transparent" Padding="10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="*, Auto"
+                                  RowDefinitions="Auto, Auto">
+                                <Label Grid.Row="0"
+                                       Grid.Column="0"
+                                       Text="{Binding Title}"
+                                       FontAttributes="Bold" />
+                                <Label Grid.Row="1"
+                                       Grid.Column="0"
+                                       Text="{Binding Description}"
+                                       LineBreakMode="TailTruncation" />
+                                <Label Grid.Row="0"
+                                       Grid.Column="1"
+                                       Text="{Binding MediaCount, StringFormat='Media Count: {0}'}" />
+                                <Label Grid.Row="1"
+                                       Grid.Column="1"
+                                       Text="{Binding TotalDuration, StringFormat='Total Duration: {0} min'}" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
         </CollectionView>
-                  
+
         <!-- Back button -->
-        <Button Grid.Row="3" Text="Go back to select screen" HorizontalOptions="Start"/>
-            <!-- TODO Bind to command -->
+        <Button Grid.Row="3"
+                Text="Go back to select screen"
+                HorizontalOptions="Start"
+                Command="{Binding GoBackCommand}" />
     </Grid>
 
 </views:ContentPageBase>
