@@ -47,6 +47,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
     public bool IsMediumSelected { get; set; }
     public string MediumName { get; set; } = string.Empty;
+    public Guid MediumID { get; set; } = Guid.Empty;
     public string MediumAuthor { get; set; } = string.Empty;
     public string MediumDescription { get; set; } = string.Empty;
     public string MediumURL { get; set; } = string.Empty;
@@ -233,6 +234,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
             if (medium != null)
             {
                 MediumName = medium.Title;
+                MediumID = medium.Id; 
                 MediumAuthor = medium.Author;
                 MediumDescription = medium.Description;
                 MediumURL = medium.Url;
@@ -736,8 +738,8 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
             var mediumToSave = new MediumDetailedModel
             {
-                Id = Guid.NewGuid(),
-                MediumId = Guid.NewGuid(),
+                Id = MediumID,
+                MediumId = _mediumId,
                 PlaylistId = _playlistId,
                 Title = MediumName,
                 Author = MediumAuthor,
