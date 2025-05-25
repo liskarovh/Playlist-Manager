@@ -6,5 +6,16 @@
              xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
              x:Class="PlaylistManager.App.Views.SettingsView"
              x:Name="SettingsViewRoot">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto">
+        <Button Grid.Row="0" Margin="0,10" HorizontalOptions="Fill" Text="Return back to playlist manager" Command="{Binding}"/>
+        <Button Grid.Row="1" Margin="0,10" HorizontalOptions="Fill" Text="{Binding DarkMode}" Command="{Binding}"/>
+        <Button Grid.Row="2" Margin="0,10" HorizontalOptions="Fill" Text="{Binding EnglishLanguage}" Command="{Binding}"/>
+        <!-- Grid row 3 should have background image or something nice-->
+        <Button Grid.Row="4" HorizontalOptions="Fill" Text="Donate to developers"/>
+        <Label Grid.Row="5"
+               HorizontalOptions="Fill" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+               Text="App version: 0.0.69&#10;Authors: Jan Kalina, David Krejčí, Jakub Kacálek, Hana Liškařová" LineBreakMode="WordWrap"/>
+    </Grid>
     
 </views:ContentPageBase>
