@@ -737,7 +737,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
             var mediumToSave = new MediumDetailedModel
             {
                 Id = Guid.NewGuid(),
-                MediumId = _mediumId,
+                MediumId = Guid.NewGuid(),
                 PlaylistId = _playlistId,
                 Title = MediumName,
                 Author = MediumAuthor,
