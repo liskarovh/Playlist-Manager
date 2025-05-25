@@ -888,6 +888,139 @@ public class PlaylistFacadeTests : FacadeTestsBase
         Assert.Null(result);
     }
 
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_FilterByAuthor_ReturnsCorrectMedia()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expected = PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot;
+        var authorPrefix = expected.Multimedia!.Author!.Substring(0, 3); // e.g., "Gre"
+
+        var filters = new Dictionary<MediaFilterBy, string>
+        {
+            { MediaFilterBy.Author, authorPrefix }
+        };
+
+        var expectedSummary = MediumModelMapper.MapToSummary(expected);
+
+        // Act
+        var result = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            filters,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        var list = result.ToList();
+        Assert.Single(list);
+        DeepAssert.Equal(expectedSummary, list.First());
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_FilterByTitleAndAuthor_ReturnsIntersection()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expected = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody;
+
+        var filters = new Dictionary<MediaFilterBy, string>
+        {
+            { MediaFilterBy.Title, "Bohemian" },
+            { MediaFilterBy.Author, "Queen" }
+        };
+
+        var expectedSummary = MediumModelMapper.MapToSummary(expected);
+
+        // Act
+        var result = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            filters,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        var list = result.ToList();
+        Assert.Single(list);
+        DeepAssert.Equal(expectedSummary, list.First());
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_FilterByTitleAndAuthor_OnlyOneMatches_ReturnsEmpty()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+
+        var filters = new Dictionary<MediaFilterBy, string>
+        {
+            { MediaFilterBy.Title, "Bohemian" },
+            { MediaFilterBy.Author, "NonMatchingAuthor" }
+        };
+
+        // Act
+        var result = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            filters,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_FilterByAuthor_WithNullAuthorMedia_ExcludesIt()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var targetSeed = PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot;
+
+        await using (var dbx = await DbContextFactory.CreateDbContextAsync())
+        {
+            var entity = await dbx.PlaylistMultimedia
+                .Include(pm => pm.Multimedia)
+                .FirstAsync(pm => pm.Id == targetSeed.Id);
+
+            entity.Multimedia!.Author = null;
+            await dbx.SaveChangesAsync();
+        }
+
+        // Act
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            new Dictionary<MediaFilterBy, string> { { MediaFilterBy.Author, "Any" } },
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(results);
+        Assert.DoesNotContain(results, m => m.Id == targetSeed.Id);
+    }
+
+
+    [Fact]
+    public async Task GetMediaInPlaylistSortedAsync_FilterDictionaryNull_ReturnsAll()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expected = await GetExpectedSortedMediaInPlaylistAsync(playlistId, MediaSortBy.Title, SortOrder.Ascending);
+
+        // Act
+        var result = await _facadeSUT.GetMediaInPlaylistSortedAsync(
+            playlistId,
+            null,
+            MediaSortBy.Title,
+            SortOrder.Ascending
+        );
+
+        // Assert
+        Assert.NotNull(result);
+        DeepAssert.Equal(expected, result.ToList());
+    }
 
 
 
