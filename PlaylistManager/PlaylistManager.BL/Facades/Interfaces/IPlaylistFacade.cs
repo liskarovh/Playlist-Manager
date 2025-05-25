@@ -11,13 +11,12 @@ public interface
     Task<PlaylistSummaryModel?> GetPlaylistByIdAsync(Guid playlistId);
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByTypeAsync(PlaylistType playlistType);
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix, PlaylistType playlistType);
-    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistByTitleAsync(Guid playlistId, string mediaTitlePrefix);
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder, PlaylistType playlistType);
-    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(Guid playlistId, MediaSortBy sortBy, SortOrder sortOrder);
 
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
         Guid playlistId,
-        string? mediaTitlePrefix,
+        MediaFilterBy? filterBy, // Which property to filter on (nullable for no property filter)
+        string? filterValue,     // The value to filter with
         MediaSortBy sortBy,
         SortOrder sortOrder);
 }

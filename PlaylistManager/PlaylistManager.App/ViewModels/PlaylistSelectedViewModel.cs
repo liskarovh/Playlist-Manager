@@ -186,7 +186,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         };
 
         var sortedMedia = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                              _playlistId,
+                                                                              _playlistId,MediaFilterBy.Title,
                                                                               null,
                                                                               sortBy,
                                                                               MediaSortOrder);
@@ -250,7 +250,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         }
         else
         {
-            results = await _playlistFacade.GetMediaInPlaylistByTitleAsync(_playlistId, searchQuery);
+            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(_playlistId,MediaFilterBy.Title, searchQuery, MediaSortBy.Title, SortOrder.Descending);
         }
 
         Media.Clear();
