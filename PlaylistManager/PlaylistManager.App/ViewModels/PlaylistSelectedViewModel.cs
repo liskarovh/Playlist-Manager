@@ -343,19 +343,18 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     }
 
     [RelayCommand]
-    private async Task SelectMedium(MediumSummaryModel medium)
+    private async Task SelectMedium(MediumSummaryModel? medium)
     {
         if (medium == null) return;
 
-        MessengerService.Send(new MediumSelectedMessage(medium));
+        await _navigationService.GoToAsync("//mediumDetail");
 
-        var parameters = new Dictionary<string, object?>
+        MessengerService.Send(new ManagerSelectedMessage
         {
-            { "mediumId", medium.Id },
-            { "playlistId", _playlistId }
-        };
+            SelectedType = _selectedManagerType
+        });
 
-        await _navigationService.GoToAsync<MediumSelectedViewModel>(parameters);
+        MessengerService.Send(new MediumSelectedMessage(_playlistId, medium.MediumId, _selectedManagerType));
     }
 
     [RelayCommand]

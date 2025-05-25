@@ -9,7 +9,7 @@
              x:Name="MediumSelectedViewRoot">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto"
-      ColumnDefinitions="400, *">
+          ColumnDefinitions="450, *, 400">
 
         <!-- Top Bar left -->
         <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
@@ -20,11 +20,21 @@
              HorizontalOptions="Fill"
              VerticalOptions="Fill"
              Command="{Binding NavigateToSettingsCommand}"/>
-            <Picker Grid.Column="1"
-                Title="Sort playlists by"
-                Margin="10,0"
-                ItemsSource="{Binding SortOptions}"
-                SelectedItem="{Binding SelectedSortOption}"/>
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
+                <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
+                <HorizontalStackLayout Grid.Row="1">
+                    <Picker ItemsSource="{Binding PlaylistSortOptions}"
+                            SelectedItem="{Binding SelectedPlaylistSortOption}"
+                            WidthRequest="150"/>
+                    <Button BackgroundColor="Transparent"
+                            TextColor="Black"
+                            FontSize="24"
+                            Margin="0,0,0,0"
+                            Padding="0"
+                            Text="{Binding PlaylistSortOrderSymbol}"
+                            Command="{Binding TogglePlaylistSortOrderCommand}"/>
+                </HorizontalStackLayout>
+            </Grid>
             <Button Grid.Column="2"
                 Text="New Playlist"
                 HorizontalOptions="Fill"
@@ -32,7 +42,8 @@
         </Grid>
 
         <!-- Top Bar right -->
-        <Grid Grid.Column="1" ColumnDefinitions="*, Auto, Auto, Auto, 50">
+        <Grid Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="*, Auto, Auto, Auto, 50">
+
             <Border Grid.Column="0"
                     MinimumWidthRequest="40"
                     BackgroundColor="#f2f2f2"
@@ -92,7 +103,7 @@
         </Grid>
 
     <!-- Second Bar -->
-        <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+        <BoxView Grid.Row="1" Grid.ColumnSpan="3"
                  HeightRequest="2"
                  Color="Black"
                  HorizontalOptions="Fill"
@@ -108,7 +119,7 @@
             VerticalOptions="Center"
             StrokeShape="RoundRectangle 20">
             <SearchBar Placeholder="Search playlists"
-                   Text="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.PlaylistSearchQuery}"
+                   Text="{Binding Source={x:Reference MediumSelectedViewRoot}, Path=BindingContext.PlaylistSearchQuery}"
                    BackgroundColor="Transparent"
                    FontSize="14"
                    Margin="10,0"/>
@@ -121,8 +132,10 @@
 
         <!-- List of playlists (left) -->
         <CollectionView Grid.Row="2" Grid.Column="0"
-                        ItemsSource="{Binding }"
-                        SelectionMode="Single">
+                        ItemsSource="{Binding Playlists}"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding SelectPlaylistCommand}"
+                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
             </CollectionView.ItemsLayout>
@@ -130,23 +143,28 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:PlaylistSummaryModel">
                     <Border Stroke="Black" HeightRequest="50">
-                        <Label Text="{Binding }"/>
+                        <Label Text="{Binding Title}" Margin="10" VerticalOptions="Center"/>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
         <!-- List of media (middle) -->
-        <CollectionView Grid.Row="2" Grid.Column="1">
+        <CollectionView Grid.Row="2" Grid.Column="1"
+                        ItemsSource="{Binding Media}"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding SelectMediumCommand}"
+                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
             </CollectionView.ItemsLayout>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:MediumSummaryModel">
                     <Border Stroke="Black" HeightRequest="50">
                         <Grid ColumnDefinitions="3*, 3*, 60">
-                            <Entry Grid.Column="0" Text="Name of medium to bind" FontSize="18"/>
+                            <Label Grid.Column="0" Text="{Binding Title}" Margin="10" VerticalOptions="Center" FontSize="18"/>
+                            <Label Grid.Column="1" Text="{Binding Author}" Margin="10" VerticalOptions="Center" FontSize="14"/>
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -154,29 +172,33 @@
         </CollectionView>
 
         <!-- Medium detail (right) -->
-        <Grid Grid.Row="2" Grid.Column="1" Grid.RowSpan="2" ColumnDefinitions="3*, 3*, 60">
-            <Border Stroke="Black" Grid.Column="1" Grid.ColumnSpan="2">
-                <Grid RowDefinitions="*, *, 3*, *, Auto, Auto, Auto, Auto">
-                    <Border Grid.Row="0" Grid.RowSpan="2" Stroke="Black"/>
-                    <Entry Grid.Row="0" Text="{Binding MediumName}" HorizontalTextAlignment="Center" FontSize="18" FontAttributes="Bold"/>
-                    <Entry Grid.Row="1" Text="{Binding MediumAuthor}" HorizontalTextAlignment="Center" FontSize="16"/>
-                    <ScrollView Grid.Row="2">
-                        <Label Text="{Binding MediumDescription}" LineBreakMode="WordWrap" FontSize="12"/>
-                    </ScrollView>
-                    <Editor Grid.Row="3" Text="{Binding MediumURL}" FontSize="12"/>
-                    <Entry Grid.Row="4" Text="{Binding MediumDuration}" FontSize="12"/>
-                    <Entry Grid.Row="5" Text="{Binding MediumReleaseYear}" FontSize="12"/>
-                    <Entry Grid.Row="6" Text="{Binding MediumFormat}" FontSize="12"/>
-                    <Picker Grid.Row="7" FontSize="12"/>
-                </Grid>
-            </Border>
-        </Grid>
+        <Border Grid.Row="2" Grid.Column="2" Stroke="Black">
+            <Grid RowDefinitions="*, *, 3*, *, Auto, Auto, Auto, Auto, Auto">
+                <Border Grid.Row="0" Grid.RowSpan="2" Stroke="Black"/>
+                <Entry Grid.Row="0" Text="{Binding MediumName}" HorizontalTextAlignment="Center" FontSize="18" FontAttributes="Bold" IsReadOnly="{Binding IsNotEditMode}"/>
+                <Entry Grid.Row="1" Text="{Binding MediumAuthor}" HorizontalTextAlignment="Center" FontSize="16" IsReadOnly="{Binding IsNotEditMode}"/>
+                <ScrollView Grid.Row="2">
+                    <Editor Text="{Binding MediumDescription}" FontSize="12" IsReadOnly="{Binding IsNotEditMode}"/>
+                </ScrollView>
+                <Editor Grid.Row="3" Text="{Binding MediumURL}" FontSize="12" IsReadOnly="{Binding IsNotEditMode}"/>
+                <Entry Grid.Row="4" Text="{Binding MediumDuration}" FontSize="12" Placeholder="Duration (seconds)" IsReadOnly="{Binding IsNotEditMode}"/>
+                <Entry Grid.Row="5" Text="{Binding MediumReleaseYear}" FontSize="12" Placeholder="Release Year" IsReadOnly="{Binding IsNotEditMode}"/>
+                <Picker Grid.Row="6" ItemsSource="{Binding FormatOptions}" SelectedItem="{Binding MediumFormat}" FontSize="12" IsEnabled="{Binding IsEditMode}"/>
+                <Picker Grid.Row="7" ItemsSource="{Binding GenreOptions}" SelectedItem="{Binding MediumGenre}" FontSize="12" IsEnabled="{Binding IsEditMode}"/>
+                <StackLayout Grid.Row="8" Orientation="Horizontal" HorizontalOptions="Center">
+                    <Button Text="Edit" Command="{Binding StartEditCommand}" IsVisible="{Binding IsNotEditMode}"/>
+                    <Button Text="Save" Command="{Binding SaveMediumCommand}" IsVisible="{Binding IsEditMode}"/>
+                    <Button Text="Cancel" Command="{Binding CancelEditCommand}" IsVisible="{Binding IsEditMode}"/>
+                    <Button Text="Delete" Command="{Binding DeleteCurrentMediumCommand}" BackgroundColor="Red" TextColor="White"/>
+                </StackLayout>
+            </Grid>
+        </Border>
 
         <!-- Back button -->
         <Button Grid.Row="3"
             Text="Go back to select screen"
             HorizontalOptions="Fill"
-            Command="{Binding GoBackCommand}"/>
+            Command="{Binding GoToSelectCommand}"/>
     </Grid>
 </views:ContentPageBase>
 

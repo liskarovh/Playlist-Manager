@@ -73,6 +73,23 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
         return ModelMapper.MapToSummary(entities);
     }
 
+    public async Task<MediumDetailedModel?> GetMediumByIdAsync(Guid mediumId)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+
+        IQueryable<PlaylistMultimediaEntity> query = uow
+                                                     .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
+                                                     .Get(Include);
+
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
+
+        PlaylistMultimediaEntity? entity = await query
+                                                 .SingleOrDefaultAsync(e => e.MultimediaId == mediumId)
+                                                 .ConfigureAwait(false);
+
+        return entity is null ? null : ModelMapper.MapToDetailModel(entity);
+    }
+
     public override async Task<MediumDetailedModel> SaveAsync(MediumDetailedModel model)
 {
     if (model.PlaylistId == Guid.Empty)
