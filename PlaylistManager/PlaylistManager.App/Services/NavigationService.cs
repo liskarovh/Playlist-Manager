@@ -11,7 +11,9 @@ public class NavigationService : INavigationService
         new("//select", typeof(SelectManagerView), typeof(SelectManagerViewModel)),
         new("//playlists", typeof(PlaylistOverviewView), typeof(PlaylistOverviewViewModel)),
         new("//media", typeof(PlaylistSelectedView), typeof(PlaylistSelectedViewModel)),
-        new("//mediumDetail", typeof(MediumSelectedView), typeof(MediumSelectedViewModel))
+        new("//mediumDetail", typeof(MediumSelectedView), typeof(MediumSelectedViewModel)),
+        new("//settings", typeof(SettingsView), typeof(SettingsViewModel))
+
     };
 
     public async Task GoToAsync<TViewModel>()

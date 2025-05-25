@@ -18,7 +18,9 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
                                                IRecipient<MediumEditedMessage>,
                                                IRecipient<PlaylistAddMessage>,
                                                IRecipient<PlaylistDeleteMessage>,
-                                               IRecipient<PlaylistEditMessage>
+                                               IRecipient<PlaylistEditMessage>,
+                                               IRecipient<ManagerSelectedMessage>,
+                                               IRecipient<PlaylistDisplayMessage>
 {
     private readonly IPlaylistFacade _playlistFacade;
     private readonly IMediumFacade _mediumFacade;
@@ -99,31 +101,11 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         if (query.TryGetValue("playlistId", out var playlistIdObj) &&
             playlistIdObj is Guid playlistId)
         {
-            _playlistId = playlistId;
-            LoadPlaylistData();
+            LoadPlaylistAndRelatedData(playlistId).ConfigureAwait(false);
         }
     }
 
-    private async void LoadPlaylistData()
-    {
-        await LoadPlaylistAsync();
-        await LoadMediaAsync();
-        await LoadPlaylistsAsync();
-        IsPlaylistSelected = Playlist != null;
-    }
-
-    protected override async Task LoadDataAsync()
-    {
-        if (_playlistId != Guid.Empty)
-        {
-            await LoadPlaylistAsync();
-            await LoadMediaAsync();
-        }
-
-        await LoadPlaylistsAsync();
-    }
-
-    private async Task LoadPlaylistAsync()
+    private async Task LoadPlaylistSummary()
     {
         var playlist = await _playlistFacade.GetPlaylistByIdAsync(_playlistId);
         if (playlist != null)
@@ -134,17 +116,32 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         }
     }
 
-    private async Task LoadMediaAsync()
+    private async Task LoadPlaylistAndRelatedData(Guid playlistId)
+    {
+        _playlistId = playlistId;
+
+        await LoadPlaylistSummary();
+
+        await LoadMedia();
+
+        if (Playlists.Count == 0)
+        {
+            await LoadAllPlaylists();
+        }
+
+        IsPlaylistSelected = Playlist != null;
+    }
+
+    private async Task LoadMedia()
     {
         if (_playlistId != Guid.Empty)
         {
             var media =
-                await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                            _playlistId,
-                                                                            null,
-                                                                            null,
-                                                                            MediaSortBy.Title,
-                                                                            MediaSortOrder);
+                await _playlistFacade.GetMediaInPlaylistSortedAsync(_playlistId,
+                                                                    null,
+                                                                    null,
+                                                                    MediaSortBy.Title,
+                                                                    MediaSortOrder);
             Media.Clear();
             foreach (var medium in media)
             {
@@ -155,7 +152,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         }
     }
 
-    private async Task LoadPlaylistsAsync()
+    private async Task LoadAllPlaylists()
     {
         var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
         var playlists = await _playlistFacade.GetPlaylistsByTypeAsync(playlistType);
@@ -366,11 +363,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     {
         if (playlist == null) return;
 
-        _playlistId = playlist.PlaylistId;
-        await LoadPlaylistAsync();
-        await LoadMediaAsync();
-        IsPlaylistSelected = true;
-
+        await LoadPlaylistAndRelatedData(playlist.PlaylistId);
         MessengerService.Send(new PlaylistSelectedMessage(playlist));
     }
 
@@ -476,6 +469,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     {
         IsPlaylistSelected = false;
         _playlistId = Guid.Empty;
+
         Playlist = null;
         Media.Clear();
         PlaylistTitle = string.Empty;
@@ -548,10 +542,21 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         }
     }
 
+    public void Receive(ManagerSelectedMessage message)
+    {
+        _selectedManagerType = message.SelectedType;
+    }
+
+    public async void Receive(PlaylistDisplayMessage message)
+    {
+        _selectedManagerType = message.ManagerType;
+        await LoadPlaylistAndRelatedData(message.SelectedPlaylistId);
+    }
+
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("//select");
+        await _navigationService.GoToAsync("//settings");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)

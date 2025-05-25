@@ -196,14 +196,9 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         }
         else
         {
-            MessengerService.Send(new PlaylistSelectedMessage(playlist));
-            var parameters = new Dictionary<string, object?>
-            {
-                { "playlistId", playlist.PlaylistId }
-            };
+            await _navigationService.GoToAsync("//media");
 
-            await _navigationService.GoToAsync<PlaylistSelectedViewModel>(parameters);
-
+            MessengerService.Send(new PlaylistDisplayMessage(playlist.PlaylistId, _selectedManagerType));
         }
     }
 
@@ -299,13 +294,23 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     [RelayCommand]
     private async Task GoBack()
     {
+        if (IsEditMode && CurrentlyEditedPlaylist != null)
+        {
+            await FinishCurrentEditingAsync();
+        }
+
         await _navigationService.GoToAsync("//select");
     }
 
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("//select");
+    if (IsEditMode && CurrentlyEditedPlaylist != null)
+    {
+        await FinishCurrentEditingAsync();
+    }
+
+    await _navigationService.GoToAsync("//settings");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)
