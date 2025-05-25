@@ -78,7 +78,7 @@
                     <Border Stroke="Black" HeightRequest="50" BackgroundColor="Transparent">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistOverviewViewModel}}, Path=SelectPlaylistCommand}"
+                                Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
                                 CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="400, 3*, 2*, *, 60" Margin="10,5">
@@ -105,7 +105,7 @@
                             <ImageButton Grid.Column="4"
                                          Source="delete.png"
                                          HeightRequest="50"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistOverviewViewModel}}, Path=DeletePlaylistCommand}"
+                                         Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.DeletePlaylistCommand}"
                                          CommandParameter="{Binding PlaylistId}" />
                         </Grid>
                     </Border>
