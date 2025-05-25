@@ -13,8 +13,10 @@ namespace PlaylistManager.App.ViewModels;
 
 [AddINotifyPropertyChangedInterface]
 public partial class MediumSelectedViewModel : ViewModelBase,
+                                               IRecipient<MediumAddedMessage>,
                                                IRecipient<MediumEditedMessage>,
                                                IRecipient<MediumRemovedMessage>,
+                                               IRecipient<PlaylistAddMessage>,
                                                IRecipient<ManagerSelectedMessage>,
                                                IRecipient<MediumSelectedMessage>
 {
@@ -67,13 +69,9 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     public SortOrder MediaSortOrder { get; set; } = SortOrder.Ascending;
     public string PlaylistSortOrderSymbol { get; set; } = "↑";
     public string MediaSortOrderSymbol { get; set; } = "↑";
-    public ObservableCollection<string> PlaylistSortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
 
-    public ObservableCollection<string> MediaSortOptions { get; } = new([
-                                                                            "Title", "Author", "Added Date",
-                                                                            "Duration"
-                                                                        ]
-                                                                       );
+    public ObservableCollection<string> PlaylistSortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
+    public ObservableCollection<string> MediaSortOptions { get; } = new(["Title", "Author", "Added Date", "Duration"]);
 
     public bool HasValidationErrors { get; set; }
     public string ValidationMessage { get; set; } = string.Empty;
@@ -326,21 +324,15 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                                                                             MediaSortBy.Title,
                                                                             MediaSortOrder);
 
-            // Přidání logování
-            System.Diagnostics.Debug.WriteLine($"Načteno {media.Count()} médií pro playlist {_playlistId}");
-
             Media.Clear();
             foreach (var medium in media)
             {
                 Media.Add(medium);
             }
-
-            // Výpis aktuálního počtu médií v kolekci
-            System.Diagnostics.Debug.WriteLine($"Počet médií v kolekci po přidání: {Media.Count}");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Chyba při načítání médií: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Error while loading media: {ex.Message}");
         }
     }
 
@@ -598,8 +590,6 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                 AddedDate = newMedium.AddedDate
             };
 
-            Media.Add(summaryMedium);
-
             await SelectMediumCommand.ExecuteAsync(summaryMedium);
             StartEditCommand.Execute(null);
 
@@ -846,6 +836,16 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         {
             ClearMediumSelection();
         }
+    }
+
+    public void Receive(PlaylistAddMessage message)
+    {
+        Playlists.Add(message.Value);
+    }
+
+    public void Receive(MediumAddedMessage message)
+    {
+        Media.Add(message.Value);
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)
