@@ -6,10 +6,7 @@
     x:Class="PlaylistManager.App.AppShell"
     x:Name="AppShellRoot"
     Shell.NavBarIsVisible="False"
-    Shell.FlyoutBackdrop="Transparent">
-    <!-- Shell.FlyoutBehavior="Disabled"-->
-
-
+    Shell.FlyoutBehavior="Disabled">
 
 
     <ShellContent ContentTemplate="{DataTemplate v:SelectManagerView}" Route="select" Title="SelectManagerView"/>
