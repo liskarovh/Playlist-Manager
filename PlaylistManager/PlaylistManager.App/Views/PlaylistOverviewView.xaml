@@ -125,7 +125,14 @@
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Center"
                                    FontSize="12"
-                                   TextColor="Black"/>
+                                   TextColor="Black">
+                                <Editor.Behaviors>
+                                    <toolkit:EventToCommandBehavior
+                                        EventName="Unfocused"
+                                        Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SavePlaylistCommand}"
+                                        CommandParameter="{Binding Source={x:Reference BorderRoot}, Path=BindingContext}"/>
+                                </Editor.Behaviors>
+                            </Editor>
                             <Label Grid.Column="2"
                                    Text="{Binding MediaCount, StringFormat='Media Count: {0}'}"
                                    VerticalTextAlignment="Center"
