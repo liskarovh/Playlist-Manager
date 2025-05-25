@@ -90,8 +90,8 @@ public class MediumFacadeTests : FacadeTestsBase
         // Arrange
         var medium = new MediumDetailedModel
         {
-            Id = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody.Id,
-            MediumId = MusicSeeds.BohemianRhapsody.Id,
+            Id = Guid.NewGuid(),
+            MediumId = Guid.NewGuid(),
             PlaylistId = PlaylistSeeds.MusicPlaylist.Id,
             Title = MusicSeeds.BohemianRhapsody.Title,
             Author = MusicSeeds.BohemianRhapsody.Author,
@@ -206,4 +206,60 @@ public class MediumFacadeTests : FacadeTestsBase
             DeepAssert.Equal(MediumModelMapper.MapToSummary(expectedEntity), summary);
         }
     }
+
+    [Fact]
+    public async Task GetMediaByPlaylistIdAsync_ValidPlaylistId_ReturnsCorrectSummaries()
+    {
+        // Arrange
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
+        var expectedEntities = new[]
+        {
+            PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody,
+            PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot
+        };
+
+        // Act
+        var result = await _mediumFacadeSUT.GetMediaByPlaylistIdAsync(playlistId);
+
+        // Assert
+        Assert.NotNull(result);
+        var resultList = result.ToList();
+        Assert.Equal(expectedEntities.Length, resultList.Count);
+
+        foreach (var expected in expectedEntities)
+        {
+            var summary = resultList.SingleOrDefault(m => m.Id == expected.Id);
+            Assert.NotNull(summary);
+            DeepAssert.Equal(MediumModelMapper.MapToSummary(expected), summary);
+        }
+    }
+
+    [Fact]
+    public async Task GetMediaByPlaylistIdAsync_UnknownPlaylistId_ReturnsEmptyList()
+    {
+        // Arrange
+        var unknownId = Guid.NewGuid();
+
+        // Act
+        var result = await _mediumFacadeSUT.GetMediaByPlaylistIdAsync(unknownId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GetMediaByPlaylistIdAsync_ExistingPlaylistWithNoMedia_ReturnsEmptyList()
+    {
+        // Arrange
+        var emptyPlaylistId = PlaylistSeeds.EmptyPlaylist.Id;
+
+        // Act
+        var result = await _mediumFacadeSUT.GetMediaByPlaylistIdAsync(emptyPlaylistId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result);
+    }
+
 }

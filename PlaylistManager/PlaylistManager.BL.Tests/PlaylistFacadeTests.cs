@@ -422,7 +422,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "Bohemian";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, prefix);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -439,7 +439,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "NonExistentMediaTitleInThisPlaylist";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, prefix);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -464,7 +464,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, string.Empty);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, string.Empty, MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -494,8 +494,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(playlistId, null);
-
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, null, MediaSortBy.Title, SortOrder.Descending);
         // Assert
         Assert.NotNull(results);
         var resultList = results.ToList();
@@ -514,7 +513,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "AnyTitle";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(nonExistentPlaylistId, prefix);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(nonExistentPlaylistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -529,7 +528,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "AnyTitle";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistByTitleAsync(emptyPlaylistId, prefix);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(emptyPlaylistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -591,6 +590,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
             playlistId,
+            null, null,
             MediaSortBy.Title,
             SortOrder.Ascending
         );
@@ -613,7 +613,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            playlistId,
+            playlistId,null,null,
             MediaSortBy.Author,
             SortOrder.Descending
         );
@@ -636,7 +636,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            playlistId,
+            playlistId,null,null,
             MediaSortBy.Duration,
             SortOrder.Ascending
         );
@@ -654,7 +654,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            nonExistentPlaylistId,
+            nonExistentPlaylistId,null,null,
             MediaSortBy.Title,
             SortOrder.Ascending
         );
@@ -672,7 +672,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            emptyPlaylistId,
+            emptyPlaylistId,null,null,
             MediaSortBy.Title,
             SortOrder.Ascending
         );
@@ -784,10 +784,10 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var expectedResultList = expectedSortedMedia.ToList();
 
         // Act
-        var results = (await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, titlePrefix, sortBy, sortOrder)).ToList();
+        var results = (await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title,titlePrefix, sortBy, sortOrder)).ToList();
 
         // Assert
-        Assert.Equal(expectedCount, results.Count);
+        Assert.Equal((uint)expectedCount, (uint)results.Count);
         Assert.Equal(expectedResultList.Count, results.Count); // Double check count from manual filter/sort
 
         for (int i = 0; i < expectedResultList.Count; i++)
@@ -859,4 +859,36 @@ public class PlaylistFacadeTests : FacadeTestsBase
             .SingleOrDefaultAsync(p => p.Id == playlistId);
         return PlaylistModelMapper.MapToSummary(playlistEntity);
     }
+
+    [Fact]
+    public async Task GetPlaylistByIdAsync_SeededMusicPlaylist_ReturnsCorrectSummary()
+    {
+        // Arrange
+        var expectedEntity = PlaylistSeeds.MusicPlaylist;
+        var expectedSummary = PlaylistModelMapper.MapToSummary(expectedEntity);
+
+        // Act
+        var result = await _facadeSUT.GetPlaylistByIdAsync(expectedEntity.Id);
+
+        // Assert
+        Assert.NotNull(result);
+        DeepAssert.Equal(expectedSummary, result);
+    }
+
+    [Fact]
+    public async Task GetPlaylistByIdAsync_UnknownId_ReturnsNull()
+    {
+        // Arrange
+        var unknownId = Guid.NewGuid();
+
+        // Act
+        var result = await _facadeSUT.GetPlaylistByIdAsync(unknownId);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+
+
+
 }

@@ -25,9 +25,10 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     public ObservableCollection<PlaylistSummaryModel> Playlists { get; set; } = new();
     public string PlaylistSearchQuery { get; set; } = string.Empty;
 
-    public string SelectedSortOption { get; set; } = "Name";
-    public SortOrder CurrentSortOrder { get; set; } = SortOrder.Ascending;
-    public ObservableCollection<string> SortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
+    public string SelectedPlaylistSortOption { get; set; } = "Name";
+    public SortOrder PlaylistSortOrder { get; set; } = SortOrder.Ascending;
+    public string PlaylistSortOrderSymbol { get; set; } = "↑";
+    public ObservableCollection<string> PlaylistSortOption { get; } = new(["Name", "Media Count", "Total Duration"]);
 
     public bool IsEditMode { get; set; } = false;
     public PlaylistSummaryModel? CurrentlyEditedPlaylist { get; set; }
@@ -46,9 +47,9 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
                                    case nameof(PlaylistSearchQuery):
                                        await SearchPlaylistsCommand.ExecuteAsync(PlaylistSearchQuery);
                                        break;
-                                   case nameof(SelectedSortOption):
-                                   case nameof(CurrentSortOrder):
-                                       await SortPlaylistsCommand.ExecuteAsync(SelectedSortOption);
+                                   case nameof(SelectedPlaylistSortOption):
+                                   case nameof(PlaylistSortOrder):
+                                       await SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
                                        break;
                                }
                            };
@@ -98,7 +99,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
             Playlists.Add(playlist);
         }
 
-        await SortPlaylistsCommand.ExecuteAsync(SelectedSortOption);
+        await SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
     }
 
     [RelayCommand]
@@ -116,7 +117,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
 
         var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
 
-        var sortedPlaylists = await _playlistFacade.GetPlaylistsSortedAsync(sortBy, CurrentSortOrder, playlistType);
+        var sortedPlaylists = await _playlistFacade.GetPlaylistsSortedAsync(sortBy, PlaylistSortOrder, playlistType);
 
         Playlists.Clear();
         foreach (var item in sortedPlaylists)
@@ -126,11 +127,15 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     }
 
     [RelayCommand]
-    private void ToggleSortOrder()
+    private void TogglePlaylistSortOrder()
     {
-        CurrentSortOrder = CurrentSortOrder == SortOrder.Ascending
-                               ? SortOrder.Descending
-                               : SortOrder.Ascending;
+        PlaylistSortOrder = PlaylistSortOrder == SortOrder.Ascending
+                                ? SortOrder.Descending
+                                : SortOrder.Ascending;
+
+        PlaylistSortOrderSymbol = PlaylistSortOrder == SortOrder.Ascending
+                                ? "↑"
+                                : "↓";
     }
 
     [RelayCommand]
