@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
              xmlns:idk="clr-namespace:PlaylistManager.App"
-             x:Class="PlaylistManager.App.Views.PlaylistSelected">
+             x:Class="PlaylistManager.App.Views.PlaylistSelectedView">
 
-    <Grid RowDefinitions="Auto, Auto, *, Auto" 
+    <Grid RowDefinitions="Auto, Auto, *, Auto"
           ColumnDefinitions="400, *">
 
         <!-- Top Bar left -->
@@ -46,7 +46,7 @@
 
         <!-- Second Bar -->
         <Border Grid.Row="1" Grid.ColumnSpan="2"  Stroke="Black"/>
-        
+
         <!-- Second Bar left -->
         <Border Grid.Row="1" BackgroundColor="#f2f2f2" HorizontalOptions="Fill" Margin="10, 5"
                 Stroke="Black"
