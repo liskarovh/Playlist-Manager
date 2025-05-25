@@ -5,11 +5,10 @@
                        xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
                        xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
                        x:Class="PlaylistManager.App.Views.PlaylistSelectedView"
-                       x:DataType="viewmodels:PlaylistSelectedViewModel"
-                       x:Name="PlaylistSelectedViewRoot">
+                       x:DataType="viewmodels:PlaylistSelectedViewModel">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto"
-          ColumnDefinitions="400, *">
+          ColumnDefinitions="450, *">
 
         <!-- Top Bar left -->
         <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
@@ -19,11 +18,20 @@
                          HeightRequest="40"
                          HorizontalOptions="Fill"
                          VerticalOptions="Fill"/>
-            <Picker Grid.Column="1"
-                    Title="Sort plalylists by"
-                    Margin="10,0"
-                    ItemsSource="{Binding PlaylistSortOptions}"
-                    SelectedItem="{Binding SelectedPlaylistSortOption}" />
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
+                <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
+                <HorizontalStackLayout Grid.Row="1">
+                    <Picker ItemsSource="{Binding PlaylistSortOptions}"
+                            SelectedItem="{Binding SelectedPlaylistSortOption}"
+                            WidthRequest="150"/>
+                    <Button BackgroundColor="Transparent"
+                            TextColor="Black"
+                            FontSize="24"
+                            Padding="0"
+                            Text="{Binding PlaylistSortOrderSymbol}"
+                            Command="{Binding TogglePlaylistSortOrderCommand}"/>
+                </HorizontalStackLayout>
+            </Grid>
             <Button Grid.Column="2"
                     Text="New palylist"
                     HorizontalOptions="Fill"
@@ -39,24 +47,38 @@
                 StrokeThickness="1"
                 HeightRequest="45"
                 VerticalOptions="Center"
-                StrokeShape="RoundRectangle 20">
+                StrokeShape="RoundRectangle 20"
+                IsEnabled="{Binding IsPlaylistSelected}">
                 <SearchBar Placeholder="Search media in playlist"
                            BackgroundColor="Transparent"
                            FontSize="14"
                            Margin="10,0"
+                           IsEnabled="{Binding IsPlaylistSelected}"
                            Text="{Binding MediaSearchQuery}"/>
             </Border>
             <Button Grid.Column="1"
                     Text="New Medium"
                     HorizontalOptions="Fill"
                     Margin="10,5"
+                    IsEnabled="{Binding IsPlaylistSelected}"
                     Command="{Binding CreateMediumCommand}"/>
-            <Picker Grid.Column="2"
-                    Title="Sort mediums by"
-                    Margin="10, 5"
-                    ItemsSource="{Binding MediaSortOptions}"
-                    SelectedItem="{Binding SelectedMediaSortOption}"/>
-            <Picker Grid.Column="3" Title="Filter mediums by" Margin="10, 5"/>
+            <Grid Grid.Column="2" RowDefinitions="Auto,Auto" Margin="10,0">
+                <Label Text="Sort mediums by:" FontSize="14" HorizontalOptions="Start"/>
+                <HorizontalStackLayout Grid.Row="1">
+                    <Picker ItemsSource="{Binding MediaSortOptions}"
+                            SelectedItem="{Binding SelectedMediaSortOption}"
+                            IsEnabled="{Binding IsPlaylistSelected}"
+                            WidthRequest="150"/>
+                    <Button BackgroundColor="Transparent"
+                            TextColor="Black"
+                            FontSize="24"
+                            Padding="0"
+                            IsEnabled="{Binding IsPlaylistSelected}"
+                            Text="{Binding MediaSortOrderSymbol}"
+                            Command="{Binding ToggleMediaSortOrderCommand}"/>
+                </HorizontalStackLayout>
+            </Grid>
+            <Picker Grid.Column="3" Title="Filter mediums by" Margin="10, 5" IsEnabled="{Binding IsPlaylistSelected}"/>
             <Image Grid.Column="4" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill"/>
         </Grid>
 
@@ -78,40 +100,48 @@
         </Border>
 
         <!-- Second Bar right -->
-        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *" Margin="10,5">
             <Label Grid.Column="0" Text="Medium name" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
             <Label Grid.Column="1" Text="Author" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
             <Label Grid.Column="2" Text="Duration" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
-            <Button Grid.Column="3"
-                    Text="{Binding PlaylistSortOrder}"
-                    Command="{Binding TogglePlaylistSortOrderCommand}"/>
         </Grid>
 
 
         <!-- List of playlists (left) -->
-        <CollectionView Grid.Row="2" Grid.Column="0"
-                        ItemsSource="{Binding Playlists}"
-                        SelectionMode="Single"
-                        SelectionChangedCommand="{Binding SelectPlaylistCommand}"
-                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
-            <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
-            </CollectionView.ItemsLayout>
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ClearPlaylistSelectionCommand}"/>
+            </Grid.GestureRecognizers>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:PlaylistSummaryModel">
-                    <Border Stroke="Black" HeightRequest="50">
-                        <Grid ColumnDefinitions="*, Auto">
-                            <Label Text="{Binding Title}" VerticalOptions="Center" Margin="10,0"/>
-                            <ImageButton Grid.Column="1"
-                                         Source="delete.png"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=DeletePlaylistCommand}"
-                                         CommandParameter="{Binding PlaylistId}"/>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <CollectionView ItemsSource="{Binding Playlists}"
+                            SelectionMode="Single"
+                            BackgroundColor="Transparent"
+                            SelectionChangedCommand="{Binding SelectPlaylistCommand}"
+                            SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:PlaylistSummaryModel">
+                        <Border Stroke="Black" HeightRequest="50">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=SelectPlaylistCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Text="{Binding Title}" VerticalOptions="Center" Margin="10,0"/>
+                                <ImageButton Grid.Column="1"
+                                             Source="delete.png"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=DeletePlaylistCommand}"
+                                             CommandParameter="{Binding PlaylistId}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
 
         <!-- List of media (right) -->
         <CollectionView Grid.Row="2" Grid.Column="1"
@@ -144,6 +174,6 @@
         <Button Grid.Row="3"
                 Text="Go back to select screen"
                 HorizontalOptions="Fill"
-                Command="{Binding GoBackCommand}"/>
+                Command="{Binding GoToSelectCommand}"/>
     </Grid>
 </views:ContentPageBase>

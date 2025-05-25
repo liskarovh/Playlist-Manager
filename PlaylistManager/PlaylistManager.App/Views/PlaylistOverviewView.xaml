@@ -5,26 +5,35 @@
                        xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
                        xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
                        x:Class="PlaylistManager.App.Views.PlaylistOverviewView"
-                       x:DataType="viewmodels:PlaylistOverviewViewModel"
-                       x:Name="PlaylistOverviewViewRoot">
+                       x:DataType="viewmodels:PlaylistOverviewViewModel">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto"
-          ColumnDefinitions="400, *">
+          ColumnDefinitions="450, *">
 
         <!-- Top Bar left -->
-        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
+        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, Auto" HorizontalOptions="Fill" Margin="10,5">
             <ImageButton Source="setting.png"
-                 Margin="10,0"
-                 WidthRequest="40"
-                 HeightRequest="40"
-                 HorizontalOptions="Fill"
-                 VerticalOptions="Fill"
-                 Command="{Binding NavigateToSettingsCommand}"/>
-            <Picker Grid.Column="1"
-                    Title="Sort playlists by"
-                    Margin="10,0"
-                    ItemsSource="{Binding SortOptions}"
-                    SelectedItem="{Binding SelectedSortOption}"/>
+                         Margin="10,0"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         HorizontalOptions="Fill"
+                         VerticalOptions="Fill"
+                         Command="{Binding NavigateToSettingsCommand}"/>
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
+                <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
+                <HorizontalStackLayout Grid.Row="1">
+                    <Picker ItemsSource="{Binding PlaylistSortOption}"
+                            SelectedItem="{Binding SelectedPlaylistSortOption}"
+                            WidthRequest="150"/>
+                    <Button BackgroundColor="Transparent"
+                            TextColor="Black"
+                            FontSize="24"
+                            Margin="0,0,0,0"
+                            Padding="0"
+                            Text="{Binding PlaylistSortOrderSymbol}"
+                            Command="{Binding TogglePlaylistSortOrderCommand}"/>
+                </HorizontalStackLayout>
+            </Grid>
             <Button Grid.Column="2"
                     Text="New Playlist"
                     HorizontalOptions="Fill"

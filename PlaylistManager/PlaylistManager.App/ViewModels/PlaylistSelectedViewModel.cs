@@ -24,6 +24,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     private readonly IMediumFacade _mediumFacade;
     private readonly INavigationService _navigationService;
     private Guid _playlistId;
+    private bool _isPlaylistSelected;
     private ManagerType _selectedManagerType = ManagerType.NotDecided;
 
     public PlaylistSummaryModel? Playlist { get; set; }
@@ -41,6 +42,8 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     public string SelectedMediaSortOption { get; set; } = "Name";
     public SortOrder PlaylistSortOrder { get; set; } = SortOrder.Ascending;
     public SortOrder MediaSortOrder { get; set; } = SortOrder.Ascending;
+    public string PlaylistSortOrderSymbol { get; set; } = "↑";
+    public string MediaSortOrderSymbol { get; set; } = "↑";
     public ObservableCollection<string> PlaylistSortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
     public ObservableCollection<string> MediaSortOptions { get; } = new(["Title", "Author", "Added Date", "Duration"]);
 
@@ -54,6 +57,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         _playlistFacade = playlistFacade;
         _mediumFacade = mediumFacade;
         _navigationService = navigationService;
+        _isPlaylistSelected = false;
 
         PropertyChanged += async (_, args) =>
                            {
@@ -79,6 +83,12 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
 
+    public bool IsPlaylistSelected
+    {
+        get => _isPlaylistSelected;
+        set => SetProperty(ref _isPlaylistSelected, value);
+    }
+
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("playlistId", out var playlistIdObj) &&
@@ -94,6 +104,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         await LoadPlaylistAsync();
         await LoadMediaAsync();
         await LoadPlaylistsAsync();
+        IsPlaylistSelected = Playlist != null;
     }
 
     protected override async Task LoadDataAsync()
@@ -204,6 +215,10 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         PlaylistSortOrder = PlaylistSortOrder == SortOrder.Ascending
                                 ? SortOrder.Descending
                                 : SortOrder.Ascending;
+
+        PlaylistSortOrderSymbol = PlaylistSortOrder == SortOrder.Ascending
+                                      ? "↑"
+                                      : "↓";
     }
 
     [RelayCommand]
@@ -212,6 +227,10 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         MediaSortOrder = MediaSortOrder == SortOrder.Ascending
                              ? SortOrder.Descending
                              : SortOrder.Ascending;
+
+        MediaSortOrderSymbol = MediaSortOrder == SortOrder.Ascending
+                                      ? "↑"
+                                      : "↓";
     }
 
     [RelayCommand]
@@ -295,6 +314,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
         _playlistId = playlist.PlaylistId;
         await LoadPlaylistAsync();
         await LoadMediaAsync();
+        IsPlaylistSelected = true;
 
         MessengerService.Send(new PlaylistSelectedMessage(playlist));
     }
@@ -306,24 +326,41 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
 
         var mediumId = Guid.NewGuid();
 
-        var newMedium = MediumDetailedModel.Empty with
+        try
         {
-            Id = Guid.NewGuid(),
-            MediumId = mediumId,
-            PlaylistId = _playlistId,
-            Title = "New Medium",
-            Description = "Description of the new medium"
-        };
+            var newMedium = MediumDetailedModel.Empty with
+            {
+                Id = Guid.NewGuid(),
+                MediumId = mediumId,
+                PlaylistId = _playlistId,
+                Title = "New Medium",
+                Description = "Description of the new medium",
+                Author = "Unknown Author",
+                Duration = 0,
+                AddedDate = DateTime.Now,
+                Format = "Unknown",
+                Genre = "Unknown"
+            };
 
-        await _mediumFacade.SaveAsync(newMedium);
+            await _mediumFacade.SaveAsync(newMedium);
 
-        var media = await _mediumFacade.GetMediaByPlaylistIdAsync(_playlistId);
-        var summaryMedium = media.FirstOrDefault(m => m.MediumId == mediumId);
+            var summaryMedium = new MediumSummaryModel
+            {
+                Id = newMedium.Id,
+                MediumId = newMedium.MediumId,
+                PlaylistId = _playlistId,
+                Title = newMedium.Title,
+                Author = newMedium.Author,
+                Duration = newMedium.Duration,
+                AddedDate = newMedium.AddedDate
+            };
 
-        if (summaryMedium != null)
-        {
             Media.Add(summaryMedium);
             MessengerService.Send(new MediumAddedMessage(summaryMedium, _playlistId));
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error creating medium: {ex.Message}");
         }
     }
 
@@ -359,6 +396,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
 
         if (playlistId == _playlistId)
         {
+            IsPlaylistSelected = false;
             await GoBack();
         }
 
@@ -368,7 +406,25 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     [RelayCommand]
     private async Task GoBack()
     {
+        IsPlaylistSelected = false;
         await _navigationService.GoToAsync("//playlists");
+    }
+
+    [RelayCommand]
+    private async Task GoToSelect()
+    {
+        await _navigationService.GoToAsync("//select");
+    }
+
+    [RelayCommand]
+    private void ClearPlaylistSelection()
+    {
+        IsPlaylistSelected = false;
+        _playlistId = Guid.Empty;
+        Playlist = null;
+        Media.Clear();
+        PlaylistTitle = string.Empty;
+        PlaylistDescription = string.Empty;
     }
 
     public void Receive(MediumAddedMessage message)
