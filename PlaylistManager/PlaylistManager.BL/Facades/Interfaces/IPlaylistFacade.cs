@@ -19,4 +19,10 @@ public interface
         string? filterValue,     // The value to filter with
         MediaSortBy sortBy = MediaSortBy.Title,
         SortOrder sortOrder = SortOrder.Descending);
+
+    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
+        Guid playlistId,
+        IDictionary<MediaFilterBy, string>? filters, // Dictionary for multiple filters
+        MediaSortBy sortBy,
+        SortOrder sortOrder);
 }
