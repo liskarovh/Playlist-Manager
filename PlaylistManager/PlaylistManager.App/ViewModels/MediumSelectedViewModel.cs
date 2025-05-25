@@ -47,6 +47,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
     public bool IsMediumSelected { get; set; }
     public string MediumName { get; set; } = string.Empty;
+    public Guid PlaylistMultimediaId { get; set; } = Guid.Empty;
     public Guid MediumID { get; set; } = Guid.Empty;
     public string MediumAuthor { get; set; } = string.Empty;
     public string MediumDescription { get; set; } = string.Empty;
@@ -234,7 +235,8 @@ public partial class MediumSelectedViewModel : ViewModelBase,
             if (medium != null)
             {
                 MediumName = medium.Title;
-                MediumID = medium.Id; 
+                PlaylistMultimediaId = medium.Id;
+                MediumID = medium.MediumId;
                 MediumAuthor = medium.Author;
                 MediumDescription = medium.Description;
                 MediumURL = medium.Url;
@@ -580,10 +582,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                 Title = "New Medium",
                 Description = "Description of the new medium",
                 Author = "Unknown Author",
-                Duration = 0,
                 AddedDate = DateTime.Now,
-                Format = "Unknown",
-                Genre = "Unknown"
             };
 
             await _mediumFacade.SaveAsync(newMedium);
@@ -743,7 +742,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
             var mediumToSave = new MediumDetailedModel
             {
-                Id = MediumID,
+                Id = PlaylistMultimediaId,
                 MediumId = _mediumId,
                 PlaylistId = _playlistId,
                 Title = MediumName,
@@ -754,22 +753,21 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                 ReleaseYear = releaseYear,
                 Format = MediumFormat,
                 Genre = MediumGenre,
-                AddedDate = DateTime.Now
             };
 
-            var savedMedium = await _mediumFacade.SaveAsync(mediumToSave);
+            var savedModel = await _mediumFacade.SaveAsync(mediumToSave);
 
             IsEditMode = false;
 
             var summaryModel = new MediumSummaryModel
             {
-                Id = savedMedium.Id,
-                MediumId = savedMedium.MediumId,
-                PlaylistId = savedMedium.PlaylistId,
-                Title = savedMedium.Title,
-                Author = savedMedium.Author,
-                Duration = savedMedium.Duration,
-                AddedDate = savedMedium.AddedDate
+                Id = savedModel.Id,
+                MediumId = savedModel.MediumId,
+                PlaylistId = savedModel.PlaylistId,
+                Title = savedModel.Title,
+                Author = savedModel.Author,
+                Duration = savedModel.Duration,
+                AddedDate = savedModel.AddedDate
             };
 
             var existingItem = Media.FirstOrDefault(m => m.MediumId == _mediumId);
