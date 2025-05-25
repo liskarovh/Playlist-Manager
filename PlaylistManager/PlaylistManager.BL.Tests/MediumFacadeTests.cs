@@ -90,8 +90,8 @@ public class MediumFacadeTests : FacadeTestsBase
         // Arrange
         var medium = new MediumDetailedModel
         {
-            Id = PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody.Id,
-            MediumId = MusicSeeds.BohemianRhapsody.Id,
+            Id = Guid.NewGuid(),
+            MediumId = Guid.NewGuid(),
             PlaylistId = PlaylistSeeds.MusicPlaylist.Id,
             Title = MusicSeeds.BohemianRhapsody.Title,
             Author = MusicSeeds.BohemianRhapsody.Author,
