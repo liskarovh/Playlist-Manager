@@ -5,7 +5,8 @@
                        xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
                        xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
                        x:Class="PlaylistManager.App.Views.PlaylistOverviewView"
-                       x:DataType="viewmodels:PlaylistOverviewViewModel">
+                       x:DataType="viewmodels:PlaylistOverviewViewModel"
+                       x:Name="PlaylistOverviewViewRoot">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto"
           ColumnDefinitions="450, *">
