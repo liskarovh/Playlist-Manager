@@ -455,7 +455,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     private async Task GoBack()
     {
         IsPlaylistSelected = false;
-        await _navigationService.GoToAsync("//playlists");
+        await _navigationService.GoToAsync("/playlists");
     }
 
     [RelayCommand]
@@ -556,7 +556,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("//settings");
+        await _navigationService.GoToAsync("settings");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)

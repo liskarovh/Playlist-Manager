@@ -14,6 +14,7 @@
             <converters:EditModeToTextConverter x:Key="EditModeToTextConverter"/>
             <converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
             <converters:DurationToStringConverter x:Key="DurationToStringConverter"/>
+            <converters:ThemeToStringConverter x:Key="ThemeToStringConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -305,12 +305,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-    if (IsEditMode && CurrentlyEditedPlaylist != null)
-    {
-        await FinishCurrentEditingAsync();
-    }
-
-    await _navigationService.GoToAsync("//settings");
+        await _navigationService.GoToAsync("/settings");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)

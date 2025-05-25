@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging;
 using PlaylistManager.App.Services;
 using PlaylistManager.App.ViewModels;
 using PlaylistManager.App.Views;
@@ -29,6 +29,8 @@ public static class AppInstaller
                                   .WithTransientLifetime());
 
         services.AddTransient<INavigationService, NavigationService>();
+
+        services.AddSingleton<IThemeService, ThemeService>();
 
         return services;
     }

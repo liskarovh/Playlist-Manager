@@ -3,6 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
              xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
+<<<<<<< Updated upstream
+=======
+             xmlns:resx="clr-namespace:PlaylistManager.App.Resources.Texts"
+             x:Class="PlaylistManager.App.Views.SelectManagerView"
+>>>>>>> Stashed changes
              xmlns:enums="clr-namespace:PlaylistManager.Common.Enums;assembly=PlaylistManager.Common"
              x:Class="PlaylistManager.App.Views.SelectManagerView"
              x:DataType="viewModels:SelectManagerViewModel">
@@ -95,6 +100,15 @@
                     <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
                                           CommandParameter="{x:Static enums:ManagerType.Video}" />
                 </Grid.GestureRecognizers>
+<<<<<<< Updated upstream
+=======
+
+                <Label Text="{x:Static resx:AppTexts.VideoString}"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"/>
+>>>>>>> Stashed changes
             </Grid>
         </Border>
 
@@ -152,6 +166,15 @@
                     <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
                                           CommandParameter="{x:Static enums:ManagerType.Music}" />
                 </Grid.GestureRecognizers>
+<<<<<<< Updated upstream
+=======
+
+                <Label Text="{x:Static resx:AppTexts.MusicString}"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"/>
+>>>>>>> Stashed changes
             </Grid>
         </Border>
 
@@ -207,6 +230,15 @@
                     <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
                                           CommandParameter="{x:Static enums:ManagerType.AudioBook}" />
                 </Grid.GestureRecognizers>
+<<<<<<< Updated upstream
+=======
+
+                <Label Text="{x:Static resx:AppTexts.AudiobookString}"
+                       FontSize="24"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="Black"/>
+>>>>>>> Stashed changes
             </Grid>
         </Border>
 

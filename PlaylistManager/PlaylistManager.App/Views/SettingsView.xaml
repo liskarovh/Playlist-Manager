@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
              xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
-             xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
+             xmlns:resx="clr-namespace:PlaylistManager.App.Resources.Texts"
              x:Class="PlaylistManager.App.Views.SettingsView"
-             x:Name="SettingsViewRoot">
+             x:Name="SettingsViewRoot"
+             x:DataType="viewmodels:SettingsViewModel">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto">
-        <Button Grid.Row="0" Margin="0,10" HorizontalOptions="Fill" Text="Return back to playlist manager" Command="{Binding}"/>
-        <Button Grid.Row="1" Margin="0,10" HorizontalOptions="Fill" Text="{Binding DarkMode}" Command="{Binding}"/>
-        <Button Grid.Row="2" Margin="0,10" HorizontalOptions="Fill" Text="{Binding EnglishLanguage}" Command="{Binding}"/>
+    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" BackgroundColor="LightSkyBlue">
+        <Button Grid.Row="0" Margin="0,10" HorizontalOptions="Fill" Text="Return back to playlist manager" Command="{Binding SwitchViewCommand}"/>
+        <Button Grid.Row="1" Margin="0,10" HorizontalOptions="Fill" Text="{Binding DarkMode, Converter={x:StaticResource ThemeToStringConverter}}" Command="{Binding ToggleThemeCommand}"/>
+        <Button Grid.Row="2" Margin="0,10" HorizontalOptions="Fill" Text="{x:Static resx:AppTexts.SwitchLanguageString}" Command="{Binding SwitchLocaleCommand}"/>
         <!-- Grid row 3 should have background image or something nice-->
         <Button Grid.Row="4" HorizontalOptions="Fill" Text="Donate to developers"/>
         <Label Grid.Row="5"

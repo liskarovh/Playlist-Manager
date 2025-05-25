@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlaylistManager.App.Messages;
 using PlaylistManager.App.Services;
@@ -27,7 +27,7 @@ public partial class SelectManagerViewModel(IMessengerService messengerService, 
             SelectedManager = type;
         }
 
-        await navigationService.GoToAsync("//playlists");
+        await navigationService.GoToAsync("/playlists");
 
         MessengerService.Send(new ManagerSelectedMessage
         {
