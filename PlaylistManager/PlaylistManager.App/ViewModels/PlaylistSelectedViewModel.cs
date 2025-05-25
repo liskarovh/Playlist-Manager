@@ -23,6 +23,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     private readonly IPlaylistFacade _playlistFacade;
     private readonly IMediumFacade _mediumFacade;
     private readonly INavigationService _navigationService;
+
     private Guid _playlistId;
     private bool _isPlaylistSelected;
     private ManagerType _selectedManagerType = ManagerType.NotDecided;
@@ -31,15 +32,16 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     public ObservableCollection<MediumSummaryModel> Media { get; set; } = new();
     public ObservableCollection<PlaylistSummaryModel> Playlists { get; set; } = new();
     public string PlaylistTitle { get; set; } = string.Empty;
-    public string PlaylistDescription { get; set; } = string.Empty;
+    public string? PlaylistDescription { get; set; } = string.Empty;
     public int MediaCount => Media.Count;
     public double? TotalDuration => Media.Sum(m => m.Duration);
 
     public string PlaylistSearchQuery { get; set; } = string.Empty;
     public string MediaSearchQuery { get; set; } = string.Empty;
+    public string AuthorFilterQuery { get; set; } = string.Empty;
 
     public string SelectedPlaylistSortOption { get; set; } = "Name";
-    public string SelectedMediaSortOption { get; set; } = "Name";
+    public string SelectedMediaSortOption { get; set; } = "Title";
     public SortOrder PlaylistSortOrder { get; set; } = SortOrder.Ascending;
     public SortOrder MediaSortOrder { get; set; } = SortOrder.Ascending;
     public string PlaylistSortOrderSymbol { get; set; } = "↑";
@@ -68,6 +70,9 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
                                        break;
                                    case nameof(MediaSearchQuery):
                                        await SearchMediaCommand.ExecuteAsync(MediaSearchQuery);
+                                       break;
+                                   case nameof(AuthorFilterQuery):
+                                       await FilterMediaByAuthorCommand.ExecuteAsync(AuthorFilterQuery);
                                        break;
                                    case nameof(SelectedPlaylistSortOption):
                                    case nameof(PlaylistSortOrder):
@@ -133,7 +138,13 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     {
         if (_playlistId != Guid.Empty)
         {
-            var media = await _mediumFacade.GetMediaByPlaylistIdAsync(_playlistId);
+            var media =
+                await _playlistFacade.GetMediaInPlaylistSortedAsync(
+                                                                            _playlistId,
+                                                                            null,
+                                                                            null,
+                                                                            MediaSortBy.Title,
+                                                                            MediaSortOrder);
             Media.Clear();
             foreach (var medium in media)
             {
@@ -196,12 +207,13 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
             _                => MediaSortBy.Title
         };
 
-        var sortedMedia = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                              _playlistId,MediaFilterBy.Title,
+        var sortedMedia =
+            await _playlistFacade.GetMediaInPlaylistSortedAsync(
+                                                                              _playlistId,
+                                                                              null,
                                                                               null,
                                                                               sortBy,
                                                                               MediaSortOrder);
-
         Media.Clear();
         foreach (var medium in sortedMedia)
         {
@@ -265,11 +277,54 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
 
         if (string.IsNullOrEmpty(searchQuery))
         {
-            results = await _mediumFacade.GetMediaByPlaylistIdAsync(_playlistId);
+            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
+                                                                          _playlistId,
+                                                                          null,
+                                                                          null,
+                                                                          MediaSortBy.Title,
+                                                                          MediaSortOrder);
         }
         else
         {
-            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(_playlistId,MediaFilterBy.Title, searchQuery, MediaSortBy.Title, SortOrder.Descending);
+            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
+                                                                          _playlistId,
+                                                                          MediaFilterBy.Title,
+                                                                          searchQuery,
+                                                                          MediaSortBy.Title,
+                                                                          MediaSortOrder);
+        }
+
+        Media.Clear();
+        foreach (var medium in results)
+        {
+            Media.Add(medium);
+        }
+    }
+
+    [RelayCommand]
+    private async Task FilterMediaByAuthor(string? filterQuery)
+    {
+        if (_playlistId == Guid.Empty) return;
+
+        IEnumerable<MediumSummaryModel> results;
+
+        if (string.IsNullOrEmpty(filterQuery))
+        {
+            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
+                                                                          _playlistId,
+                                                                          null,
+                                                                          null,
+                                                                          MediaSortBy.Title,
+                                                                          MediaSortOrder);
+        }
+        else
+        {
+            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
+                                                                          _playlistId,
+                                                                          MediaFilterBy.Author,
+                                                                          filterQuery,
+                                                                          MediaSortBy.Title,
+                                                                          MediaSortOrder);
         }
 
         Media.Clear();
@@ -491,6 +546,12 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
 
             SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
         }
+    }
+
+    [RelayCommand]
+    private async Task NavigateToSettings()
+    {
+        await _navigationService.GoToAsync("//select");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)

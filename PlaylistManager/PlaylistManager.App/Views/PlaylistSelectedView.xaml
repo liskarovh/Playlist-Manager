@@ -17,7 +17,8 @@
                          WidthRequest="40"
                          HeightRequest="40"
                          HorizontalOptions="Fill"
-                         VerticalOptions="Fill"/>
+                         VerticalOptions="Fill"
+                         Command="{Binding NavigateToSettingsCommand}"/>
             <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
                 <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
                 <HorizontalStackLayout Grid.Row="1">
@@ -78,7 +79,23 @@
                             Command="{Binding ToggleMediaSortOrderCommand}"/>
                 </HorizontalStackLayout>
             </Grid>
-            <Picker Grid.Column="3" Title="Filter mediums by" Margin="10, 5" IsEnabled="{Binding IsPlaylistSelected}"/>
+            <Border Grid.Column="3"
+                    Margin="10,5"
+                    MinimumWidthRequest="40"
+                    BackgroundColor="#f2f2f2"
+                    Stroke="Black"
+                    StrokeThickness="1"
+                    HeightRequest="45"
+                    VerticalOptions="Center"
+                    StrokeShape="RoundRectangle 20"
+                    IsEnabled="{Binding IsPlaylistSelected}">
+                <SearchBar Placeholder="Filter by author"
+                           BackgroundColor="Transparent"
+                           FontSize="14"
+                           Margin="10,0"
+                           IsEnabled="{Binding IsPlaylistSelected}"
+                           Text="{Binding AuthorFilterQuery}"/>
+            </Border>
             <Image Grid.Column="4" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill"/>
         </Grid>
 
