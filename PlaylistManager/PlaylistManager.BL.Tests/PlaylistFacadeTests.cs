@@ -270,7 +270,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "NonExistentNameXYZ123";
 
         // Act
-        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix);
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix, PlaylistType.Music);
 
         // Assert
         Assert.NotNull(results);
@@ -286,7 +286,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var expectedSummary = await GetExpectedSummaryModelAsync(expectedPlaylistSeed.Id);
 
         // Act
-        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix);
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix, PlaylistType.Video);
 
         // Assert
         Assert.NotNull(results);
@@ -301,17 +301,18 @@ public class PlaylistFacadeTests : FacadeTestsBase
         // Arrange
         // Seeded titles: "Music Playlist", "AudioBook Playlist", "Video Playlist", "Empty Playlist", "Playlist For Delete", "Playlist For Update"
         var prefix = "Music"; // This prefix should match "Playlist For Delete" and "Playlist For Update"
-        var expectedPlaylistsSeeds = new[]
-            {
-                PlaylistSeeds.MusicPlaylist,
-                PlaylistSeeds.MusicPlaylistDelete,
-                PlaylistSeeds.MusicPlaylistForMultimediaDelete,
-                PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
-                PlaylistSeeds.MusicPlaylistUpdate
-            }
-            .Where(p => p.Title.StartsWith(prefix)) // Redundant here as manually selected, but good for clarity
-            .ToList();
+        var playlistType = PlaylistType.Music;
 
+        var expectedPlaylistsSeeds = new[]
+                                     {
+                                         PlaylistSeeds.MusicPlaylist,
+                                         PlaylistSeeds.MusicPlaylistDelete,
+                                         PlaylistSeeds.MusicPlaylistForMultimediaDelete,
+                                         PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+                                         PlaylistSeeds.MusicPlaylistUpdate
+                                     }
+                                     .Where(p => p.Title.StartsWith(prefix) && p.Type == playlistType)
+                                     .ToList();
 
         var expectedSummaries = new List<PlaylistSummaryModel>();
         foreach (var seed in expectedPlaylistsSeeds)
@@ -320,52 +321,51 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
 
         // Act
-        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix);
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(prefix, playlistType);
 
         // Assert
         Assert.NotNull(results);
         var resultList = results.ToList();
         Assert.Equal(expectedPlaylistsSeeds.Count, resultList.Count);
+        Assert.All(resultList, p => Assert.Equal(playlistType, p.Type));
+        Assert.All(resultList, p => Assert.StartsWith(prefix, p.Title));
 
         foreach (var expectedSummary in expectedSummaries)
         {
             Assert.Contains(
-                resultList,
-                r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title
-            );
+                            resultList,
+                            r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title
+                           );
             var actualSummary = resultList.Single(r => r.Id == expectedSummary.Id);
             DeepAssert.Equal(expectedSummary, actualSummary);
         }
     }
 
-    [Fact]
-    public async Task GetPlaylistsByNameAsync_EmptyPrefix_ReturnsAllPlaylists()
+    [Fact] public async Task GetPlaylistsByNameAsync_EmptyPrefix_ReturnsAllMusicPlaylists()
     {
-        // Arrange
-        var allSeededPlaylists = new[]
+        var musicPlaylists = new[]
         {
-
-            PlaylistSeeds.VideoPlaylist,
             PlaylistSeeds.MusicPlaylist,
             PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
             PlaylistSeeds.MusicPlaylistUpdate,
             PlaylistSeeds.MusicPlaylistForMultimediaDelete,
             PlaylistSeeds.MusicPlaylistDelete,
-            PlaylistSeeds.AudioBookPlaylist,
         };
+
         var expectedSummaries = new List<PlaylistSummaryModel>();
-        foreach (var seed in allSeededPlaylists)
+        foreach (var seed in musicPlaylists)
         {
             expectedSummaries.Add(await GetExpectedSummaryModelAsync(seed.Id));
         }
 
         // Act
-        var results = await _facadeSUT.GetPlaylistsByNameAsync(string.Empty);
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(string.Empty, PlaylistType.Music);
 
         // Assert
         Assert.NotNull(results);
         var resultList = results.ToList();
-        Assert.Equal(allSeededPlaylists.Length, resultList.Count);
+        Assert.Equal(musicPlaylists.Length, resultList.Count);
+        Assert.All(resultList, p => Assert.Equal(PlaylistType.Music, p.Type));
 
         foreach (var expectedSummary in expectedSummaries)
         {
@@ -376,32 +376,34 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Fact]
-    public async Task GetPlaylistsByNameAsync_NullPrefix_ReturnsAllPlaylists()
+    public async Task GetPlaylistsByNameAsync_NullPrefix_WithType_ReturnsOnlyMatchingType()
     {
         // Arrange
-        var allSeededPlaylists = new[]
+        var playlistType = PlaylistType.Music;
+        var musicPlaylists = new[]
         {
-            PlaylistSeeds.VideoPlaylist,
             PlaylistSeeds.MusicPlaylist,
             PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
             PlaylistSeeds.MusicPlaylistUpdate,
             PlaylistSeeds.MusicPlaylistForMultimediaDelete,
             PlaylistSeeds.MusicPlaylistDelete,
-            PlaylistSeeds.AudioBookPlaylist,
         };
+
         var expectedSummaries = new List<PlaylistSummaryModel>();
-        foreach (var seed in allSeededPlaylists)
+        foreach (var seed in musicPlaylists)
         {
             expectedSummaries.Add(await GetExpectedSummaryModelAsync(seed.Id));
         }
 
         // Act
-        var results = await _facadeSUT.GetPlaylistsByNameAsync(null);
+        var results = await _facadeSUT.GetPlaylistsByNameAsync(null, playlistType);
 
         // Assert
         Assert.NotNull(results);
         var resultList = results.ToList();
-        Assert.Equal(allSeededPlaylists.Length, resultList.Count);
+        Assert.Equal(musicPlaylists.Length, resultList.Count);
+        Assert.All(resultList, p => Assert.Equal(playlistType, p.Type));
+
         foreach (var expectedSummary in expectedSummaries)
         {
             Assert.Contains(resultList, r => r.Id == expectedSummary.Id);
@@ -535,39 +537,39 @@ public class PlaylistFacadeTests : FacadeTestsBase
     }
 
     [Theory]
-    [InlineData(PlaylistSortBy.Title, SortOrder.Ascending)]
-    [InlineData(PlaylistSortBy.Title, SortOrder.Descending)]
-    public async Task GetPlaylistsSortedAsync_ByTitle_ReturnsSortedCorrectly(PlaylistSortBy sortBy, SortOrder sortOrder)
+    [InlineData(PlaylistSortBy.Title, SortOrder.Ascending, PlaylistType.Music)]
+    [InlineData(PlaylistSortBy.Title, SortOrder.Descending, PlaylistType.Music)]
+    public async Task GetPlaylistsSortedAsync_ByTitleWithType_ReturnsSortedCorrectly(PlaylistSortBy sortBy, SortOrder sortOrder, PlaylistType playlistType)
     {
         // Arrange
-        // Expected order based on PlaylistSeeds titles:
-        // "AudioBook Playlist", "Empty Playlist", "Music Playlist", "Playlist For Delete", "Playlist For Update", "Video Playlist"
         var allPlaylists = new List<PlaylistSummaryModel>
         {
-            await GetExpectedSummaryModelAsync(PlaylistSeeds.VideoPlaylist.Id),
             await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylist.Id),
             await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistForMultimediaUpdate.Id),
             await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistUpdate.Id),
             await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistForMultimediaDelete.Id),
             await GetExpectedSummaryModelAsync(PlaylistSeeds.MusicPlaylistDelete.Id),
-            await GetExpectedSummaryModelAsync(PlaylistSeeds.AudioBookPlaylist.Id),
         };
+
+        var playlistsOfType = allPlaylists.Where(p => p.Type == playlistType).ToList();
 
         List<PlaylistSummaryModel> expectedOrderedPlaylists;
         if (sortOrder == SortOrder.Ascending)
         {
-            expectedOrderedPlaylists = allPlaylists.OrderBy(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
+            expectedOrderedPlaylists = playlistsOfType.OrderBy(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
         }
         else
         {
-            expectedOrderedPlaylists = allPlaylists.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
+            expectedOrderedPlaylists = playlistsOfType.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         // Act
-        var results = (await _facadeSUT.GetPlaylistsSortedAsync(sortBy, sortOrder)).ToList();
+        var results = (await _facadeSUT.GetPlaylistsSortedAsync(sortBy, sortOrder, playlistType)).ToList();
 
         // Assert
         Assert.Equal(expectedOrderedPlaylists.Count, results.Count);
+        Assert.All(results, p => Assert.Equal(playlistType, p.Type));
+
         for (int i = 0; i < expectedOrderedPlaylists.Count; i++)
         {
             Assert.Equal(expectedOrderedPlaylists[i].Id, results[i].Id);

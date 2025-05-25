@@ -8,17 +8,15 @@ using PropertyChanged;
 namespace PlaylistManager.App.ViewModels;
 
 [AddINotifyPropertyChangedInterface]
-public partial class SelectManagerViewModel : ViewModelBase
+public partial class SelectManagerViewModel(IMessengerService messengerService, INavigationService navigationService)
+    : ViewModelBase(messengerService)
 {
-    private readonly INavigationService _navigationService;
+    private ManagerType _selectedManager = ManagerType.NotDecided;
 
-    [ObservableProperty]
-    private ManagerType selectedManager = ManagerType.NotDecided;
-
-    public SelectManagerViewModel(IMessengerService messengerService, INavigationService navigationService)
-        : base(messengerService)
+    private ManagerType SelectedManager
     {
-        _navigationService = navigationService;
+        get => _selectedManager;
+        set => SetProperty(ref _selectedManager, value);
     }
 
     [RelayCommand]
@@ -29,7 +27,7 @@ public partial class SelectManagerViewModel : ViewModelBase
             SelectedManager = type;
         }
 
-        await _navigationService.GoToAsync("//playlists");
+        await navigationService.GoToAsync("//playlists");
 
         MessengerService.Send(new ManagerSelectedMessage
         {

@@ -2,9 +2,9 @@ using PlaylistManager.App.ViewModels;
 
 namespace PlaylistManager.App.Views;
 
-public partial class PlaylistOverview : ContentPageBase
+public partial class PlaylistOverviewView
 {
-	public PlaylistOverview(PlaylistOverviewViewModel viewModel) : base(viewModel)
+	public PlaylistOverviewView(PlaylistOverviewViewModel viewModel) : base(viewModel)
 	{
 		InitializeComponent();
 	}

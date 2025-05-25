@@ -4,7 +4,7 @@ public class AlertService : IAlertService
 {
     public async Task DisplayAsync(string title, string message)
     {
-        var displayAlert = Application.Current?.MainPage?.DisplayAlert(title, message, "OK");
+        var displayAlert = Application.Current?.Windows[0]?.Page?.DisplayAlert(title, message, "OK");
 
         if (displayAlert is not null)
         {

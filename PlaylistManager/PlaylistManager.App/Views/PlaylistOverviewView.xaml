@@ -2,10 +2,10 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                        xmlns:views="clr-namespace:PlaylistManager.App.Views"
-                       xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
+                       xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
                        xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
-                       x:Class="PlaylistManager.App.Views.PlaylistOverview"
-                       x:DataType="viewModels:PlaylistOverviewViewModel"
+                       x:Class="PlaylistManager.App.Views.PlaylistOverviewView"
+                       x:DataType="viewmodels:PlaylistOverviewViewModel"
                        x:Name="PlaylistOverviewViewRoot">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto"
@@ -18,8 +18,8 @@
                  WidthRequest="40"
                  HeightRequest="40"
                  HorizontalOptions="Fill"
-                 VerticalOptions="Fill"/>
-                <!-- TODO bind button to setting view -->
+                 VerticalOptions="Fill"
+                 Command="{Binding NavigateToSettingsCommand}"/>
             <Picker Grid.Column="1"
                     Title="Sort playlists by"
                     Margin="10,0"
@@ -68,6 +68,7 @@
                         ItemsSource="{Binding Playlists}"
                         SelectionMode="Single">
 
+
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
             </CollectionView.ItemsLayout>
@@ -77,11 +78,10 @@
                     <Border Stroke="Black" HeightRequest="50" BackgroundColor="Transparent">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
-                                Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistOverviewViewModel}}, Path=SelectPlaylistCommand}"
                                 CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="400, 3*, 2*, *, 60"
-                              Margin="10,5">
+                        <Grid ColumnDefinitions="400, 3*, 2*, *, 60" Margin="10,5">
                             <Label Grid.Column="0"
                                    Text="{Binding Title}"
                                    VerticalTextAlignment="Center"
@@ -104,8 +104,9 @@
                                    FontSize="12"/>
                             <ImageButton Grid.Column="4"
                                          Source="delete.png"
-                                         HeightRequest="50"/>
-                            <!-- TODO Bind button to delete command -->
+                                         HeightRequest="50"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistOverviewViewModel}}, Path=DeletePlaylistCommand}"
+                                         CommandParameter="{Binding PlaylistId}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
