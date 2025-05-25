@@ -1,10 +1,17 @@
-﻿using CommunityToolkit.Mvvm.Messaging.Messages;
-using PlaylistManager.BL.Models;
+﻿using PlaylistManager.Common.Enums;
 
 namespace PlaylistManager.App.Messages;
 
-public class MediumSelectedMessage(MediumSummaryModel medium)
-    : ValueChangedMessage<MediumSummaryModel>(medium)
+public class MediumSelectedMessage
 {
-    public MediumSummaryModel Medium => Value;
+    public Guid SelectedPlaylistId { get; set; }
+    public Guid SelectedMediumId { get; set; }
+    public ManagerType ManagerType { get; set; }
+
+    public MediumSelectedMessage(Guid playlistId, Guid mediumId, ManagerType managerType)
+    {
+        SelectedPlaylistId = playlistId;
+        SelectedMediumId = mediumId;
+        ManagerType = managerType;
+    }
 }

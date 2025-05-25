@@ -6,4 +6,5 @@ namespace PlaylistManager.BL.Facades.Interfaces;
 public interface IMediumFacade : IFacade<PlaylistMultimediaEntity, MediumNameOnlyModel, MediumSummaryModel, MediumDetailedModel>
 {
     Task<IEnumerable<MediumSummaryModel>> GetMediaByPlaylistIdAsync(Guid playlistId);
+    Task<MediumDetailedModel?> GetMediumByIdAsync(Guid mediumId);
 }
