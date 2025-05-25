@@ -349,6 +349,11 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
 
         await _navigationService.GoToAsync("//mediumDetail");
 
+        MessengerService.Send(new ManagerSelectedMessage
+        {
+            SelectedType = _selectedManagerType
+        });
+
         MessengerService.Send(new MediumSelectedMessage(_playlistId, medium.MediumId, _selectedManagerType));
     }
 

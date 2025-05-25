@@ -13,10 +13,10 @@ namespace PlaylistManager.App.ViewModels;
 
 [AddINotifyPropertyChangedInterface]
 public partial class MediumSelectedViewModel : ViewModelBase,
-                                               IRecipient<ManagerSelectedMessage>,
-                                               IRecipient<MediumSelectedMessage>,
                                                IRecipient<MediumEditedMessage>,
-                                               IRecipient<MediumRemovedMessage>
+                                               IRecipient<MediumRemovedMessage>,
+                                               IRecipient<ManagerSelectedMessage>,
+                                               IRecipient<MediumSelectedMessage>
 {
     private readonly IMediumFacade _mediumFacade;
     private readonly INavigationService _navigationService;
@@ -104,7 +104,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                     "Avi",
                     "Mkv",
                     "Mov",
-                    "Unknown"
+                    "None"
                 }),
 
                 ManagerType.Music or ManagerType.AudioBook => new(new[]
@@ -113,10 +113,10 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                     "Wav",
                     "Flac",
                     "Aac",
-                    "Unknown"
+                    "None"
                 }),
 
-                _ => new(["Unknown"])
+                _ => new(["None"])
             };
         }
     }
@@ -136,7 +136,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                     "SciFi",
                     "Drama",
                     "Other",
-                    "Unknown"
+                    "None"
                 }),
 
                 ManagerType.Music => new(new[]
@@ -150,7 +150,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                     "Punk",
                     "Anime",
                     "Other",
-                    "Unknown"
+                    "None"
                 }),
 
                 ManagerType.AudioBook => new(new[]
@@ -162,10 +162,10 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                     "SciFi",
                     "Romance",
                     "Dystopia",
-                    "Unknown"
+                    "None"
                 }),
 
-                _ => new(["Unknown"])
+                _ => new(["None"])
             };
         }
     }
@@ -613,15 +613,20 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     }
 
     [RelayCommand]
-    private async Task DeleteMedium(MediumSummaryModel medium)
+    private async Task DeleteCurrentMedium()
     {
+        if (!IsMediumSelected || _mediumId == Guid.Empty)
+            return;
+
+        var medium = Media.FirstOrDefault(m => m.MediumId == _mediumId);
         if (medium == null) return;
 
         await _mediumFacade.DeleteAsync(medium.Id);
         Media.Remove(medium);
 
-        MessengerService.Send(new MediumRemovedMessage(medium.Id));
+        MessengerService.Send(new MediumRemovedMessage(_mediumId));
     }
+
 
     [RelayCommand]
     private async Task SelectPlaylist(PlaylistSummaryModel? playlist)
@@ -813,6 +818,8 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     public void Receive(ManagerSelectedMessage message)
     {
         _selectedManagerType = message.SelectedType;
+        OnPropertyChanged(nameof(FormatOptions));
+        OnPropertyChanged(nameof(GenreOptions));
     }
 
     public async void Receive(MediumSelectedMessage message)
@@ -835,12 +842,11 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         }
     }
 
-    public async void Receive(MediumRemovedMessage message)
+    public void Receive(MediumRemovedMessage message)
     {
         if (message.MediumId == _mediumId)
         {
             ClearMediumSelection();
-            await GoBackCommand.ExecuteAsync(null);
         }
     }
 

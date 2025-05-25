@@ -189,7 +189,7 @@
                     <Button Text="Edit" Command="{Binding StartEditCommand}" IsVisible="{Binding IsNotEditMode}"/>
                     <Button Text="Save" Command="{Binding SaveMediumCommand}" IsVisible="{Binding IsEditMode}"/>
                     <Button Text="Cancel" Command="{Binding CancelEditCommand}" IsVisible="{Binding IsEditMode}"/>
-                    <Button Text="Delete" Command="{Binding DeleteMediumCommand}" BackgroundColor="Red" TextColor="White"/>
+                    <Button Text="🗑️" Command="{Binding DeleteCurrentMediumCommand}" BackgroundColor="Red" TextColor="White"/>
                 </StackLayout>
             </Grid>
         </Border>
