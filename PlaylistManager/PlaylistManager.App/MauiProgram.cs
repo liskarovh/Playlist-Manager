@@ -39,8 +39,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddTransient<SelectManagerView>();
         builder.Services.AddTransient<SelectManagerViewModel>();
-        builder.Services.AddTransient<PlaylistOverview>();
+        builder.Services.AddTransient<PlaylistOverviewView>();
         builder.Services.AddTransient<PlaylistOverviewViewModel>();
+        builder.Services.AddTransient<PlaylistSelectedView>();
+        builder.Services.AddTransient<PlaylistSelectedViewModel>();
+        builder.Services.AddTransient<MediumSelectedView>();
+        builder.Services.AddTransient<MediumSelectedViewModel>();
+        builder.Services.AddSingleton<AppShell>();
 
         ConfigureAppSettings(builder);
 

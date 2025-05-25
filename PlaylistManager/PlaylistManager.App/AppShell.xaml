@@ -9,12 +9,8 @@
     Shell.FlyoutBackdrop="Transparent">
     <!-- Shell.FlyoutBehavior="Disabled"-->
 
-
-
-
     <ShellContent ContentTemplate="{DataTemplate v:SelectManagerView}" Route="select" Title="SelectManagerView"/>
-    <ShellContent ContentTemplate="{DataTemplate v:PlaylistOverview}" Route="playlists" Title="PlaylistOverview"/>
-    <ShellContent ContentTemplate="{DataTemplate v:PlaylistSelected}" Route="media" Title="PlaylistSelected"/>
-    <ShellContent ContentTemplate="{DataTemplate v:MediumSelected}" Route="mediumDetail" Title="MediumSelected"/>
-
+    <ShellContent ContentTemplate="{DataTemplate v:PlaylistOverviewView}" Route="playlists" Title="PlaylistOverviewView"/>
+    <ShellContent ContentTemplate="{DataTemplate v:PlaylistSelectedView}" Route="media" Title="PlaylistSelectedView"/>
+    <ShellContent ContentTemplate="{DataTemplate v:MediumSelectedView}" Route="mediumDetail" Title="MediumSelectedView"/>
 </Shell>

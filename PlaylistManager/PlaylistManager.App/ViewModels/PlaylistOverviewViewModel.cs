@@ -192,7 +192,13 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         else
         {
             MessengerService.Send(new PlaylistSelectedMessage(playlist));
-            await _navigationService.GoToAsync("//playlist");
+            var parameters = new Dictionary<string, object?>
+            {
+                { "playlistId", playlist.PlaylistId }
+            };
+
+            await _navigationService.GoToAsync<PlaylistSelectedViewModel>(parameters);
+
         }
     }
 
@@ -266,9 +272,35 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
     }
 
     [RelayCommand]
-    private void GoBack()
+    private async Task DeletePlaylist(Guid playlistId)
     {
-        _navigationService.GoToAsync("//select");
+        if (IsEditMode && CurrentlyEditedPlaylist?.PlaylistId == playlistId)
+        {
+            CurrentlyEditedPlaylist = null;
+            EditedPlaylistTitle = string.Empty;
+        }
+
+        await _playlistFacade.DeleteAsync(playlistId);
+
+        var playlist = Playlists.FirstOrDefault(p => p.PlaylistId == playlistId);
+        if (playlist != null)
+        {
+            Playlists.Remove(playlist);
+        }
+
+        MessengerService.Send(new PlaylistDeleteMessage(playlistId.ToString()));
+    }
+
+    [RelayCommand]
+    private async Task GoBack()
+    {
+        await _navigationService.GoToAsync("//select");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToSettings()
+    {
+        await _navigationService.GoToAsync("//select");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)

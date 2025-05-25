@@ -2,9 +2,9 @@ using PlaylistManager.App.ViewModels;
 
 namespace PlaylistManager.App.Views;
 
-public partial class MediumSelected : ContentPageBase
+public partial class MediumSelectedView : ContentPageBase
 {
-	public MediumSelected(MediumSelectedViewModel viewModel) : base(viewModel)
+	public MediumSelectedView(MediumSelectedViewModel viewModel) : base(viewModel)
 	{
 		InitializeComponent();
 	}

@@ -2,6 +2,6 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             x:Class="PlaylistManager.App.Views.MediumSelected">
+             x:Class="PlaylistManager.App.Views.MediumSelectedView">
 </views:ContentPageBase>
 
