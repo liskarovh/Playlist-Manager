@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PlaylistManager.App.Messages;
@@ -322,5 +322,16 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
             ManagerType.AudioBook => PlaylistType.AudioBook,
             _                     => PlaylistType.Music
         };
+    }
+
+    [RelayCommand]
+    private async Task SavePlaylist(PlaylistSummaryModel updatedPlaylist)
+    {
+        if (updatedPlaylist == null)
+        {
+            return;
+        }
+
+        await _playlistFacade.SaveAsync(updatedPlaylist);
     }
 }

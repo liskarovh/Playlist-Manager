@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                        xmlns:views="clr-namespace:PlaylistManager.App.Views"
                        xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
                        xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
@@ -87,7 +88,7 @@
         <!-- List of playlists -->
         <CollectionView Grid.Row="2"
                         Grid.ColumnSpan="2"
-                        ItemsSource="{Binding Playlists}"
+                        ItemsSource="{Binding Playlists, Mode=TwoWay}"
                         SelectionMode="Single">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="5" VerticalItemSpacing="5"/>
@@ -95,14 +96,14 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:PlaylistSummaryModel">
-                    <Border Stroke="Black" MinimumHeightRequest="50" MaximumHeightRequest="100" BackgroundColor="Transparent">
+                    <Border x:Name="BorderRoot" Stroke="Black" MinimumHeightRequest="50" MaximumHeightRequest="100" BackgroundColor="Transparent">
 
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
                                 CommandParameter="{Binding .}"/>
                         </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="400, 3*, 2*, *, 60" Margin="10,5">
+                        <Grid ColumnDefinitions="400, 3*, 2*, *, 60" Margin="10,5" >
                             <Entry Grid.Column="0"
                                    Opacity="1"
                                    IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
@@ -110,7 +111,14 @@
                                    VerticalTextAlignment="Center"
                                    FontSize="16"
                                    FontAttributes="Bold"
-                                   TextColor="Black"/>
+                                   TextColor="Black">
+                                <Entry.Behaviors>
+                                    <toolkit:EventToCommandBehavior
+                                        EventName="Unfocused"
+                                        Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SavePlaylistCommand}"
+                                        CommandParameter="{Binding Source={x:Reference BorderRoot}, Path=BindingContext}"/>
+                                </Entry.Behaviors>
+                            </Entry>
                             <Editor Grid.Column="1"
                                    IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
                                    Text="{Binding Description}"
