@@ -13,4 +13,5 @@
     <ShellContent ContentTemplate="{DataTemplate v:PlaylistOverviewView}" Route="playlists" Title="PlaylistOverviewView"/>
     <ShellContent ContentTemplate="{DataTemplate v:PlaylistSelectedView}" Route="media" Title="PlaylistSelectedView"/>
     <ShellContent ContentTemplate="{DataTemplate v:MediumSelectedView}" Route="mediumDetail" Title="MediumSelectedView"/>
+    <ShellContent ContentTemplate="{DataTemplate v:SettingsView}" Route="settings" Title="SettingsView"/>
 </Shell>

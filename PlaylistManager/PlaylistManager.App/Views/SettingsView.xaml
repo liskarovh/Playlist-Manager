@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
+             xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
+             x:Class="PlaylistManager.App.Views.SettingsView"
+             x:Name="SettingsViewRoot">
+    
+</views:ContentPageBase>

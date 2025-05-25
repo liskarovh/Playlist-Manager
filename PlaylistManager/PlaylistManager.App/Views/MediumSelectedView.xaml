@@ -2,6 +2,125 @@
 <views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:PlaylistManager.App.Views"
-             x:Class="PlaylistManager.App.Views.MediumSelectedView">
+             xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
+             xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
+             x:Class="PlaylistManager.App.Views.MediumSelectedView"
+             x:DataType="viewmodels:MediumSelectedViewModel"
+             x:Name="MediumSelectedViewRoot">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto"
+      ColumnDefinitions="400, *">
+
+        <!-- Top Bar left -->
+        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
+            <ImageButton Source="setting.png"
+             Margin="10,0"
+             WidthRequest="40"
+             HeightRequest="40"
+             HorizontalOptions="Fill"
+             VerticalOptions="Fill"
+             Command="{Binding NavigateToSettingsCommand}"/>
+            <Picker Grid.Column="1"
+                Title="Sort playlists by"
+                Margin="10,0"
+                ItemsSource="{Binding SortOptions}"
+                SelectedItem="{Binding SelectedSortOption}"/>
+            <Button Grid.Column="2"
+                Text="New Playlist"
+                HorizontalOptions="Fill"
+                Command="{Binding CreatePlaylistCommand}"/>
+        </Grid>
+
+        <!-- Top Bar right -->
+        <Grid Grid.Column="1" ColumnDefinitions="*, 50" Margin="10,0">
+            <Image Grid.Column="1" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+        </Grid>
+
+        <!-- Second Bar -->
+        <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                 HeightRequest="2"
+                 Color="Black"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="End" />
+        <!-- Second Bar left -->
+        <Border Grid.Row="1"
+            BackgroundColor="#f2f2f2"
+            HorizontalOptions="Fill"
+            Margin="10, 5"
+            Stroke="Black"
+            StrokeThickness="1"
+            HeightRequest="45"
+            VerticalOptions="Center"
+            StrokeShape="RoundRectangle 20">
+            <SearchBar Placeholder="Search playlists"
+                   Text="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.PlaylistSearchQuery}"
+                   BackgroundColor="Transparent"
+                   FontSize="14"
+                   Margin="10,0"/>
+        </Border>
+
+        <!-- Second Bar right -->
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 3*, 60" Margin="10,5">
+            <Label Text="Medium name" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+        </Grid>
+
+        <!-- List of playlists (left) -->
+        <CollectionView Grid.Row="2" Grid.Column="0"
+                        ItemsSource="{Binding }"
+                        SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PlaylistSummaryModel">
+                    <Border Stroke="Black" HeightRequest="50">
+                        <Label Text="{Binding }"/>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- List of media (middle) -->
+        <CollectionView Grid.Row="2" Grid.Column="1">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="Black" HeightRequest="50">
+                        <Grid ColumnDefinitions="3*, 3*, 60">
+                            <Entry Grid.Column="0" Text="Name of medium to bind" FontSize="18"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Medium detail (right) -->
+        <Border Stroke="Black">
+            <Grid Grid.Row="2" Grid.Column="1"
+                  RowDefinitions="*, *, 3*, *, Auto, Auto, Auto, Auto">
+                <Border Grid.Row="0" Grid.RowSpan="2" Stroke="Black"/>
+                <Entry Grid.Row="0" Text="{Binding MediumName}" HorizontalTextAlignment="Center" FontSize="18" FontAttributes="Bold"/>
+                <Entry Grid.Row="1" Text="{Binding MediumAuthor}" HorizontalTextAlignment="Center" FontSize="16"/>
+                <ScrollView Grid.Row="2">
+                    <Label Text="{Binding MediumDescription}" LineBreakMode="WordWrap" FontSize="12"/>
+                </ScrollView>
+                <Editor Grid.Row="3" Text="{Binding MediumURL}" FontSize="12"/>
+                <Entry Grid.Row="4" Text="{Binding MediumDuration}" FontSize="12"/>
+                <Entry Grid.Row="5" Text="{Binding MediumReleaseYear}" FontSize="12"/>
+                <Entry Grid.Row="6" Text="{Binding MediumFormat}" FontSize="12"/>
+                <Label Grid.Row="7" Text="{Binding MediumGenre}" FontSize="12"/>
+            </Grid>
+        </Border>
+
+        <!-- Back button -->
+        <Button Grid.Row="3"
+            Text="Go back to select screen"
+            HorizontalOptions="Fill"
+            Command="{Binding GoBackCommand}"/>
+    </Grid>
 </views:ContentPageBase>
 

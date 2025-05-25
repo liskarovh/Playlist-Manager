@@ -37,23 +37,35 @@
         </Grid>
 
         <!-- Second Bar -->
-        <Border Grid.Row="1" Grid.ColumnSpan="2"  Stroke="Black"/>
+        <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                 HeightRequest="2"
+                 Color="Black"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="End" />
         <!-- Second Bar left -->
-        <Border Grid.Row="1"
-                BackgroundColor="#f2f2f2"
-                HorizontalOptions="Fill"
-                Margin="10, 5"
-                Stroke="Black"
-                StrokeThickness="1"
-                HeightRequest="45"
-                VerticalOptions="Center"
-                StrokeShape="RoundRectangle 20">
-            <SearchBar Placeholder="Search playlists"
-                       Text="{Binding PlaylistSearchQuery}"
-                       BackgroundColor="Transparent"
-                       FontSize="14"
-                       Margin="10,0"/>
-        </Border>
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="10, 5">
+            <Border Grid.Row="1"
+                    BackgroundColor="#f2f2f2"
+                    HorizontalOptions="Fill"
+                    Margin="10, 5"
+                    Stroke="Black"
+                    StrokeThickness="1"
+                    HeightRequest="45"
+                    VerticalOptions="Center"
+                    StrokeShape="RoundRectangle 20">
+                <SearchBar Placeholder="Search playlists"
+                           Text="{Binding PlaylistSearchQuery}"
+                           BackgroundColor="Transparent"
+                           FontSize="14"
+                           Margin="10,0"/>
+            </Border>
+            <Button Grid.Column="1"
+                    Text="{Binding IsEditMode, Converter={StaticResource EditModeToTextConverter}}"
+                    MaximumWidthRequest="150"
+                    LineBreakMode="WordWrap"
+                    Command="{Binding ToggleEditModeCommand}"/>
+        </Grid>
+        
 
         <!-- Second Bar right -->
         <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">
@@ -67,46 +79,56 @@
                         Grid.ColumnSpan="2"
                         ItemsSource="{Binding Playlists}"
                         SelectionMode="Single">
-
-
             <CollectionView.ItemsLayout>
-                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="10" VerticalItemSpacing="10"/>
+                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="5" VerticalItemSpacing="5"/>
             </CollectionView.ItemsLayout>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:PlaylistSummaryModel">
-                    <Border Stroke="Black" HeightRequest="50" BackgroundColor="Transparent">
+                    <Border Stroke="Black" MinimumHeightRequest="50" MaximumHeightRequest="100" BackgroundColor="Transparent">
+
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
-                                CommandParameter="{Binding .}" />
+                                CommandParameter="{Binding .}"/>
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="400, 3*, 2*, *, 60" Margin="10,5">
-                            <Label Grid.Column="0"
+                            <Entry Grid.Column="0"
+                                   Opacity="1"
+                                   IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
                                    Text="{Binding Title}"
                                    VerticalTextAlignment="Center"
                                    FontSize="16"
-                                   FontAttributes="Bold"/>
-                            <Label Grid.Column="1"
+                                   FontAttributes="Bold"
+                                   TextColor="Black"/>
+                            <Editor Grid.Column="1"
+                                   IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
                                    Text="{Binding Description}"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Center"
-                                   FontSize="12"/>
+                                   FontSize="12"
+                                   TextColor="Black"/>
                             <Label Grid.Column="2"
                                    Text="{Binding MediaCount, StringFormat='Media Count: {0}'}"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Center"
+                                   TextColor="Black"
                                    FontSize="12"/>
                             <Label Grid.Column="3"
-                                   Text="{Binding TotalDuration, StringFormat='Total Duration: {0} min'}"
+                                   Text="{Binding TotalDuration, Converter={StaticResource DurationToStringConverter}}"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Center"
+                                   TextColor="Black"
                                    FontSize="12"/>
                             <ImageButton Grid.Column="4"
                                          Source="delete.png"
                                          HeightRequest="50"
+                                         Opacity="1"
+                                         IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
+                                         IsVisible="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
                                          Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.DeletePlaylistCommand}"
-                                         CommandParameter="{Binding PlaylistId}" />
+                                         CommandParameter="{Binding PlaylistId}">
+                            </ImageButton>
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -117,6 +139,7 @@
         <Button Grid.Row="3"
                 Text="Go back to select screen"
                 HorizontalOptions="Fill"
+                Margin="0, 1, 0, 0"
                 Command="{Binding GoBackCommand}"/>
     </Grid>
 
