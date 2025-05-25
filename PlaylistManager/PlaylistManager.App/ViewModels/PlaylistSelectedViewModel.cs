@@ -556,7 +556,7 @@ public partial class PlaylistSelectedViewModel : ViewModelBase,
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("settings");
+        await _navigationService.GoToAsync("/settings");
     }
 
     private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)

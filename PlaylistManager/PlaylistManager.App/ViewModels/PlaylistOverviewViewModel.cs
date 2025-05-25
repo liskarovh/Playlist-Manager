@@ -196,7 +196,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         }
         else
         {
-            await _navigationService.GoToAsync("//media");
+            await _navigationService.GoToAsync("/media");
 
             MessengerService.Send(new PlaylistDisplayMessage(playlist.PlaylistId, _selectedManagerType));
         }
