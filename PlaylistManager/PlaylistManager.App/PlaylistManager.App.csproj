@@ -37,10 +37,6 @@
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
-  <PropertyGroup>
-    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\PlaylistManager.BL\PlaylistManager.BL.csproj"/>
   </ItemGroup>
