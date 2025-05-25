@@ -787,7 +787,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var results = (await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, titlePrefix, sortBy, sortOrder)).ToList();
 
         // Assert
-        Assert.Equal(expectedCount, results.Count);
+        Assert.Equal((uint)expectedCount, (uint)results.Count);
         Assert.Equal(expectedResultList.Count, results.Count); // Double check count from manual filter/sort
 
         for (int i = 0; i < expectedResultList.Count; i++)
@@ -859,4 +859,36 @@ public class PlaylistFacadeTests : FacadeTestsBase
             .SingleOrDefaultAsync(p => p.Id == playlistId);
         return PlaylistModelMapper.MapToSummary(playlistEntity);
     }
+
+    [Fact]
+    public async Task GetPlaylistByIdAsync_SeededMusicPlaylist_ReturnsCorrectSummary()
+    {
+        // Arrange
+        var expectedEntity = PlaylistSeeds.MusicPlaylist;
+        var expectedSummary = PlaylistModelMapper.MapToSummary(expectedEntity);
+
+        // Act
+        var result = await _facadeSUT.GetPlaylistByIdAsync(expectedEntity.Id);
+
+        // Assert
+        Assert.NotNull(result);
+        DeepAssert.Equal(expectedSummary, result);
+    }
+
+    [Fact]
+    public async Task GetPlaylistByIdAsync_UnknownId_ReturnsNull()
+    {
+        // Arrange
+        var unknownId = Guid.NewGuid();
+
+        // Act
+        var result = await _facadeSUT.GetPlaylistByIdAsync(unknownId);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+
+
+
 }
