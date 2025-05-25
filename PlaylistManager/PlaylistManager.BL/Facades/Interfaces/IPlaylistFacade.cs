@@ -17,6 +17,6 @@ public interface
         Guid playlistId,
         MediaFilterBy? filterBy, // Which property to filter on (nullable for no property filter)
         string? filterValue,     // The value to filter with
-        MediaSortBy sortBy,
-        SortOrder sortOrder);
+        MediaSortBy sortBy = MediaSortBy.Title,
+        SortOrder sortOrder = SortOrder.Descending);
 }
