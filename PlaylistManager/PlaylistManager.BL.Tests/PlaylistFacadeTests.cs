@@ -234,7 +234,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         await using PlaylistManagerDbContext dbContext = await DbContextFactory.CreateDbContextAsync();
         int expectedCount = await dbContext.Playlists
-                                           .CountAsync(p => p.Type == playlistType);
+            .CountAsync(p => p.Type == playlistType);
 
         // Act
         IEnumerable<PlaylistSummaryModel> returnedPlaylists = await _facadeSUT.GetPlaylistsByTypeAsync(playlistType);
@@ -299,20 +299,17 @@ public class PlaylistFacadeTests : FacadeTestsBase
     public async Task GetPlaylistsByNameAsync_PrefixMatch_ReturnsMatchingPlaylists()
     {
         // Arrange
-        // Seeded titles: "Music Playlist", "AudioBook Playlist", "Video Playlist", "Empty Playlist", "Playlist For Delete", "Playlist For Update"
-        var prefix = "Music"; // This prefix should match "Playlist For Delete" and "Playlist For Update"
+        var prefix = "Music";
         var playlistType = PlaylistType.Music;
 
         var expectedPlaylistsSeeds = new[]
-                                     {
-                                         PlaylistSeeds.MusicPlaylist,
-                                         PlaylistSeeds.MusicPlaylistDelete,
-                                         PlaylistSeeds.MusicPlaylistForMultimediaDelete,
-                                         PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
-                                         PlaylistSeeds.MusicPlaylistUpdate
-                                     }
-                                     .Where(p => p.Title.StartsWith(prefix) && p.Type == playlistType)
-                                     .ToList();
+            {
+                PlaylistSeeds.MusicPlaylist, PlaylistSeeds.MusicPlaylistDelete,
+                PlaylistSeeds.MusicPlaylistForMultimediaDelete, PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+                PlaylistSeeds.MusicPlaylistUpdate
+            }
+            .Where(p => p.Title.StartsWith(prefix) && p.Type == playlistType)
+            .ToList();
 
         var expectedSummaries = new List<PlaylistSummaryModel>();
         foreach (var seed in expectedPlaylistsSeeds)
@@ -333,22 +330,22 @@ public class PlaylistFacadeTests : FacadeTestsBase
         foreach (var expectedSummary in expectedSummaries)
         {
             Assert.Contains(
-                            resultList,
-                            r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title
-                           );
+                resultList,
+                r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title
+            );
             var actualSummary = resultList.Single(r => r.Id == expectedSummary.Id);
             DeepAssert.Equal(expectedSummary, actualSummary);
         }
     }
 
-    [Fact] public async Task GetPlaylistsByNameAsync_EmptyPrefix_ReturnsAllMusicPlaylists()
+    [Fact]
+    public async Task GetPlaylistsByNameAsync_EmptyPrefix_ReturnsAllMusicPlaylists()
     {
+        // Arrange
         var musicPlaylists = new[]
         {
-            PlaylistSeeds.MusicPlaylist,
-            PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
-            PlaylistSeeds.MusicPlaylistUpdate,
-            PlaylistSeeds.MusicPlaylistForMultimediaDelete,
+            PlaylistSeeds.MusicPlaylist, PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+            PlaylistSeeds.MusicPlaylistUpdate, PlaylistSeeds.MusicPlaylistForMultimediaDelete,
             PlaylistSeeds.MusicPlaylistDelete,
         };
 
@@ -382,10 +379,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var playlistType = PlaylistType.Music;
         var musicPlaylists = new[]
         {
-            PlaylistSeeds.MusicPlaylist,
-            PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
-            PlaylistSeeds.MusicPlaylistUpdate,
-            PlaylistSeeds.MusicPlaylistForMultimediaDelete,
+            PlaylistSeeds.MusicPlaylist, PlaylistSeeds.MusicPlaylistForMultimediaUpdate,
+            PlaylistSeeds.MusicPlaylistUpdate, PlaylistSeeds.MusicPlaylistForMultimediaDelete,
             PlaylistSeeds.MusicPlaylistDelete,
         };
 
@@ -422,7 +417,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "Bohemian";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, prefix,
+            MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -439,7 +435,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "NonExistentMediaTitleInThisPlaylist";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, prefix,
+            MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -453,24 +450,25 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var playlistId = PlaylistSeeds.MusicPlaylist.Id;
         var expectedMediaSeeds = new[]
         {
-            PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot, // Titles: "American Idiot", "Bohemian Rhapsody"
+            PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot,
             PlaylistMultimediaSeeds.MusicPlaylist_BohemianRhapsody
         };
         var expectedSummaries = new List<MediumSummaryModel>();
         foreach (var seed in expectedMediaSeeds)
         {
             var summary = await GetExpectedMediumSummaryFromPmIdAsync(seed.Id);
-            if(summary != null) expectedSummaries.Add(summary);
+            if (summary != null) expectedSummaries.Add(summary);
         }
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, string.Empty, MediaSortBy.Title, SortOrder.Descending);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, string.Empty,
+            MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
         var resultList = results.ToList();
         Assert.Equal(expectedMediaSeeds.Length, resultList.Count);
-        foreach (var expectedSummary in expectedSummaries.OrderBy(s => s.Title)) // Order to match facade's OrderBy
+        foreach (var expectedSummary in expectedSummaries.OrderBy(s => s.Title))
         {
             Assert.Contains(resultList, r => r.Id == expectedSummary.Id && r.Title == expectedSummary.Title);
         }
@@ -490,11 +488,12 @@ public class PlaylistFacadeTests : FacadeTestsBase
         foreach (var seed in expectedMediaSeeds)
         {
             var summary = await GetExpectedMediumSummaryFromPmIdAsync(seed.Id);
-            if(summary != null) expectedSummaries.Add(summary);
+            if (summary != null) expectedSummaries.Add(summary);
         }
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, null, MediaSortBy.Title, SortOrder.Descending);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, null,
+            MediaSortBy.Title, SortOrder.Descending);
         // Assert
         Assert.NotNull(results);
         var resultList = results.ToList();
@@ -513,7 +512,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "AnyTitle";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(nonExistentPlaylistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(nonExistentPlaylistId, MediaFilterBy.Title, prefix,
+            MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -528,7 +528,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var prefix = "AnyTitle";
 
         // Act
-        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(emptyPlaylistId, MediaFilterBy.Title, prefix, MediaSortBy.Title, SortOrder.Descending);
+        var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(emptyPlaylistId, MediaFilterBy.Title, prefix,
+            MediaSortBy.Title, SortOrder.Descending);
 
         // Assert
         Assert.NotNull(results);
@@ -538,7 +539,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
     [Theory]
     [InlineData(PlaylistSortBy.Title, SortOrder.Ascending, PlaylistType.Music)]
     [InlineData(PlaylistSortBy.Title, SortOrder.Descending, PlaylistType.Music)]
-    public async Task GetPlaylistsSortedAsync_ByTitleWithType_ReturnsSortedCorrectly(PlaylistSortBy sortBy, SortOrder sortOrder, PlaylistType playlistType)
+    public async Task GetPlaylistsSortedAsync_ByTitleWithType_ReturnsSortedCorrectly(PlaylistSortBy sortBy,
+        SortOrder sortOrder, PlaylistType playlistType)
     {
         // Arrange
         var allPlaylists = new List<PlaylistSummaryModel>
@@ -559,7 +561,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
         }
         else
         {
-            expectedOrderedPlaylists = playlistsOfType.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase).ToList();
+            expectedOrderedPlaylists = playlistsOfType.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         // Act
@@ -613,7 +616,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            playlistId,null,null,
+            playlistId, null, null,
             MediaSortBy.Author,
             SortOrder.Descending
         );
@@ -636,7 +639,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            playlistId,null,null,
+            playlistId, null, null,
             MediaSortBy.Duration,
             SortOrder.Ascending
         );
@@ -654,7 +657,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            nonExistentPlaylistId,null,null,
+            nonExistentPlaylistId, null, null,
             MediaSortBy.Title,
             SortOrder.Ascending
         );
@@ -672,7 +675,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         // Act
         var results = await _facadeSUT.GetMediaInPlaylistSortedAsync(
-            emptyPlaylistId,null,null,
+            emptyPlaylistId, null, null,
             MediaSortBy.Title,
             SortOrder.Ascending
         );
@@ -682,61 +685,11 @@ public class PlaylistFacadeTests : FacadeTestsBase
         Assert.Empty(results);
     }
 
-    private async Task<List<MediumSummaryModel>> GetExpectedSortedMediaInPlaylistAsync(
-        Guid playlistId,
-        MediaSortBy sortBy,
-        SortOrder sortOrder
-    )
-    {
-        await using var dbx = await DbContextFactory.CreateDbContextAsync();
-        var pmEntities = await dbx.PlaylistMultimedia
-            .Include(pm => pm.Multimedia)
-            .AsNoTracking()
-            .Where(pm => pm.PlaylistId == playlistId)
-            .ToListAsync();
-
-        var summaries = MediumModelMapper.MapToSummary(pmEntities).ToList();
-
-        IEnumerable<MediumSummaryModel> orderedSummaries = summaries;
-
-        switch (sortBy)
-        {
-            case MediaSortBy.Title:
-                orderedSummaries = sortOrder == SortOrder.Ascending
-                    ? summaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
-                    : summaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
-                break;
-            case MediaSortBy.Author:
-                orderedSummaries = sortOrder == SortOrder.Ascending
-                    ? summaries.OrderBy(m => m.Author, StringComparer.OrdinalIgnoreCase)
-                    : summaries.OrderByDescending(m => m.Author, StringComparer.OrdinalIgnoreCase);
-                break;
-            case MediaSortBy.Duration:
-                orderedSummaries = sortOrder == SortOrder.Ascending
-                    ? summaries.OrderBy(m => m.Duration ?? 0) // Match facade's null handling
-                    : summaries.OrderByDescending(m => m.Duration ?? 0); // Match facade's null handling
-                break;
-            case MediaSortBy.AddedDate:
-                orderedSummaries = sortOrder == SortOrder.Ascending
-                    ? summaries.OrderBy(m => m.AddedDate)
-                    : summaries.OrderByDescending(m => m.AddedDate);
-                break;
-            default:
-                // Replicate facade's default sort
-                orderedSummaries = sortOrder == SortOrder.Ascending
-                     ? summaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
-                     : summaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
-                break;
-        }
-
-        return orderedSummaries.ToList();
-    }
-
     [Theory]
-    [InlineData(MediaSortBy.Title, SortOrder.Ascending, "Bohemian", 1)] // "Bohemian Rhapsody"
+    [InlineData(MediaSortBy.Title, SortOrder.Ascending, "Bohemian", 1)]
     [InlineData(MediaSortBy.Title, SortOrder.Descending, "Bohemian", 1)]
-    [InlineData(MediaSortBy.Title, SortOrder.Ascending, "B", 1)] // Should still be "Bohemian Rhapsody"
-    [InlineData(MediaSortBy.Title, SortOrder.Ascending, null, 2)]      // All 4 media in MusicPlaylist
+    [InlineData(MediaSortBy.Title, SortOrder.Ascending, "B", 1)]
+    [InlineData(MediaSortBy.Title, SortOrder.Ascending, null, 2)]
     [InlineData(MediaSortBy.Author, SortOrder.Ascending, null, 2)]
     [InlineData(MediaSortBy.Duration, SortOrder.Descending, null, 2)]
     [InlineData(MediaSortBy.AddedDate, SortOrder.Ascending, null, 2)]
@@ -744,15 +697,15 @@ public class PlaylistFacadeTests : FacadeTestsBase
         MediaSortBy sortBy, SortOrder sortOrder, string? titlePrefix, int expectedCount)
     {
         // Arrange
-        var playlistId = PlaylistSeeds.MusicPlaylist.Id; // Has 4 diverse media items
+        var playlistId = PlaylistSeeds.MusicPlaylist.Id;
 
-        // Get all media for the playlist to manually filter and sort for expected result
         var allMediaInPlaylist = await GetExpectedMediaSummariesForPlaylistAsync(playlistId);
 
         IEnumerable<MediumSummaryModel> expectedFilteredMedia = allMediaInPlaylist;
         if (!string.IsNullOrEmpty(titlePrefix))
         {
-            expectedFilteredMedia = expectedFilteredMedia.Where(m => m.Title.StartsWith(titlePrefix, StringComparison.OrdinalIgnoreCase));
+            expectedFilteredMedia =
+                expectedFilteredMedia.Where(m => m.Title.StartsWith(titlePrefix, StringComparison.OrdinalIgnoreCase));
         }
 
         IOrderedEnumerable<MediumSummaryModel> expectedSortedMedia;
@@ -766,7 +719,8 @@ public class PlaylistFacadeTests : FacadeTestsBase
             case MediaSortBy.Author:
                 expectedSortedMedia = sortOrder == SortOrder.Ascending
                     ? expectedFilteredMedia.OrderBy(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase)
-                    : expectedFilteredMedia.OrderByDescending(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+                    : expectedFilteredMedia.OrderByDescending(m => m.Author ?? string.Empty,
+                        StringComparer.OrdinalIgnoreCase);
                 break;
             case MediaSortBy.Duration:
                 expectedSortedMedia = sortOrder == SortOrder.Ascending
@@ -781,83 +735,22 @@ public class PlaylistFacadeTests : FacadeTestsBase
             default:
                 throw new ArgumentOutOfRangeException(nameof(sortBy));
         }
+
         var expectedResultList = expectedSortedMedia.ToList();
 
         // Act
-        var results = (await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title,titlePrefix, sortBy, sortOrder)).ToList();
+        var results =
+            (await _facadeSUT.GetMediaInPlaylistSortedAsync(playlistId, MediaFilterBy.Title, titlePrefix, sortBy,
+                sortOrder)).ToList();
 
         // Assert
         Assert.Equal((uint)expectedCount, (uint)results.Count);
-        Assert.Equal(expectedResultList.Count, results.Count); // Double check count from manual filter/sort
+        Assert.Equal(expectedResultList.Count, results.Count);
 
         for (int i = 0; i < expectedResultList.Count; i++)
         {
             Assert.Equal(expectedResultList[i].Id, results[i].Id);
-            // For debugging:
-            // Console.WriteLine($"Expected: {expectedResultList[i].Title} ({GetSortValue(expectedResultList[i], sortBy)}), Actual: {results[i].Title} ({GetSortValue(results[i], sortBy)})");
         }
-    }
-
-    private async Task<List<MediumSummaryModel>> GetExpectedMediaSummariesForPlaylistAsync(Guid playlistId)
-    {
-        var summaries = new List<MediumSummaryModel>();
-        await using var dbx = await DbContextFactory.CreateDbContextAsync();
-        var pmEntities = await dbx.PlaylistMultimedia
-            .Where(pm => pm.PlaylistId == playlistId)
-            .Include(pm => pm.Multimedia)
-            .AsNoTracking()
-            .ToListAsync();
-
-        foreach (var pmEntity in pmEntities)
-        {
-            summaries.Add(MediumModelMapper.MapToSummary(pmEntity));
-        }
-        return summaries;
-    }
-
-    private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
-    {
-        returnedModel.Id = expectedModel.Id;
-        returnedModel.PlaylistId = expectedModel.PlaylistId;
-
-        foreach (var mediumModel in returnedModel.Medias)
-        {
-            var mediumDetailModel =
-                expectedModel.Medias.FirstOrDefault(m =>
-                                                        m.Title == mediumModel.Title
-                                                        && m.Url == mediumModel.Url
-                                                        && m.Format == mediumModel.Format
-                                                        && m.Description == mediumModel.Description
-                                                   );
-            if (mediumDetailModel != null)
-            {
-                mediumModel.Id = mediumDetailModel.Id;
-                mediumModel.MediumId = mediumDetailModel.MediumId;
-            }
-        }
-    }
-
-    private async Task<MediumSummaryModel?> GetExpectedMediumSummaryFromPmIdAsync(Guid playlistMultimediaId)
-    {
-        await using var dbx = await DbContextFactory.CreateDbContextAsync();
-        var pmEntity = await dbx.PlaylistMultimedia
-            .Include(pm => pm.Multimedia)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(pm => pm.Id == playlistMultimediaId);
-
-        return pmEntity == null ? null : MediumModelMapper.MapToSummary(pmEntity);
-    }
-
-    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(Guid playlistId)
-    {
-        await using var dbx = await DbContextFactory.CreateDbContextAsync();
-        var playlistEntity = await dbx.Playlists.Include(
-                p => p.PlaylistMultimedia
-            )!
-            .ThenInclude(pm => pm.Multimedia)
-            .AsNoTracking()
-            .SingleOrDefaultAsync(p => p.Id == playlistId);
-        return PlaylistModelMapper.MapToSummary(playlistEntity);
     }
 
     [Fact]
@@ -896,10 +789,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
         var expected = PlaylistMultimediaSeeds.MusicPlaylist_AmericanIdiot;
         var authorPrefix = expected.Multimedia!.Author!.Substring(0, 3); // e.g., "Gre"
 
-        var filters = new Dictionary<MediaFilterBy, string>
-        {
-            { MediaFilterBy.Author, authorPrefix }
-        };
+        var filters = new Dictionary<MediaFilterBy, string> { { MediaFilterBy.Author, authorPrefix } };
 
         var expectedSummary = MediumModelMapper.MapToSummary(expected);
 
@@ -926,8 +816,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         var filters = new Dictionary<MediaFilterBy, string>
         {
-            { MediaFilterBy.Title, "Bohemian" },
-            { MediaFilterBy.Author, "Queen" }
+            { MediaFilterBy.Title, "Bohemian" }, { MediaFilterBy.Author, "Queen" }
         };
 
         var expectedSummary = MediumModelMapper.MapToSummary(expected);
@@ -954,8 +843,7 @@ public class PlaylistFacadeTests : FacadeTestsBase
 
         var filters = new Dictionary<MediaFilterBy, string>
         {
-            { MediaFilterBy.Title, "Bohemian" },
-            { MediaFilterBy.Author, "NonMatchingAuthor" }
+            { MediaFilterBy.Title, "Bohemian" }, { MediaFilterBy.Author, "NonMatchingAuthor" }
         };
 
         // Act
@@ -1022,4 +910,117 @@ public class PlaylistFacadeTests : FacadeTestsBase
         DeepAssert.Equal(expected, result.ToList());
     }
 
+    // helper methods
+    private async Task<List<MediumSummaryModel>> GetExpectedMediaSummariesForPlaylistAsync(Guid playlistId)
+    {
+        var summaries = new List<MediumSummaryModel>();
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var pmEntities = await dbx.PlaylistMultimedia
+            .Where(pm => pm.PlaylistId == playlistId)
+            .Include(pm => pm.Multimedia)
+            .AsNoTracking()
+            .ToListAsync();
+
+        foreach (var pmEntity in pmEntities)
+        {
+            summaries.Add(MediumModelMapper.MapToSummary(pmEntity));
+        }
+
+        return summaries;
+    }
+
+    private static void FixIds(PlaylistSummaryModel expectedModel, PlaylistSummaryModel returnedModel)
+    {
+        returnedModel.Id = expectedModel.Id;
+        returnedModel.PlaylistId = expectedModel.PlaylistId;
+
+        foreach (var mediumModel in returnedModel.Medias)
+        {
+            var mediumDetailModel =
+                expectedModel.Medias.FirstOrDefault(m =>
+                    m.Title == mediumModel.Title
+                    && m.Url == mediumModel.Url
+                    && m.Format == mediumModel.Format
+                    && m.Description == mediumModel.Description
+                );
+            if (mediumDetailModel != null)
+            {
+                mediumModel.Id = mediumDetailModel.Id;
+                mediumModel.MediumId = mediumDetailModel.MediumId;
+            }
+        }
+    }
+
+    private async Task<MediumSummaryModel?> GetExpectedMediumSummaryFromPmIdAsync(Guid playlistMultimediaId)
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var pmEntity = await dbx.PlaylistMultimedia
+            .Include(pm => pm.Multimedia)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(pm => pm.Id == playlistMultimediaId);
+
+        return pmEntity == null ? null : MediumModelMapper.MapToSummary(pmEntity);
+    }
+
+    private async Task<PlaylistSummaryModel> GetExpectedSummaryModelAsync(Guid playlistId)
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var playlistEntity = await dbx.Playlists.Include(p => p.PlaylistMultimedia
+            )!
+            .ThenInclude(pm => pm.Multimedia)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(p => p.Id == playlistId);
+        return PlaylistModelMapper.MapToSummary(playlistEntity);
+    }
+
+
+    private async Task<List<MediumSummaryModel>> GetExpectedSortedMediaInPlaylistAsync(
+        Guid playlistId,
+        MediaSortBy sortBy,
+        SortOrder sortOrder
+    )
+    {
+        await using var dbx = await DbContextFactory.CreateDbContextAsync();
+        var pmEntities = await dbx.PlaylistMultimedia
+            .Include(pm => pm.Multimedia)
+            .AsNoTracking()
+            .Where(pm => pm.PlaylistId == playlistId)
+            .ToListAsync();
+
+        var summaries = MediumModelMapper.MapToSummary(pmEntities).ToList();
+
+        IEnumerable<MediumSummaryModel> orderedSummaries = summaries;
+
+        switch (sortBy)
+        {
+            case MediaSortBy.Title:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
+                    : summaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                break;
+            case MediaSortBy.Author:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Author, StringComparer.OrdinalIgnoreCase)
+                    : summaries.OrderByDescending(m => m.Author, StringComparer.OrdinalIgnoreCase);
+                break;
+            case MediaSortBy.Duration:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Duration ?? 0) // Match facade's null handling
+                    : summaries.OrderByDescending(m => m.Duration ?? 0); // Match facade's null handling
+                break;
+            case MediaSortBy.AddedDate:
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.AddedDate)
+                    : summaries.OrderByDescending(m => m.AddedDate);
+                break;
+            default:
+                // Replicate facade's default sort
+                orderedSummaries = sortOrder == SortOrder.Ascending
+                    ? summaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase)
+                    : summaries.OrderByDescending(m => m.Title, StringComparer.OrdinalIgnoreCase);
+                break;
+        }
+
+        return orderedSummaries.ToList();
+    }
 }
