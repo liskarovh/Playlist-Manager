@@ -11,18 +11,20 @@ public interface
     Task<PlaylistSummaryModel?> GetPlaylistByIdAsync(Guid playlistId);
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByTypeAsync(PlaylistType playlistType);
     Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix, PlaylistType playlistType);
-    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder, PlaylistType playlistType);
+
+    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder,
+        PlaylistType playlistType);
 
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
         Guid playlistId,
-        MediaFilterBy? filterBy, // Which property to filter on (nullable for no property filter)
-        string? filterValue,     // The value to filter with
+        MediaFilterBy? filterBy,
+        string? filterValue,
         MediaSortBy sortBy = MediaSortBy.Title,
         SortOrder sortOrder = SortOrder.Descending);
 
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
         Guid playlistId,
-        IDictionary<MediaFilterBy, string>? filters, // Dictionary for multiple filters
+        IDictionary<MediaFilterBy, string>? filters,
         MediaSortBy sortBy,
         SortOrder sortOrder);
 }

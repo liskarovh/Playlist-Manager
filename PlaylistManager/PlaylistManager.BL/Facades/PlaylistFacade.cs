@@ -109,12 +109,12 @@ public class PlaylistFacade
             case PlaylistSortBy.Title:
                 playlistSummaries = sortOrder == SortOrder.Ascending
                     ? playlistSummaries.OrderBy(p => p.Title,
-                        StringComparer.OrdinalIgnoreCase) // Case-insensitive title sort
+                        StringComparer.OrdinalIgnoreCase)
                     : playlistSummaries.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase);
                 break;
             case PlaylistSortBy.TotalDuration:
                 playlistSummaries = sortOrder == SortOrder.Ascending
-                    ? playlistSummaries.OrderBy(p => p.TotalDuration ?? 0) // Handle potential nulls
+                    ? playlistSummaries.OrderBy(p => p.TotalDuration ?? 0)
                     : playlistSummaries.OrderByDescending(p => p.TotalDuration ?? 0);
                 break;
             case PlaylistSortBy.MediaCount:
@@ -158,17 +158,14 @@ public class PlaylistFacade
             .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
             .Get()
             .Where(pm => pm.PlaylistId == playlistId)
-            .Include(pm => pm.Multimedia); // Crucial for filtering on Multimedia properties and mapping
+            .Include(pm => pm.Multimedia);
 
-        // Apply dictionary filters
         if (filters != null && filters.Any())
         {
-            // Ensure Multimedia is not null before accessing its properties for filtering
             query = query.Where(pm => pm.Multimedia != null);
 
             foreach (var filterPair in filters)
             {
-                // Skip if filter value is empty/null for a given key
                 if (string.IsNullOrEmpty(filterPair.Value))
                 {
                     continue;
@@ -181,12 +178,10 @@ public class PlaylistFacade
                             pm.Multimedia!.Title.StartsWith(filterPair.Value));
                         break;
                     case MediaFilterBy.Author:
-                        // Author is nullable on MultimediaBaseEntity
                         query = query.Where(pm =>
                             pm.Multimedia!.Author != null &&
                             pm.Multimedia.Author.StartsWith(filterPair.Value));
                         break;
-                    // Add other cases here if MediaFilterBy expands
                 }
             }
         }
@@ -195,7 +190,6 @@ public class PlaylistFacade
 
         IEnumerable<MediumSummaryModel> mediumSummaries = _mediumModelMapper.MapToSummary(mediaEntities);
 
-        // Sorting logic remains the same
         switch (sortBy)
         {
             case MediaSortBy.Title:
