@@ -21,7 +21,7 @@
              VerticalOptions="Fill"
              Command="{Binding NavigateToSettingsCommand}"/>
             <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
-                <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
+                <Label Text="Sort playlists by:" FontSize="14" HorizontalOptions="Start"/>
                 <HorizontalStackLayout Grid.Row="1">
                     <Picker ItemsSource="{Binding PlaylistSortOptions}"
                             SelectedItem="{Binding SelectedPlaylistSortOption}"
@@ -71,9 +71,7 @@
                             SelectedItem="{Binding SelectedMediaSortOption}"
                             IsEnabled="{Binding IsPlaylistSelected}"
                             WidthRequest="150"/>
-                    <Button BackgroundColor="Transparent"
-                            TextColor="Black"
-                            FontSize="24"
+                    <Button FontSize="24"
                             Padding="0"
                             IsEnabled="{Binding IsPlaylistSelected}"
                             Text="{Binding MediaSortOrderSymbol}"
@@ -125,6 +123,7 @@
         <!-- Second Bar right -->
         <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 3*, 60" Margin="10,5">
             <Label Text="Medium name" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="1" Text="Author" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
         </Grid>
 
         <!-- List of playlists (left) -->
