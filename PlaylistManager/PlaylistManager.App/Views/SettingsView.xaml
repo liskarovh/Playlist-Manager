@@ -8,13 +8,12 @@
              x:Name="SettingsViewRoot"
              x:DataType="viewmodels:SettingsViewModel">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto, Auto" BackgroundColor="LightSkyBlue">
-        <Button Grid.Row="0" Margin="0,10" HorizontalOptions="Fill" Text="Return back to playlist manager" Command="{Binding SwitchViewCommand}"/>
-        <Button Grid.Row="1" Margin="0,10" HorizontalOptions="Fill" Text="{Binding DarkMode, Converter={x:StaticResource ThemeToStringConverter}}" Command="{Binding ToggleThemeCommand}"/>
-        <Button Grid.Row="2" Margin="0,10" HorizontalOptions="Fill" Text="{x:Static resx:AppTexts.SwitchLanguageString}" Command="{Binding SwitchLocaleCommand}"/>
-        <!-- Grid row 3 should have background image or something nice-->
-        <Button Grid.Row="4" HorizontalOptions="Fill" Text="Donate to developers"/>
-        <Label Grid.Row="5"
+    <Grid RowDefinitions="Auto, Auto, *, Auto, Auto">
+        <Button Grid.Row="0" HorizontalOptions="Fill" Text="{AppThemeBinding Dark='Switch to light mode', Light='Switch to dark mode'}" Command="{Binding ToggleThemeCommand}"/>
+        <Button Grid.Row="1" HorizontalOptions="Fill" Text="Switching languages to be implemented"/>
+        
+        <Button Grid.Row="3" HorizontalOptions="Fill" Text="Donate to developers"/>
+        <Label Grid.Row="4"
                HorizontalOptions="Fill" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                Text="App version: 0.0.69&#10;Authors: Jan Kalina, David Krejčí, Jakub Kacálek, Hana Liškařová" LineBreakMode="WordWrap"/>
     </Grid>

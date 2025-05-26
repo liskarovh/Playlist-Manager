@@ -632,7 +632,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     {
         if (playlist == null) return;
 
-        await _navigationService.GoToAsync("//media");
+        await _navigationService.GoToAsync("/media");
         MessengerService.Send(new PlaylistDisplayMessage(playlist.PlaylistId, _selectedManagerType));
     }
 
@@ -798,7 +798,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     private async Task GoBack()
     {
         IsMediumSelected = false;
-        await _navigationService.GoToAsync("//media");
+        await _navigationService.GoToAsync("/media");
     }
 
     [RelayCommand]
@@ -810,7 +810,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("//settings");
+        await _navigationService.GoToAsync("/settings");
     }
 
     public void Receive(ManagerSelectedMessage message)

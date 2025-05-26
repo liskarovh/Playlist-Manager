@@ -14,7 +14,7 @@
       RowSpacing="0"
       ColumnSpacing="0">
 
-        <!-- Řádek 0 – hlavička -->
+        <!-- Row 0 – header -->
         <Border Grid.Row="0" Grid.ColumnSpan="3"
                 StrokeThickness="0"
                 Padding="0,20">

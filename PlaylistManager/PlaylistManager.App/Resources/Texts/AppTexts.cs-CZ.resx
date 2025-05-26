@@ -159,8 +159,17 @@
   <data name="PlaylistSortString" xml:space="preserve">
     <value>Řadit playlisty podle:</value>
   </data>
+  <data name="ReturnFromSettingsString" xml:space="preserve">
+    <value>Návrat zpět do správce playlistů</value>
+  </data>
   <data name="SwitchLanguageString" xml:space="preserve">
     <value>Přepnout na anglický jazyk</value>
+  </data>
+  <data name="SwitchToDarkString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SwitchToLightString" xml:space="preserve">
+    <value />
   </data>
   <data name="VideoString" xml:space="preserve">
     <value>Video</value>

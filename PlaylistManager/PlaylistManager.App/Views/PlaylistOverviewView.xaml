@@ -13,8 +13,8 @@
           ColumnDefinitions="450, *">
 
         <!-- Top Bar left -->
-        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, Auto" HorizontalOptions="Fill" Margin="10,5">
-            <ImageButton Source="setting.png"
+        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
+            <ImageButton Source="{AppThemeBinding Light='setting.png', Dark='setting_dark.png'}"
                          Margin="10,0"
                          WidthRequest="40"
                          HeightRequest="40"
@@ -44,13 +44,12 @@
 
         <!-- Top Bar right -->
         <Grid Grid.Column="1" ColumnDefinitions="*, 50" Margin="10,0">
-            <Image Grid.Column="1" Source="logo.png" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+            <Image Grid.Column="1" Source="{AppThemeBinding Light='logo.png', Dark='logo_dark.png' }" HorizontalOptions="Fill" VerticalOptions="Fill"/>
         </Grid>
 
         <!-- Second Bar -->
         <BoxView Grid.Row="1" Grid.ColumnSpan="2"
                  HeightRequest="2"
-                 Color="Black"
                  HorizontalOptions="Fill"
                  VerticalOptions="End" />
         <!-- Second Bar left -->
@@ -96,22 +95,22 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:PlaylistSummaryModel">
-                    <Border x:Name="BorderRoot" Stroke="Black" MinimumHeightRequest="50" MaximumHeightRequest="100" BackgroundColor="Transparent">
+                    <Border x:Name="BorderRoot" Stroke="Black" MinimumHeightRequest="50" MaximumHeightRequest="100">
 
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
                                 CommandParameter="{Binding .}"/>
                         </Border.GestureRecognizers>
-                        <Grid ColumnDefinitions="400, 3*, 2*, *, 60" Margin="10,5" >
+                        <Grid ColumnDefinitions="450, 3*, 2*, *, 60" Margin="10,5" >
                             <Entry Grid.Column="0"
                                    Opacity="1"
                                    IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
                                    Text="{Binding Title}"
                                    VerticalTextAlignment="Center"
                                    FontSize="16"
-                                   FontAttributes="Bold"
-                                   TextColor="Black">
+                                   Margin="0, 0, 20, 0"
+                                   FontAttributes="Bold">
                                 <Entry.Behaviors>
                                     <toolkit:EventToCommandBehavior
                                         EventName="Unfocused"
@@ -124,8 +123,7 @@
                                    Text="{Binding Description}"
                                    VerticalTextAlignment="Center"
                                    HorizontalTextAlignment="Center"
-                                   FontSize="12"
-                                   TextColor="Black">
+                                   FontSize="12">
                                 <Editor.Behaviors>
                                     <toolkit:EventToCommandBehavior
                                         EventName="Unfocused"
@@ -136,17 +134,13 @@
                             <Label Grid.Column="2"
                                    Text="{Binding MediaCount, StringFormat='Media Count: {0}'}"
                                    VerticalTextAlignment="Center"
-                                   HorizontalTextAlignment="Center"
-                                   TextColor="Black"
-                                   FontSize="12"/>
+                                   HorizontalTextAlignment="Center"/>
                             <Label Grid.Column="3"
                                    Text="{Binding TotalDuration, Converter={StaticResource DurationToStringConverter}}"
                                    VerticalTextAlignment="Center"
-                                   HorizontalTextAlignment="Center"
-                                   TextColor="Black"
-                                   FontSize="12"/>
+                                   HorizontalTextAlignment="Center"/>
                             <ImageButton Grid.Column="4"
-                                         Source="delete.png"
+                                         Source="{AppThemeBinding Light='delete.png', Dark='delete_dark.png'}"
                                          HeightRequest="50"
                                          Opacity="1"
                                          IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"

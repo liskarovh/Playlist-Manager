@@ -159,8 +159,17 @@
   <data name="PlaylistSortString" xml:space="preserve">
     <value>Sort playlists by:</value>
   </data>
+  <data name="ReturnFromSettingsString" xml:space="preserve">
+    <value>Return back to playlist manager</value>
+  </data>
   <data name="SwitchLanguageString" xml:space="preserve">
     <value>Switch to Czech language</value>
+  </data>
+  <data name="SwitchToDarkString" xml:space="preserve">
+    <value>Switch to dark mode</value>
+  </data>
+  <data name="SwitchToLightString" xml:space="preserve">
+    <value>Switch to light mode</value>
   </data>
   <data name="VideoString" xml:space="preserve">
     <value>Video</value>

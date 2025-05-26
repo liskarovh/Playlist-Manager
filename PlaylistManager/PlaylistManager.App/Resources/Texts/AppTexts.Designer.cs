@@ -187,11 +187,38 @@ namespace PlaylistManager.App.Resources.Texts {
         }
         
         /// <summary>
+        ///   Vyhledá lokalizovaný řetězec podobný Return back to playlist manager.
+        /// </summary>
+        internal static string ReturnFromSettingsString {
+            get {
+                return ResourceManager.GetString("ReturnFromSettingsString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Vyhledá lokalizovaný řetězec podobný Switch to Czech language.
         /// </summary>
         internal static string SwitchLanguageString {
             get {
                 return ResourceManager.GetString("SwitchLanguageString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Vyhledá lokalizovaný řetězec podobný Switch to dark mode.
+        /// </summary>
+        internal static string SwitchToDarkString {
+            get {
+                return ResourceManager.GetString("SwitchToDarkString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Vyhledá lokalizovaný řetězec podobný Switch to light mode.
+        /// </summary>
+        internal static string SwitchToLightString {
+            get {
+                return ResourceManager.GetString("SwitchToLightString", resourceCulture);
             }
         }
         

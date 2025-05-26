@@ -20,13 +20,12 @@
                          VerticalOptions="Fill"
                          Command="{Binding NavigateToSettingsCommand}"/>
             <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
-                <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
+                <Label Text="Sort playlists by:" FontSize="14" HorizontalOptions="Start"/>
                 <HorizontalStackLayout Grid.Row="1">
                     <Picker ItemsSource="{Binding PlaylistSortOptions}"
                             SelectedItem="{Binding SelectedPlaylistSortOption}"
                             WidthRequest="150"/>
                     <Button BackgroundColor="Transparent"
-                            TextColor="Black"
                             FontSize="24"
                             Padding="0"
                             Text="{Binding PlaylistSortOrderSymbol}"
@@ -34,7 +33,7 @@
                 </HorizontalStackLayout>
             </Grid>
             <Button Grid.Column="2"
-                    Text="New palylist"
+                    Text="New playlist"
                     HorizontalOptions="Fill"
                     Command="{Binding CreatePlaylistCommand}"/>
         </Grid>
@@ -70,9 +69,7 @@
                             SelectedItem="{Binding SelectedMediaSortOption}"
                             IsEnabled="{Binding IsPlaylistSelected}"
                             WidthRequest="150"/>
-                    <Button BackgroundColor="Transparent"
-                            TextColor="Black"
-                            FontSize="24"
+                    <Button FontSize="24"
                             Padding="0"
                             IsEnabled="{Binding IsPlaylistSelected}"
                             Text="{Binding MediaSortOrderSymbol}"
@@ -100,11 +97,13 @@
         </Grid>
 
         <!-- Second Bar -->
-        <Border Grid.Row="1" Grid.ColumnSpan="2"  Stroke="Black"/>
+        <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+         HeightRequest="2"
+         HorizontalOptions="Fill"
+         VerticalOptions="End" />
 
         <!-- Second Bar left -->
         <Border Grid.Row="1" BackgroundColor="#f2f2f2" HorizontalOptions="Fill" Margin="10, 5"
-                Stroke="Black"
                 StrokeThickness="1"
                 HeightRequest="45"
                 VerticalOptions="Center"
@@ -117,8 +116,8 @@
         </Border>
 
         <!-- Second Bar right -->
-        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *" Margin="10,5">
-            <Label Grid.Column="0" Text="Medium name" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">
+            <Label Grid.Column="0" Text="Medium name" FontSize="18" HorizontalTextAlignment="Start" VerticalTextAlignment="End" Margin="10,0,0,0"/>
             <Label Grid.Column="1" Text="Author" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
             <Label Grid.Column="2" Text="Duration" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
         </Grid>
@@ -132,7 +131,6 @@
 
             <CollectionView ItemsSource="{Binding Playlists}"
                             SelectionMode="Single"
-                            BackgroundColor="Transparent"
                             SelectionChangedCommand="{Binding SelectPlaylistCommand}"
                             SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
                 <CollectionView.ItemsLayout>
@@ -141,7 +139,7 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:PlaylistSummaryModel">
-                        <Border Stroke="Black" HeightRequest="50">
+                        <Border HeightRequest="50">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=SelectPlaylistCommand}"
                                                       CommandParameter="{Binding .}"/>
@@ -150,7 +148,7 @@
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Text="{Binding Title}" VerticalOptions="Center" Margin="10,0"/>
                                 <ImageButton Grid.Column="1"
-                                             Source="delete.png"
+                                             Source="{AppThemeBinding Light='delete.png', Dark='delete_dark.png'}"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=DeletePlaylistCommand}"
                                              CommandParameter="{Binding PlaylistId}"/>
                             </Grid>
@@ -172,11 +170,11 @@
 
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:MediumSummaryModel">
-                    <Border Stroke="Black" HeightRequest="50">
+                    <Border HeightRequest="50">
                         <Grid ColumnDefinitions="3*, 2*, *, 60">
                             <Label Grid.Column="0" Text="{Binding Title}" FontSize="18" VerticalOptions="Center" Margin="10,0"/>
-                            <Label Grid.Column="1" Text="{Binding Author}" FontSize="18" VerticalOptions="Center"/>
-                            <Label Grid.Column="2" Text="{Binding Duration, StringFormat='{0:F2} min'}" FontSize="14" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding Author}" FontSize="18" VerticalOptions="Center" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Column="2" Text="{Binding Duration, Converter={StaticResource DurationToStringConverter}}" FontSize="14" VerticalOptions="Center" HorizontalTextAlignment="Center"/>
                             <ImageButton Grid.Column="3"
                                          Source="delete.png"
                                          Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=DeleteMediumCommand}"
