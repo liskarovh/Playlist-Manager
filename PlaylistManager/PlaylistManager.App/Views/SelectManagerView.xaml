@@ -20,8 +20,8 @@
                 Padding="0,20">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#CCCCCC" Offset="0.0" />
-                    <GradientStop Color="#BBBBBB" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Light='#CCCCCC', Dark='#BBBBBB'}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Light='#8B8B8B', Dark='#6A6A6A'}" Offset="1.0" />
                 </LinearGradientBrush>
             </Border.Background>
 
@@ -30,8 +30,7 @@
                    FontAttributes="Bold"
                    FontAutoScalingEnabled="True"
                    HorizontalOptions="Center"
-                   VerticalOptions="Center"
-                   TextColor="Black" />
+                   VerticalOptions="Center"/>
         </Border>
 
 
@@ -59,7 +58,7 @@
                       RowDefinitions="15*, 70*, 15*"
                       ColumnDefinitions="10*, 80*, 10*">
                     <Image Grid.Row="1" Grid.Column="1"
-                           Source="video.png"
+                           Source="{AppThemeBinding Light='video.png', Dark='video_dark.png'}"
                            HorizontalOptions="Fill"
                            VerticalOptions="Fill"
                            Aspect="AspectFit" />
@@ -76,7 +75,7 @@
                             VerticalOptions="Center"
                             Padding="10,2">
 
-                        <Label Text="{x:Static resx:AppTexts.VideoString}"
+                        <Label Text="Video"
                                FontSize="36"
                                FontAttributes="Bold"
                                FontAutoScalingEnabled="True"
@@ -121,7 +120,7 @@
                       RowDefinitions="15*, 70*, 15*"
                       ColumnDefinitions="10*, 80*, 10*">
                     <Image Grid.Row="1" Grid.Column="1"
-                           Source="music.png"
+                           Source="{AppThemeBinding Light='music.png', Dark='music_dark.png'}"
                            HorizontalOptions="Fill"
                            VerticalOptions="Fill"
                            Aspect="AspectFit" />
@@ -137,7 +136,7 @@
                             VerticalOptions="Center"
                             Padding="10,2">
 
-                        <Label Text="{x:Static resx:AppTexts.MusicString}"
+                        <Label Text="Music"
                                FontSize="36"
                                FontAttributes="Bold"
                                FontAutoScalingEnabled="True"
@@ -176,7 +175,7 @@
                       RowDefinitions="15*, 70*, 15*"
                       ColumnDefinitions="10*, 80*, 10*">
                     <Image Grid.Row="1" Grid.Column="1"
-                           Source="audiobook.png"
+                           Source="{AppThemeBinding Light='audiobook.png', Dark='audiobook_dark.png'}"
                            HorizontalOptions="Fill"
                            VerticalOptions="Fill"
                            Aspect="AspectFit" />
@@ -192,7 +191,7 @@
                             VerticalOptions="Center"
                             Padding="10,2">
 
-                        <Label Text="{x:Static resx:AppTexts.AudiobookString}"
+                        <Label Text="Audiobook"
                                FontSize="36"
                                FontAttributes="Bold"
                                FontAutoScalingEnabled="True"

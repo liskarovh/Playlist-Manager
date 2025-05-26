@@ -27,9 +27,7 @@
                     <Picker ItemsSource="{Binding PlaylistSortOption}"
                             SelectedItem="{Binding SelectedPlaylistSortOption}"
                             WidthRequest="150"/>
-                    <Button BackgroundColor="Transparent"
-                            TextColor="Black"
-                            FontSize="24"
+                    <Button FontSize="24"
                             Margin="0,0,0,0"
                             Padding="0"
                             Text="{Binding PlaylistSortOrderSymbol}"
