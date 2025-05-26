@@ -5,7 +5,8 @@
                        xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
                        xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
                        x:Class="PlaylistManager.App.Views.PlaylistSelectedView"
-                       x:DataType="viewmodels:PlaylistSelectedViewModel">
+                       x:DataType="viewmodels:PlaylistSelectedViewModel"
+                       x:Name="PlaylistSelectedViewRoot">
 
     <Grid RowDefinitions="Auto, Auto, *, Auto"
           ColumnDefinitions="450, *">
@@ -104,6 +105,7 @@
 
         <!-- Second Bar left -->
         <Border Grid.Row="1" BackgroundColor="#f2f2f2" HorizontalOptions="Fill" Margin="10, 5"
+                Stroke="Black"
                 StrokeThickness="1"
                 HeightRequest="45"
                 VerticalOptions="Center"
@@ -141,15 +143,16 @@
                     <DataTemplate x:DataType="models:PlaylistSummaryModel">
                         <Border HeightRequest="50">
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=SelectPlaylistCommand}"
-                                                      CommandParameter="{Binding .}"/>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference PlaylistSelectedViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
+                                    CommandParameter="{Binding .}"/>
                             </Border.GestureRecognizers>
 
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Text="{Binding Title}" VerticalOptions="Center" Margin="10,0"/>
                                 <ImageButton Grid.Column="1"
                                              Source="{AppThemeBinding Light='delete.png', Dark='delete_dark.png'}"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=DeletePlaylistCommand}"
+                                             Command="{Binding Source={x:Reference PlaylistSelectedViewRoot}, Path=BindingContext.DeletePlaylistCommand}"
                                              CommandParameter="{Binding PlaylistId}"/>
                             </Grid>
                         </Border>
@@ -177,7 +180,7 @@
                             <Label Grid.Column="2" Text="{Binding Duration, Converter={StaticResource DurationToStringConverter}}" FontSize="14" VerticalOptions="Center" HorizontalTextAlignment="Center"/>
                             <ImageButton Grid.Column="3"
                                          Source="delete.png"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:PlaylistSelectedViewModel}}, Path=DeleteMediumCommand}"
+                                         Command="{Binding Source={x:Reference PlaylistSelectedViewRoot}, Path=BindingContext.DeleteMediumCommand}"
                                          CommandParameter="{Binding .}"/>
                         </Grid>
                     </Border>
