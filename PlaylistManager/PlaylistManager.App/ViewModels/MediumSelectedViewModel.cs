@@ -589,13 +589,6 @@ public partial class MediumSelectedViewModel : PlaylistBaseViewModel,
         await NavigationService.GoToAsync("/settings");
     }
 
-    public new void Receive(ManagerSelectedMessage message)
-    {
-        SelectedManagerType = message.SelectedType;
-        OnPropertyChanged(nameof(FormatOptions));
-        OnPropertyChanged(nameof(GenreOptions));
-    }
-
     public async void Receive(MediumSelectedMessage message)
     {
         if (message.SelectedMediumId == _mediumId && message.SelectedPlaylistId == _playlistId)
@@ -603,6 +596,9 @@ public partial class MediumSelectedViewModel : PlaylistBaseViewModel,
 
         SelectedManagerType = message.ManagerType;
         _mediumId = message.SelectedMediumId;
+
+        OnPropertyChanged(nameof(FormatOptions));
+        OnPropertyChanged(nameof(GenreOptions));
 
         await LoadPlaylistAndRelatedData(message.SelectedPlaylistId);
         await LoadMediumDetailCommand.ExecuteAsync(null);

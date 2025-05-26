@@ -263,7 +263,7 @@ public partial class PlaylistSelectedViewModel : PlaylistBaseViewModel,
     private async Task GoBack()
     {
         IsPlaylistSelected = false;
-        await NavigationService.GoToAsync("..");
+        await NavigationService.GoToAsync("/playlists");
     }
 
     [RelayCommand]
