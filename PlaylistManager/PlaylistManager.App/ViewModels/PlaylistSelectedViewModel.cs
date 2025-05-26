@@ -163,7 +163,7 @@ public partial class PlaylistSelectedViewModel : PlaylistBaseViewModel,
     {
         if (medium == null) return;
 
-        await NavigationService.GoToAsync("//mediumDetail");
+        await NavigationService.GoToAsync("mediumDetail");
 
         MessengerService.Send(new ManagerSelectedMessage
         {
