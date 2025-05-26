@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PlaylistManager.Common.Enums;
 using PlaylistManager.BL.Enums;
 using PlaylistManager.DAL.Entities;
 using PlaylistManager.DAL.Mappers;
@@ -10,37 +11,64 @@ using PlaylistManager.BL.Models;
 namespace PlaylistManager.BL.Facades;
 
 public class PlaylistFacade
-    : FacadeBase<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel, PlaylistEntityMapper>,
-      IPlaylistFacade
+    : FacadeBase<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel,
+            PlaylistEntityMapper>,
+        IPlaylistFacade
 {
-
     private readonly MediumModelMapper _mediumModelMapper;
 
     protected override ICollection<string> IncludesNavigationPathDetail
         => [$"{nameof(PlaylistEntity.PlaylistMultimedia)}.{nameof(PlaylistMultimediaEntity.Multimedia)}"];
 
-    public PlaylistFacade(
-        IUnitOfWorkFactory unitOfWorkFactory,
-        PlaylistModelMapper playlistModelMapper, // This is 'ModelMapper' for FacadeBase
-        MediumModelMapper mediumModelMapper      // New injected dependency
-    ) : base(unitOfWorkFactory, playlistModelMapper)
-    {
-        _mediumModelMapper = mediumModelMapper; // Store injected mapper
-    }
-
-    /// <summary>
-    /// Gets playlists whose names start with the given prefix.
-    /// If the prefix is null or empty, all playlists are returned.
-    /// </summary>
-    /// <param name="namePrefix">The prefix to filter playlist names by.</param>
-    /// <returns>A collection of playlist summaries matching the criteria.</returns>
-    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix)
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByTypeAsync(PlaylistType playlistType)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
 
+        query = query.Where(p => p.Type == playlistType);
 
-        // Apply includes necessary for PlaylistSummaryModel mapping
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
+
+        List<PlaylistEntity> entities = await query.ToListAsync().ConfigureAwait(false);
+        return ModelMapper.MapToSummary(entities);
+    }
+
+    public PlaylistFacade(
+        IUnitOfWorkFactory unitOfWorkFactory,
+        PlaylistModelMapper playlistModelMapper,
+        MediumModelMapper mediumModelMapper
+    ) : base(unitOfWorkFactory, playlistModelMapper)
+    {
+        _mediumModelMapper = mediumModelMapper;
+    }
+
+    public async Task<PlaylistSummaryModel?> GetPlaylistByIdAsync(Guid playlistId)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
+
+        query = query.Where(p => p.Id == playlistId);
+
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
+
+        PlaylistEntity? entity = await query.FirstOrDefaultAsync().ConfigureAwait(false);
+
+        if (entity == null)
+        {
+            return null;
+        }
+
+        return ModelMapper.MapToSummary(entity);
+    }
+
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix,
+        PlaylistType playlistType)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+        IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
+
+        query = query.Where(p => p.Type == playlistType);
+
         query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
         if (!string.IsNullOrEmpty(namePrefix))
         {
@@ -62,17 +90,13 @@ public class PlaylistFacade
         return ModelMapper.MapToSummary(entities);
     }
 
-    public async Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistByTitleAsync(Guid playlistId, string mediaTitlePrefix)
-    {
-        // This method can now be a specific case of the new more general sorted method
-        return await GetMediaInPlaylistSortedAsync(playlistId, mediaTitlePrefix, MediaSortBy.Title, SortOrder.Ascending);
-    }
-
-    // New method implementation
-    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder)
+    public async Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy,
+        SortOrder sortOrder, PlaylistType playlistType)
     {
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
         IQueryable<PlaylistEntity> query = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>().Get();
+
+        query = query.Where(p => p.Type == playlistType);
 
         query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
 
@@ -84,12 +108,13 @@ public class PlaylistFacade
         {
             case PlaylistSortBy.Title:
                 playlistSummaries = sortOrder == SortOrder.Ascending
-                    ? playlistSummaries.OrderBy(p => p.Title, StringComparer.OrdinalIgnoreCase) // Case-insensitive title sort
+                    ? playlistSummaries.OrderBy(p => p.Title,
+                        StringComparer.OrdinalIgnoreCase)
                     : playlistSummaries.OrderByDescending(p => p.Title, StringComparer.OrdinalIgnoreCase);
                 break;
             case PlaylistSortBy.TotalDuration:
                 playlistSummaries = sortOrder == SortOrder.Ascending
-                    ? playlistSummaries.OrderBy(p => p.TotalDuration ?? 0) // Handle potential nulls
+                    ? playlistSummaries.OrderBy(p => p.TotalDuration ?? 0)
                     : playlistSummaries.OrderByDescending(p => p.TotalDuration ?? 0);
                 break;
             case PlaylistSortBy.MediaCount:
@@ -98,19 +123,32 @@ public class PlaylistFacade
                     : playlistSummaries.OrderByDescending(p => p.MediaCount);
                 break;
             default:
-                // Optional: default to a sort or throw an exception for unhandled enum
                 playlistSummaries = playlistSummaries.OrderBy(p => p.Title);
                 break;
         }
-        return playlistSummaries.ToList(); // ToList to execute the ordering
+
+        return playlistSummaries.ToList();
     }
 
-    public Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(Guid playlistId, MediaSortBy sortBy, SortOrder sortOrder) => GetMediaInPlaylistSortedAsync(playlistId, null, sortBy, sortOrder);
-
-    // New method implementation
     public async Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
         Guid playlistId,
-        string? mediaTitlePrefix,
+        MediaFilterBy? filterBy,
+        string? filterValue,
+        MediaSortBy sortBy,
+        SortOrder sortOrder)
+    {
+        var filters = new Dictionary<MediaFilterBy, string>();
+        if (filterBy.HasValue && !string.IsNullOrEmpty(filterValue))
+        {
+            filters[filterBy.Value] = filterValue;
+        }
+
+        return await GetMediaInPlaylistSortedAsync(playlistId, filters.Any() ? filters : null, sortBy, sortOrder);
+    }
+
+    public async Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
+        Guid playlistId,
+        IDictionary<MediaFilterBy, string>? filters,
         MediaSortBy sortBy,
         SortOrder sortOrder)
     {
@@ -120,20 +158,38 @@ public class PlaylistFacade
             .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
             .Get()
             .Where(pm => pm.PlaylistId == playlistId)
-            .Include(pm => pm.Multimedia); // Crucial for filtering and mapping
+            .Include(pm => pm.Multimedia);
 
-        // Apply title prefix filter if provided
-        if (!string.IsNullOrEmpty(mediaTitlePrefix))
+        if (filters != null && filters.Any())
         {
-            query = query.Where(pm => pm.Multimedia != null && pm.Multimedia.Title.StartsWith(mediaTitlePrefix));
+            query = query.Where(pm => pm.Multimedia != null);
+
+            foreach (var filterPair in filters)
+            {
+                if (string.IsNullOrEmpty(filterPair.Value))
+                {
+                    continue;
+                }
+
+                switch (filterPair.Key)
+                {
+                    case MediaFilterBy.Title:
+                        query = query.Where(pm =>
+                            pm.Multimedia!.Title.StartsWith(filterPair.Value));
+                        break;
+                    case MediaFilterBy.Author:
+                        query = query.Where(pm =>
+                            pm.Multimedia!.Author != null &&
+                            pm.Multimedia.Author.StartsWith(filterPair.Value));
+                        break;
+                }
+            }
         }
 
         List<PlaylistMultimediaEntity> mediaEntities = await query.ToListAsync().ConfigureAwait(false);
 
-        // Map to MediumSummaryModel before sorting, as sorting properties are on the model
         IEnumerable<MediumSummaryModel> mediumSummaries = _mediumModelMapper.MapToSummary(mediaEntities);
 
-        // Perform sorting on the IEnumerable<MediumSummaryModel>
         switch (sortBy)
         {
             case MediaSortBy.Title:
@@ -143,12 +199,13 @@ public class PlaylistFacade
                 break;
             case MediaSortBy.Author:
                 mediumSummaries = sortOrder == SortOrder.Ascending
-                    ? mediumSummaries.OrderBy(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase) // Handle null author
-                    : mediumSummaries.OrderByDescending(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase);
+                    ? mediumSummaries.OrderBy(m => m.Author ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                    : mediumSummaries.OrderByDescending(m => m.Author ?? string.Empty,
+                        StringComparer.OrdinalIgnoreCase);
                 break;
             case MediaSortBy.Duration:
                 mediumSummaries = sortOrder == SortOrder.Ascending
-                    ? mediumSummaries.OrderBy(m => m.Duration ?? 0) // Handle null duration
+                    ? mediumSummaries.OrderBy(m => m.Duration ?? 0)
                     : mediumSummaries.OrderByDescending(m => m.Duration ?? 0);
                 break;
             case MediaSortBy.AddedDate:
@@ -157,12 +214,10 @@ public class PlaylistFacade
                     : mediumSummaries.OrderByDescending(m => m.AddedDate);
                 break;
             default:
-                // Default to sorting by title ascending if an unknown sort option is provided
                 mediumSummaries = mediumSummaries.OrderBy(m => m.Title, StringComparer.OrdinalIgnoreCase);
                 break;
         }
 
-        return mediumSummaries.ToList(); // ToList to execute the ordering
+        return mediumSummaries.ToList();
     }
 }
-

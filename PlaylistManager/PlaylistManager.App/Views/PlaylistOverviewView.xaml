@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                       xmlns:views="clr-namespace:PlaylistManager.App.Views"
+                       xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
+                       xmlns:models="clr-namespace:PlaylistManager.BL.Models;assembly=PlaylistManager.BL"
+                       x:Class="PlaylistManager.App.Views.PlaylistOverviewView"
+                       x:DataType="viewmodels:PlaylistOverviewViewModel"
+                       x:Name="PlaylistOverviewViewRoot">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto"
+          ColumnDefinitions="450, *">
+
+        <!-- Top Bar left -->
+        <Grid Grid.Column="0" ColumnDefinitions="Auto, Auto, *" HorizontalOptions="Fill" Margin="10,5">
+            <ImageButton Source="{AppThemeBinding Light='setting.png', Dark='setting_dark.png'}"
+                         Margin="10,0"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         HorizontalOptions="Fill"
+                         VerticalOptions="Fill"
+                         Command="{Binding NavigateToSettingsCommand}"/>
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
+                <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
+                <HorizontalStackLayout Grid.Row="1">
+                    <Picker ItemsSource="{Binding PlaylistSortOptions}"
+                            SelectedItem="{Binding SelectedPlaylistSortOption}"
+                            WidthRequest="150"/>
+                    <Button FontSize="24"
+                            Margin="0,0,0,0"
+                            Padding="0"
+                            Text="{Binding PlaylistSortOrderSymbol}"
+                            Command="{Binding TogglePlaylistSortOrderCommand}"/>
+                </HorizontalStackLayout>
+            </Grid>
+            <Button Grid.Column="2"
+                    Text="New Playlist"
+                    HorizontalOptions="Fill"
+                    Command="{Binding CreatePlaylistCommand}"/>
+        </Grid>
+
+        <!-- Top Bar right -->
+        <Grid Grid.Column="1" ColumnDefinitions="*, 50" Margin="10,0">
+            <Image Grid.Column="1" Source="{AppThemeBinding Light='logo.png', Dark='logo_dark.png' }" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+        </Grid>
+
+        <!-- Second Bar -->
+        <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                 HeightRequest="2"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="End" />
+        <!-- Second Bar left -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="10, 5">
+            <Border Grid.Row="1"
+                    BackgroundColor="#f2f2f2"
+                    HorizontalOptions="Fill"
+                    Margin="10, 5"
+                    Stroke="Black"
+                    StrokeThickness="1"
+                    HeightRequest="45"
+                    VerticalOptions="Center"
+                    StrokeShape="RoundRectangle 20">
+                <SearchBar Placeholder="Search playlists"
+                           Text="{Binding PlaylistSearchQuery}"
+                           BackgroundColor="Transparent"
+                           FontSize="14"
+                           Margin="10,0"/>
+            </Border>
+            <Button Grid.Column="1"
+                    Text="{Binding IsEditMode, Converter={StaticResource EditModeToTextConverter}}"
+                    MaximumWidthRequest="150"
+                    LineBreakMode="WordWrap"
+                    Command="{Binding ToggleEditModeCommand}"/>
+        </Grid>
+
+
+        <!-- Second Bar right -->
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">
+            <Label Grid.Column="0" Text="Playlist description" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="1" Text="Count" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+            <Label Grid.Column="2" Text="Duration" FontSize="18" HorizontalTextAlignment="Center" VerticalTextAlignment="End"/>
+        </Grid>
+
+        <!-- List of playlists -->
+        <CollectionView Grid.Row="2"
+                        Grid.ColumnSpan="2"
+                        ItemsSource="{Binding Playlists, Mode=TwoWay}"
+                        SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" HorizontalItemSpacing="5" VerticalItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:PlaylistSummaryModel">
+                    <Border x:Name="BorderRoot" Stroke="Black" MinimumHeightRequest="50" MaximumHeightRequest="100">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SelectPlaylistCommand}"
+                                CommandParameter="{Binding .}"/>
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="450, 3*, 2*, *, 60" Margin="10,5" >
+                            <Entry Grid.Column="0"
+                                   Opacity="1"
+                                   IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
+                                   Text="{Binding Title}"
+                                   VerticalTextAlignment="Center"
+                                   FontSize="16"
+                                   Margin="0, 0, 20, 0"
+                                   FontAttributes="Bold">
+                                <Entry.Behaviors>
+                                    <toolkit:EventToCommandBehavior
+                                        EventName="Unfocused"
+                                        Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SavePlaylistCommand}"
+                                        CommandParameter="{Binding Source={x:Reference BorderRoot}, Path=BindingContext}"/>
+                                </Entry.Behaviors>
+                            </Entry>
+                            <Editor Grid.Column="1"
+                                   IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
+                                   Text="{Binding Description}"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"
+                                   FontSize="12">
+                                <Editor.Behaviors>
+                                    <toolkit:EventToCommandBehavior
+                                        EventName="Unfocused"
+                                        Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.SavePlaylistCommand}"
+                                        CommandParameter="{Binding Source={x:Reference BorderRoot}, Path=BindingContext}"/>
+                                </Editor.Behaviors>
+                            </Editor>
+                            <Label Grid.Column="2"
+                                   Text="{Binding MediaCount, StringFormat='Media Count: {0}'}"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"/>
+                            <Label Grid.Column="3"
+                                   Text="{Binding TotalDuration, Converter={StaticResource DurationToStringConverter}}"
+                                   VerticalTextAlignment="Center"
+                                   HorizontalTextAlignment="Center"/>
+                            <ImageButton Grid.Column="4"
+                                         Source="{AppThemeBinding Light='delete.png', Dark='delete_dark.png'}"
+                                         HeightRequest="50"
+                                         Opacity="1"
+                                         IsEnabled="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
+                                         IsVisible="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.IsEditMode}"
+                                         Command="{Binding Source={x:Reference PlaylistOverviewViewRoot}, Path=BindingContext.DeletePlaylistCommand}"
+                                         CommandParameter="{Binding PlaylistId}">
+                            </ImageButton>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Back button -->
+        <Button Grid.Row="3"
+                Text="Go back to select screen"
+                HorizontalOptions="Fill"
+                Margin="0, 1, 0, 0"
+                Command="{Binding GoBackCommand}"/>
+    </Grid>
+
+</views:ContentPageBase>

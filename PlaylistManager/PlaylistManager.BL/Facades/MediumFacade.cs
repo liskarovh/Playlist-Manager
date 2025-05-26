@@ -11,13 +11,15 @@ using PlaylistManager.BL.Models;
 namespace PlaylistManager.BL.Facades;
 
 public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMapper modelMapper)
-    : FacadeBase<PlaylistMultimediaEntity, MediumNameOnlyModel, MediumSummaryModel, MediumDetailedModel, PlaylistMultimediaEntityMapper>(unitOfWorkFactory, modelMapper),
-      IMediumFacade
+    : FacadeBase<PlaylistMultimediaEntity, MediumNameOnlyModel, MediumSummaryModel, MediumDetailedModel,
+            PlaylistMultimediaEntityMapper>(unitOfWorkFactory, modelMapper),
+        IMediumFacade
 {
     protected override ICollection<string> IncludesNavigationPathDetail
         => [$"{nameof(PlaylistMultimediaEntity.Multimedia)}"];
 
-    private static IIncludableQueryable<PlaylistMultimediaEntity, object> Include(IQueryable<PlaylistMultimediaEntity> query)
+    private static IIncludableQueryable<PlaylistMultimediaEntity, object> Include(
+        IQueryable<PlaylistMultimediaEntity> query)
         => query.Include(e => e.Multimedia);
 
     public override async Task<IEnumerable<MediumSummaryModel>> GetAsyncSummary()
@@ -25,9 +27,9 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
 
         List<PlaylistMultimediaEntity> entities = await uow
-                                                        .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
-                                                        .Get(Include)
-                                                        .ToListAsync().ConfigureAwait(false);
+            .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
+            .Get(Include)
+            .ToListAsync().ConfigureAwait(false);
 
         return ModelMapper.MapToSummary(entities);
     }
@@ -37,9 +39,9 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
 
         List<PlaylistMultimediaEntity> entities = await uow
-                                                        .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
-                                                        .Get(Include)
-                                                        .ToListAsync().ConfigureAwait(false);
+            .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
+            .Get(Include)
+            .ToListAsync().ConfigureAwait(false);
 
         return ModelMapper.MapToNameOnly(entities);
     }
@@ -49,13 +51,43 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
         await using IUnitOfWork uow = UnitOfWorkFactory.Create();
 
         IQueryable<PlaylistMultimediaEntity> query = uow
-                                                     .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
-                                                     .Get(Include);
+            .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
+            .Get(Include);
         query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
 
         PlaylistMultimediaEntity? entity = await query
-                                                 .SingleOrDefaultAsync(e => e.Id == id)
-                                                 .ConfigureAwait(false);
+            .SingleOrDefaultAsync(e => e.Id == id)
+            .ConfigureAwait(false);
+
+        return entity is null ? null : ModelMapper.MapToDetailModel(entity);
+    }
+
+    public async Task<IEnumerable<MediumSummaryModel>> GetMediaByPlaylistIdAsync(Guid playlistId)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+
+        List<PlaylistMultimediaEntity> entities = await uow
+            .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
+            .Get(Include)
+            .Where(e => e.PlaylistId == playlistId)
+            .ToListAsync().ConfigureAwait(false);
+
+        return ModelMapper.MapToSummary(entities);
+    }
+
+    public async Task<MediumDetailedModel?> GetMediumByIdAsync(Guid mediumId)
+    {
+        await using IUnitOfWork uow = UnitOfWorkFactory.Create();
+
+        IQueryable<PlaylistMultimediaEntity> query = uow
+            .GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>()
+            .Get(Include);
+
+        query = IncludesNavigationPathDetail.Aggregate(query, (current, includePath) => current.Include(includePath));
+
+        PlaylistMultimediaEntity? entity = await query
+            .SingleOrDefaultAsync(e => e.MultimediaId == mediumId)
+            .ConfigureAwait(false);
 
         return entity is null ? null : ModelMapper.MapToDetailModel(entity);
     }
@@ -71,8 +103,8 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
         IRepository<PlaylistEntity> playlistRepo = uow.GetRepository<PlaylistEntity, PlaylistEntityMapper>();
 
         PlaylistEntity? playlist = await playlistRepo.Get()
-                                                     .SingleOrDefaultAsync(e => e.Id == model.PlaylistId)
-                                                     .ConfigureAwait(false);
+            .SingleOrDefaultAsync(e => e.Id == model.PlaylistId)
+            .ConfigureAwait(false);
 
         if (playlist == null)
         {
@@ -85,12 +117,15 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
         }
 
         PlaylistMultimediaEntity entity = mediumMapper.MapToEntity(model, playlist);
-        IRepository<PlaylistMultimediaEntity> repository = uow.GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>();
+        IRepository<PlaylistMultimediaEntity> repository =
+            uow.GetRepository<PlaylistMultimediaEntity, PlaylistMultimediaEntityMapper>();
 
+        PlaylistMultimediaEntity entityToMap;
         if (await repository.ExistsAsync(entity).ConfigureAwait(false))
         {
-            PlaylistMultimediaEntity updatedEntity = await repository.UpdateAsync(entity, Include).ConfigureAwait(false);
-            model = ModelMapper.MapToDetailModel(updatedEntity);
+            PlaylistMultimediaEntity updatedEntity =
+                await repository.UpdateAsync(entity, Include).ConfigureAwait(false);
+            entityToMap = updatedEntity;
         }
         else
         {
@@ -99,12 +134,21 @@ public class MediumFacade(IUnitOfWorkFactory unitOfWorkFactory, MediumModelMappe
                 entity.Id = Guid.NewGuid();
             }
 
-            PlaylistMultimediaEntity insertedEntity = repository.Insert(entity, Include);
-            model = ModelMapper.MapToDetailModel(insertedEntity);
+            repository.Insert(entity);
+            entityToMap = entity;
         }
 
         await uow.CommitAsync().ConfigureAwait(false);
 
-        return model;
+        Guid committedEntityId = entityToMap.Id;
+        PlaylistMultimediaEntity? finalEntity = await repository.Get(Include)
+            .SingleOrDefaultAsync(e => e.Id == committedEntityId)
+            .ConfigureAwait(false);
+        if (finalEntity == null)
+        {
+            throw new InvalidOperationException("Failed to retrieve the entity after save operation.");
+        }
+
+        return ModelMapper.MapToDetailModel(finalEntity);
     }
 }

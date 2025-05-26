@@ -19,7 +19,10 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-      
+
+        <!-- Default to english resources -->
+        <NeutralResourcesLanguage>en-US</NeutralResourcesLanguage>
+
         <!-- Display name -->
         <ApplicationTitle>PlaylistManager.App</ApplicationTitle>
 
@@ -37,28 +40,123 @@
       <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">17.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PlaylistManager.BL\PlaylistManager.BL.csproj" />
+  </ItemGroup>
+
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
         <!-- Images -->
-        <MauiImage Include="Resources\Images\*"/>
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185"/>
+        <MauiImage Include="Resources\Images\*" />
+        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 
         <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*"/>
+        <MauiFont Include="Resources\Fonts\*" />
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.14" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0"/>
+      <Compile Remove="Resources\NováSložka1\**" />
+      <Compile Remove="Resources\NováSložka\**" />
+      <EmbeddedResource Remove="Resources\NováSložka1\**" />
+      <EmbeddedResource Remove="Resources\NováSložka\**" />
+      <MauiCss Remove="Resources\NováSložka1\**" />
+      <MauiCss Remove="Resources\NováSložka\**" />
+      <MauiXaml Remove="Resources\NováSložka1\**" />
+      <MauiXaml Remove="Resources\NováSložka\**" />
+      <None Remove="Resources\NováSložka1\**" />
+      <None Remove="Resources\NováSložka\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+      <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.50" />
+      <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.70" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.5" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
+      <PackageReference Include="Fody" Version="6.9.2" PrivateAssets="all" />
+      <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" privateAssets="All" />
+      <PackageReference Include="Scrutor" Version="6.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\Texts\AppTexts.cs-CZ.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AppTexts.cs-CZ.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Texts\AppTexts.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>AppTexts.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Views\ContentPageBase.xaml.cs">
+        <DependentUpon>ContentPageBase.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\MediumSelectedView.xaml.cs">
+        <DependentUpon>MediumSelectedView.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\PlaylistSelectedView.xaml.cs">
+        <DependentUpon>PlaylistSelectedView.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\PlaylistOverviewView.xaml.cs">
+        <DependentUpon>PlaylistOverviewView.xaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\SelectManagerView.xaml.cs">
+        <DependentUpon>SelectManagerView.xaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiXaml Update="Views\ContentPageBase.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\MediumSelectedView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\PlaylistSelectedView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\PlaylistOverviewView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+      <MauiXaml Update="Views\SelectManagerView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PRIResource Remove="Resources\NováSložka\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PRIResource Remove="Resources\NováSložka1\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PlaylistManager.Common\PlaylistManager.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Texts\AppTexts.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AppTexts.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Texts\AppTexts.cs-CZ.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AppTexts.cs-CZ.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

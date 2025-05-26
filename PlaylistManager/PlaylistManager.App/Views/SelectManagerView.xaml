@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             xmlns:viewModels="clr-namespace:PlaylistManager.App.ViewModels"
+             xmlns:resx="clr-namespace:PlaylistManager.App.Resources.Texts"
+             x:Class="PlaylistManager.App.Views.SelectManagerView"
+             xmlns:enums="clr-namespace:PlaylistManager.Common.Enums;assembly=PlaylistManager.Common"
+             x:DataType="viewModels:SelectManagerViewModel">
+
+    <Grid RowDefinitions="auto, *"
+      ColumnDefinitions="*, *, *"
+      Padding="0"
+      RowSpacing="0"
+      ColumnSpacing="0">
+
+        <!-- Row 0 – header -->
+        <Border Grid.Row="0" Grid.ColumnSpan="3"
+                StrokeThickness="0"
+                Padding="0,20">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{AppThemeBinding Light='#CCCCCC', Dark='#BBBBBB'}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Light='#8B8B8B', Dark='#6A6A6A'}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Label Text="Select media manager"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   FontAutoScalingEnabled="True"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+        </Border>
+
+
+
+
+
+
+        <Border Grid.Row="1" Grid.Column="0"
+                Stroke="Black"
+                StrokeThickness="1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#FFDDDD" Offset="0.0" />
+                    <GradientStop Color="#FFCCCC" Offset="0.7" />
+                    <GradientStop Color="#FFBFBF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid RowDefinitions="*, *, *, *"
+                  ColumnDefinitions="1*"
+                  Padding="0">
+
+
+                <Grid Grid.Row="0" Grid.RowSpan="3"
+                      RowDefinitions="15*, 70*, 15*"
+                      ColumnDefinitions="10*, 80*, 10*">
+                    <Image Grid.Row="1" Grid.Column="1"
+                           Source="{AppThemeBinding Light='video.png', Dark='video_dark.png'}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill"
+                           Aspect="AspectFit" />
+                </Grid>
+
+
+                <Grid Grid.Row="3"
+                      BackgroundColor="#FFBFBF"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill"
+                      Padding="0">
+                    <Border StrokeThickness="0"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Padding="10,2">
+
+                        <Label Text="Video"
+                               FontSize="36"
+                               FontAttributes="Bold"
+                               FontAutoScalingEnabled="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="Black"
+                               LineBreakMode="TailTruncation"
+                               MaxLines="1"/>
+                    </Border>
+                </Grid>
+
+
+
+
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="{x:Static enums:ManagerType.Video}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+        </Border>
+
+
+
+        <!-- Music Column -->
+        <Border Grid.Row="1" Grid.Column="1"
+                Stroke="Black"
+                StrokeThickness="1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#DDFFDD" Offset="0.0" />
+                    <GradientStop Color="#CCFFCC" Offset="0.7" />
+                    <GradientStop Color="#BFFFBF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid RowDefinitions="*, *, *, *"
+                  ColumnDefinitions="1*"
+                  Padding="0">
+
+                <Grid Grid.Row="0" Grid.RowSpan="3"
+                      RowDefinitions="15*, 70*, 15*"
+                      ColumnDefinitions="10*, 80*, 10*">
+                    <Image Grid.Row="1" Grid.Column="1"
+                           Source="{AppThemeBinding Light='music.png', Dark='music_dark.png'}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill"
+                           Aspect="AspectFit" />
+                </Grid>
+
+                <Grid Grid.Row="3"
+                      BackgroundColor="#BFFFBF"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill"
+                      Padding="0">
+                    <Border StrokeThickness="0"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Padding="10,2">
+
+                        <Label Text="Music"
+                               FontSize="36"
+                               FontAttributes="Bold"
+                               FontAutoScalingEnabled="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="Black"
+                               LineBreakMode="TailTruncation"
+                               MaxLines="1"/>
+                    </Border>
+                </Grid>
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="{x:Static enums:ManagerType.Music}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+        </Border>
+
+        <!-- Audiobook Column -->
+        <Border Grid.Row="1" Grid.Column="2"
+                Stroke="Black"
+                StrokeThickness="1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#DDDDFF" Offset="0.0" />
+                    <GradientStop Color="#CCCCFF" Offset="0.7" />
+                    <GradientStop Color="#BFBFFF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid RowDefinitions="*, *, *, *"
+                  ColumnDefinitions="1*"
+                  Padding="0">
+
+                <Grid Grid.Row="0" Grid.RowSpan="3"
+                      RowDefinitions="15*, 70*, 15*"
+                      ColumnDefinitions="10*, 80*, 10*">
+                    <Image Grid.Row="1" Grid.Column="1"
+                           Source="{AppThemeBinding Light='audiobook.png', Dark='audiobook_dark.png'}"
+                           HorizontalOptions="Fill"
+                           VerticalOptions="Fill"
+                           Aspect="AspectFit" />
+                </Grid>
+
+                <Grid Grid.Row="3"
+                      BackgroundColor="#BFBFFF"
+                      HorizontalOptions="Fill"
+                      VerticalOptions="Fill"
+                      Padding="0">
+                    <Border StrokeThickness="0"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Padding="10,2">
+
+                        <Label Text="Audiobook"
+                               FontSize="36"
+                               FontAttributes="Bold"
+                               FontAutoScalingEnabled="True"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               TextColor="Black"
+                               LineBreakMode="TailTruncation"
+                               MaxLines="1"/>
+                    </Border>
+                </Grid>
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectManagerCommand}"
+                                          CommandParameter="{x:Static enums:ManagerType.AudioBook}" />
+                </Grid.GestureRecognizers>
+            </Grid>
+        </Border>
+
+    </Grid>
+
+
+</views:ContentPageBase>

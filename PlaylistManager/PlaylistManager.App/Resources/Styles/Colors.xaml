@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -6,12 +6,39 @@
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
-    <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <!-- 🎨 PRIMARY BRAND COLOR (used in both modes) -->
+    <Color x:Key="Primary">#1DB954</Color>
+    <!-- Energetic green -->
+    <Color x:Key="PrimaryLightText">#FFFFFF</Color>
+    <!-- For buttons or dark backgrounds -->
+    <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
+    <!-- Same in dark mode -->
+
+    <!-- 🌞 LIGHT MODE COLORS -->
+    <Color x:Key="LightBackground">#F1FEF2</Color>
+    <!-- Clean white base -->
+    <Color x:Key="LightSurface">#83FE9F</Color>
+    <!-- Light gray for cards, panels -->
+    <Color x:Key="LightTextPrimary">#1C1C1C</Color>
+    <!-- Dark charcoal for legibility -->
+    <Color x:Key="LightTextSecondary">#555555</Color>
+    <!-- Softer gray for subtitles -->
+
+    <!-- 🌚 DARK MODE COLORS -->
+    <Color x:Key="DarkBackground">#1F1F1F</Color>
+    <!-- Near-black, perfect for media UIs -->
+    <Color x:Key="DarkSurface">#1E1E1E</Color>
+    <!-- Dark gray for cards, overlays -->
+    <Color x:Key="DarkTextPrimary">#FFFFFF</Color>
+    <!-- Crisp white for contrast -->
+    <Color x:Key="DarkTextSecondary">#B3B3B3</Color>
+    <!-- Light gray for less emphasis -->
+
+    <!-- 🎯 ACCENTS -->
+    <Color x:Key="Tertiary">#535353</Color>
+    <!-- Utility color for borders/icons -->
+
+    <Color x:Key="Secondary">#FFFFFF</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>

@@ -1,20 +1,30 @@
 using PlaylistManager.BL.Enums;
 using PlaylistManager.BL.Models;
 using PlaylistManager.DAL.Entities;
+using PlaylistManager.Common.Enums;
 
 namespace PlaylistManager.BL.Facades.Interfaces;
 
 public interface
     IPlaylistFacade : IFacade<PlaylistEntity, PlaylistNameOnlyModel, PlaylistSummaryModel, PlaylistSummaryModel>
 {
-    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix);
-    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistByTitleAsync(Guid playlistId, string mediaTitlePrefix);
-    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder);
-    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(Guid playlistId, MediaSortBy sortBy, SortOrder sortOrder);
+    Task<PlaylistSummaryModel?> GetPlaylistByIdAsync(Guid playlistId);
+    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByTypeAsync(PlaylistType playlistType);
+    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsByNameAsync(string? namePrefix, PlaylistType playlistType);
+
+    Task<IEnumerable<PlaylistSummaryModel>> GetPlaylistsSortedAsync(PlaylistSortBy sortBy, SortOrder sortOrder,
+        PlaylistType playlistType);
 
     Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
         Guid playlistId,
-        string? mediaTitlePrefix,
+        MediaFilterBy? filterBy,
+        string? filterValue,
+        MediaSortBy sortBy = MediaSortBy.Title,
+        SortOrder sortOrder = SortOrder.Descending);
+
+    Task<IEnumerable<MediumSummaryModel>> GetMediaInPlaylistSortedAsync(
+        Guid playlistId,
+        IDictionary<MediaFilterBy, string>? filters,
         MediaSortBy sortBy,
         SortOrder sortOrder);
 }

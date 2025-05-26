@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:ContentPageBase xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:PlaylistManager.App.Views"
+             xmlns:viewmodels="clr-namespace:PlaylistManager.App.ViewModels"
+             xmlns:resx="clr-namespace:PlaylistManager.App.Resources.Texts"
+             x:Class="PlaylistManager.App.Views.SettingsView"
+             x:Name="SettingsViewRoot"
+             x:DataType="viewmodels:SettingsViewModel">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto, Auto">
+        <Button Grid.Row="0" HorizontalOptions="Fill" Text="{AppThemeBinding Dark='Switch to light mode', Light='Switch to dark mode'}" Command="{Binding ToggleThemeCommand}"/>
+        <Button Grid.Row="1" HorizontalOptions="Fill" Text="Switching languages to be implemented"/>
+        
+        <Button Grid.Row="3" HorizontalOptions="Fill" Text="Donate to developers"/>
+        <Label Grid.Row="4"
+               HorizontalOptions="Fill" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+               Text="App version: 0.0.69&#10;Authors: Jan Kalina, David Krejčí, Jakub Kacálek, Hana Liškařová" LineBreakMode="WordWrap"/>
+    </Grid>
+    
+</views:ContentPageBase>
