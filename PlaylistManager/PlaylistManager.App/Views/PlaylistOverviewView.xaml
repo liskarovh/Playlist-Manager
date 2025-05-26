@@ -24,7 +24,7 @@
             <Grid Grid.Column="1" RowDefinitions="Auto,Auto" Margin="10,0">
                 <Label Text="Sort playlists by" FontSize="14" HorizontalOptions="Start"/>
                 <HorizontalStackLayout Grid.Row="1">
-                    <Picker ItemsSource="{Binding PlaylistSortOption}"
+                    <Picker ItemsSource="{Binding PlaylistSortOptions}"
                             SelectedItem="{Binding SelectedPlaylistSortOption}"
                             WidthRequest="150"/>
                     <Button FontSize="24"
@@ -73,7 +73,7 @@
                     LineBreakMode="WordWrap"
                     Command="{Binding ToggleEditModeCommand}"/>
         </Grid>
-        
+
 
         <!-- Second Bar right -->
         <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 2*, *, 60" Margin="10,5">

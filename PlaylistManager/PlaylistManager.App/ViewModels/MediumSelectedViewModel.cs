@@ -12,68 +12,74 @@ using PropertyChanged;
 namespace PlaylistManager.App.ViewModels;
 
 [AddINotifyPropertyChangedInterface]
-public partial class MediumSelectedViewModel : ViewModelBase,
+public partial class MediumSelectedViewModel : PlaylistBaseViewModel,
+                                               IRecipient<MediumAddedMessage>,
                                                IRecipient<MediumEditedMessage>,
                                                IRecipient<MediumRemovedMessage>,
-                                               IRecipient<ManagerSelectedMessage>,
                                                IRecipient<MediumSelectedMessage>
 {
+    private readonly MediumOperationsHandler _mediumHandler;
     private readonly IMediumFacade _mediumFacade;
-    private readonly INavigationService _navigationService;
-    private readonly IPlaylistFacade _playlistFacade;
-
     private Guid _playlistId;
-    private Guid _mediumId;
-    private ManagerType _selectedManagerType = ManagerType.NotDecided;
-    private bool _isEditMode;
     private bool _isPlaylistSelected;
 
+    private Guid _mediumId;
+    private bool _isEditMode;
+
     private string _originalName = string.Empty;
-    private string _originalAuthor = string.Empty;
-    private string _originalDescription = string.Empty;
-    private string _originalURL = string.Empty;
+    private string? _originalAuthor = string.Empty;
+    private string? _originalDescription = string.Empty;
+    private string? _originalURL = string.Empty;
     private string _originalDuration = string.Empty;
     private string _originalReleaseYear = string.Empty;
     private string _originalFormat = string.Empty;
     private string _originalGenre = string.Empty;
 
     public PlaylistSummaryModel? Playlist { get; set; }
-    public ObservableCollection<MediumSummaryModel> Media { get; set; } = new();
-    public ObservableCollection<PlaylistSummaryModel> Playlists { get; set; } = new();
     public string PlaylistTitle { get; set; } = string.Empty;
-    public string PlaylistDescription { get; set; } = string.Empty;
+    public string? PlaylistDescription { get; set; } = string.Empty;
+
+    public ObservableCollection<MediumSummaryModel> Media => _mediumHandler.Media;
     public int MediaCount => Media.Count;
     public double? TotalDuration => Media.Sum(m => m.Duration);
+    public string MediaSearchQuery
+    {
+        get => _mediumHandler.MediaSearchQuery;
+        set => _mediumHandler.MediaSearchQuery = value;
+    }
+    public string AuthorFilterQuery
+    {
+        get => _mediumHandler.AuthorFilterQuery;
+        set => _mediumHandler.AuthorFilterQuery = value;
+    }
+    public string SelectedMediaSortOption
+    {
+        get => _mediumHandler.SelectedMediaSortOption;
+        set => _mediumHandler.SelectedMediaSortOption = value;
+    }
+    public SortOrder MediaSortOrder
+    {
+        get => _mediumHandler.MediaSortOrder;
+        set => _mediumHandler.MediaSortOrder = value;
+    }
+    public string MediaSortOrderSymbol
+    {
+        get => _mediumHandler.MediaSortOrderSymbol;
+        set => _mediumHandler.MediaSortOrderSymbol = value;
+    }
+    public ObservableCollection<string> MediaSortOptions => _mediumHandler.MediaSortOptions;
 
     public bool IsMediumSelected { get; set; }
     public string MediumName { get; set; } = string.Empty;
     public Guid PlaylistMultimediaId { get; set; } = Guid.Empty;
     public Guid MediumID { get; set; } = Guid.Empty;
-    public string MediumAuthor { get; set; } = string.Empty;
-    public string MediumDescription { get; set; } = string.Empty;
-    public string MediumURL { get; set; } = string.Empty;
+    public string? MediumAuthor { get; set; } = string.Empty;
+    public string? MediumDescription { get; set; } = string.Empty;
+    public string? MediumURL { get; set; } = string.Empty;
     public string MediumDuration { get; set; } = string.Empty;
     public string MediumReleaseYear { get; set; } = string.Empty;
     public string MediumFormat { get; set; } = string.Empty;
     public string MediumGenre { get; set; } = string.Empty;
-
-    public string PlaylistSearchQuery { get; set; } = string.Empty;
-    public string MediaSearchQuery { get; set; } = string.Empty;
-    public string AuthorFilterQuery { get; set; } = string.Empty;
-
-    public string SelectedPlaylistSortOption { get; set; } = "Name";
-    public string SelectedMediaSortOption { get; set; } = "Title";
-    public SortOrder PlaylistSortOrder { get; set; } = SortOrder.Ascending;
-    public SortOrder MediaSortOrder { get; set; } = SortOrder.Ascending;
-    public string PlaylistSortOrderSymbol { get; set; } = "↑";
-    public string MediaSortOrderSymbol { get; set; } = "↑";
-    public ObservableCollection<string> PlaylistSortOptions { get; } = new(["Name", "Media Count", "Total Duration"]);
-
-    public ObservableCollection<string> MediaSortOptions { get; } = new([
-                                                                            "Title", "Author", "Added Date",
-                                                                            "Duration"
-                                                                        ]
-                                                                       );
 
     public bool HasValidationErrors { get; set; }
     public string ValidationMessage { get; set; } = string.Empty;
@@ -84,7 +90,6 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         get => _isEditMode;
         set => SetProperty(ref _isEditMode, value);
     }
-
     public bool IsNotEditMode => !IsEditMode;
 
     public bool IsPlaylistSelected
@@ -97,7 +102,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     {
         get
         {
-            return _selectedManagerType switch
+            return SelectedManagerType switch
             {
                 ManagerType.Video => new(new[]
                 {
@@ -126,7 +131,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     {
         get
         {
-            return _selectedManagerType switch
+            return SelectedManagerType switch
             {
                 ManagerType.Video => new(new[]
                 {
@@ -171,36 +176,30 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         }
     }
 
-    public MediumSelectedViewModel(IPlaylistFacade playlistFacade,
-                                   IMediumFacade mediumFacade,
-                                   INavigationService navigationService,
-                                   IMessengerService messengerService)
-        : base(messengerService)
+    public MediumSelectedViewModel(
+        IPlaylistFacade playlistFacade,
+        IMediumFacade mediumFacade,
+        INavigationService navigationService,
+        IMessengerService messengerService)
+        : base(playlistFacade, navigationService, messengerService)
     {
-        _playlistFacade = playlistFacade;
         _mediumFacade = mediumFacade;
-        _navigationService = navigationService;
+        _mediumHandler = new MediumOperationsHandler(playlistFacade, mediumFacade, messengerService);
+        _isPlaylistSelected = false;
 
         PropertyChanged += async (_, args) =>
                            {
                                switch (args.PropertyName)
                                {
-                                   case nameof(PlaylistSearchQuery):
-                                       await SearchPlaylistsCommand.ExecuteAsync(PlaylistSearchQuery);
-                                       break;
                                    case nameof(MediaSearchQuery):
-                                       await SearchMediaCommand.ExecuteAsync(MediaSearchQuery);
+                                       await _mediumHandler.SearchMediaAsync(MediaSearchQuery);
                                        break;
                                    case nameof(AuthorFilterQuery):
-                                       await FilterMediaByAuthorCommand.ExecuteAsync(AuthorFilterQuery);
-                                       break;
-                                   case nameof(SelectedPlaylistSortOption):
-                                   case nameof(PlaylistSortOrder):
-                                       await SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
+                                       await _mediumHandler.FilterMediaByAuthorAsync(AuthorFilterQuery);
                                        break;
                                    case nameof(SelectedMediaSortOption):
                                    case nameof(MediaSortOrder):
-                                       await SortMediaCommand.ExecuteAsync(SelectedMediaSortOption);
+                                       await _mediumHandler.SortMediaAsync(SelectedMediaSortOption);
                                        break;
                                    case nameof(MediumName):
                                    case nameof(MediumAuthor):
@@ -214,12 +213,34 @@ public partial class MediumSelectedViewModel : ViewModelBase,
                                        {
                                            ValidateMediumData();
                                        }
-
                                        break;
                                }
                            };
 
         WeakReferenceMessenger.Default.RegisterAll(this);
+    }
+
+    private async Task LoadPlaylistSummary()
+    {
+        var playlist = await PlaylistFacade.GetPlaylistByIdAsync(_playlistId);
+
+        if (playlist != null)
+        {
+            Playlist = playlist;
+            PlaylistTitle = playlist.Title;
+            PlaylistDescription = playlist.Description;
+        }
+    }
+
+    private async Task LoadPlaylistAndRelatedData(Guid playlistId)
+    {
+        _playlistId = playlistId;
+        _mediumHandler.SetCurrentPlaylistId(playlistId);
+
+        await LoadPlaylistSummary();
+        await _mediumHandler.LoadMediaAsync();
+
+        IsPlaylistSelected = Playlist != null;
     }
 
     [RelayCommand]
@@ -285,80 +306,6 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         MediumGenre = _originalGenre;
     }
 
-    private async Task LoadPlaylistAndRelatedData(Guid playlistId)
-    {
-        _playlistId = playlistId;
-
-        await LoadPlaylistSummary();
-
-        await LoadMedia();
-
-        if (Playlists.Count == 0)
-        {
-            await LoadAllPlaylists();
-        }
-
-        IsPlaylistSelected = Playlist != null;
-    }
-
-    private async Task LoadPlaylistSummary()
-    {
-        var playlist = await _playlistFacade.GetPlaylistByIdAsync(_playlistId);
-
-        if (playlist != null)
-        {
-            Playlist = playlist;
-            PlaylistTitle = playlist.Title;
-            PlaylistDescription = playlist.Description;
-        }
-    }
-
-    private async Task LoadMedia()
-    {
-        if (_playlistId == Guid.Empty) return;
-
-        try
-        {
-            var media = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                            _playlistId,
-                                                                            null,
-                                                                            null,
-                                                                            MediaSortBy.Title,
-                                                                            MediaSortOrder);
-
-            // Přidání logování
-            System.Diagnostics.Debug.WriteLine($"Načteno {media.Count()} médií pro playlist {_playlistId}");
-
-            Media.Clear();
-            foreach (var medium in media)
-            {
-                Media.Add(medium);
-            }
-
-            // Výpis aktuálního počtu médií v kolekci
-            System.Diagnostics.Debug.WriteLine($"Počet médií v kolekci po přidání: {Media.Count}");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Chyba při načítání médií: {ex.Message}");
-        }
-    }
-
-    private async Task LoadAllPlaylists()
-    {
-        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
-        var playlists = await _playlistFacade.GetPlaylistsByTypeAsync(playlistType);
-
-        Playlists.Clear();
-
-        foreach (var playlist in playlists)
-        {
-            Playlists.Add(playlist);
-        }
-
-        await SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
-    }
-
     private void ClearMediumSelection()
     {
         IsMediumSelected = false;
@@ -376,178 +323,32 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     }
 
     [RelayCommand]
-    private async Task SortPlaylists(string? sortOption)
-    {
-        if (string.IsNullOrEmpty(sortOption)) return;
-
-        PlaylistSortBy sortBy = sortOption switch
-        {
-            "Name"           => PlaylistSortBy.Title,
-            "Media Count"    => PlaylistSortBy.MediaCount,
-            "Total Duration" => PlaylistSortBy.TotalDuration,
-            _                => PlaylistSortBy.Title
-        };
-
-        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
-
-        var sortedPlaylists = await _playlistFacade.GetPlaylistsSortedAsync(sortBy, PlaylistSortOrder, playlistType);
-
-        Playlists.Clear();
-
-        foreach (var item in sortedPlaylists)
-        {
-            Playlists.Add(item);
-        }
-    }
-
-    [RelayCommand]
     private async Task SortMedia(string? sortOption)
     {
-        if (string.IsNullOrEmpty(sortOption) || _playlistId == Guid.Empty) return;
-
-        MediaSortBy sortBy = sortOption switch
-        {
-            "Title"      => MediaSortBy.Title,
-            "Author"     => MediaSortBy.Author,
-            "Added Date" => MediaSortBy.AddedDate,
-            "Duration"   => MediaSortBy.Duration,
-            _            => MediaSortBy.Title
-        };
-
-        var sortedMedia =
-            await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                _playlistId,
-                                                                null,
-                                                                null,
-                                                                sortBy,
-                                                                MediaSortOrder
-                                                               );
-        Media.Clear();
-
-        foreach (var medium in sortedMedia)
-        {
-            Media.Add(medium);
-        }
+        await _mediumHandler.SortMediaAsync(sortOption);
     }
 
     [RelayCommand]
-    private void TogglePlaylistSortOrder()
+    private async Task ToggleMediaSortOrder()
     {
-        PlaylistSortOrder = PlaylistSortOrder == SortOrder.Ascending
-                                ? SortOrder.Descending
-                                : SortOrder.Ascending;
+        _mediumHandler.ToggleMediaSortOrder();
 
-        PlaylistSortOrderSymbol = PlaylistSortOrder == SortOrder.Ascending
-                                      ? "↑"
-                                      : "↓";
-    }
+        OnPropertyChanged(nameof(MediaSortOrder));
+        OnPropertyChanged(nameof(MediaSortOrderSymbol));
 
-    [RelayCommand]
-    private void ToggleMediaSortOrder()
-    {
-        MediaSortOrder = MediaSortOrder == SortOrder.Ascending
-                             ? SortOrder.Descending
-                             : SortOrder.Ascending;
-
-        MediaSortOrderSymbol = MediaSortOrder == SortOrder.Ascending
-                                   ? "↑"
-                                   : "↓";
-    }
-
-    [RelayCommand]
-    private async Task SearchPlaylists(string? searchQuery)
-    {
-        IEnumerable<PlaylistSummaryModel> results;
-
-        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
-
-        if (string.IsNullOrEmpty(searchQuery))
-        {
-            results = await _playlistFacade.GetPlaylistsByTypeAsync(playlistType);
-        }
-        else
-        {
-            results = await _playlistFacade.GetPlaylistsByNameAsync(searchQuery, playlistType);
-        }
-
-        Playlists.Clear();
-
-        foreach (var playlist in results)
-        {
-            Playlists.Add(playlist);
-        }
+        await _mediumHandler.SortMediaAsync(SelectedMediaSortOption);
     }
 
     [RelayCommand]
     private async Task SearchMedia(string? searchQuery)
     {
-        if (_playlistId == Guid.Empty) return;
-
-        IEnumerable<MediumSummaryModel> results;
-
-        if (string.IsNullOrEmpty(searchQuery))
-        {
-            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                          _playlistId,
-                                                                          null,
-                                                                          null,
-                                                                          MediaSortBy.Title,
-                                                                          MediaSortOrder
-                                                                         );
-        }
-        else
-        {
-            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                          _playlistId,
-                                                                          MediaFilterBy.Title,
-                                                                          searchQuery,
-                                                                          MediaSortBy.Title,
-                                                                          MediaSortOrder
-                                                                         );
-        }
-
-        Media.Clear();
-
-        foreach (var medium in results)
-        {
-            Media.Add(medium);
-        }
+        await _mediumHandler.SearchMediaAsync(searchQuery);
     }
 
     [RelayCommand]
     private async Task FilterMediaByAuthor(string? filterQuery)
     {
-        if (_playlistId == Guid.Empty) return;
-
-        IEnumerable<MediumSummaryModel> results;
-
-        if (string.IsNullOrEmpty(filterQuery))
-        {
-            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                          _playlistId,
-                                                                          null,
-                                                                          null,
-                                                                          MediaSortBy.Title,
-                                                                          MediaSortOrder
-                                                                         );
-        }
-        else
-        {
-            results = await _playlistFacade.GetMediaInPlaylistSortedAsync(
-                                                                          _playlistId,
-                                                                          MediaFilterBy.Author,
-                                                                          filterQuery,
-                                                                          MediaSortBy.Title,
-                                                                          MediaSortOrder
-                                                                         );
-        }
-
-        Media.Clear();
-
-        foreach (var medium in results)
-        {
-            Media.Add(medium);
-        }
+        await _mediumHandler.FilterMediaByAuthorAsync(filterQuery);
     }
 
     [RelayCommand]
@@ -562,52 +363,19 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
         await LoadMediumDetailCommand.ExecuteAsync(null);
 
-        MessengerService.Send(new MediumSelectedMessage(_playlistId, medium.MediumId, _selectedManagerType));
+        MessengerService.Send(new MediumSelectedMessage(_playlistId, medium.MediumId, SelectedManagerType));
     }
 
     [RelayCommand]
     private async Task CreateMedium()
     {
-        if (_playlistId == Guid.Empty) return;
+        await _mediumHandler.CreateMediumAsync();
 
-        var mediumId = Guid.NewGuid();
-
-        try
+        var newMedium = Media.LastOrDefault();
+        if (newMedium != null)
         {
-            var newMedium = MediumDetailedModel.Empty with
-            {
-                Id = Guid.NewGuid(),
-                MediumId = mediumId,
-                PlaylistId = _playlistId,
-                Title = "New Medium",
-                Description = "Description of the new medium",
-                Author = "Unknown Author",
-                AddedDate = DateTime.Now,
-            };
-
-            await _mediumFacade.SaveAsync(newMedium);
-
-            var summaryMedium = new MediumSummaryModel
-            {
-                Id = newMedium.Id,
-                MediumId = newMedium.MediumId,
-                PlaylistId = _playlistId,
-                Title = newMedium.Title,
-                Author = newMedium.Author,
-                Duration = newMedium.Duration,
-                AddedDate = newMedium.AddedDate
-            };
-
-            Media.Add(summaryMedium);
-
-            await SelectMediumCommand.ExecuteAsync(summaryMedium);
+            await SelectMediumCommand.ExecuteAsync(newMedium);
             StartEditCommand.Execute(null);
-
-            MessengerService.Send(new MediumAddedMessage(summaryMedium, _playlistId));
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Error while creating medium: {ex.Message}");
         }
     }
 
@@ -620,38 +388,46 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         var medium = Media.FirstOrDefault(m => m.MediumId == _mediumId);
         if (medium == null) return;
 
-        await _mediumFacade.DeleteAsync(medium.Id);
-        Media.Remove(medium);
-
-        MessengerService.Send(new MediumRemovedMessage(_mediumId));
+        await _mediumHandler.DeleteMediumAsync(medium);
+        ClearMediumSelection();
     }
-
 
     [RelayCommand]
     private async Task SelectPlaylist(PlaylistSummaryModel? playlist)
     {
         if (playlist == null) return;
 
-        await _navigationService.GoToAsync("/media");
-        MessengerService.Send(new PlaylistDisplayMessage(playlist.PlaylistId, _selectedManagerType));
+        ClearMediumSelection();
+
+        await LoadPlaylistAndRelatedData(playlist.PlaylistId);
+        _playlistId = playlist.PlaylistId;
+
+        MessengerService.Send(new PlaylistSelectedMessage(playlist));
     }
 
     [RelayCommand]
     private async Task CreatePlaylist()
     {
-        var newPlaylist = PlaylistSummaryModel.Empty with
-        {
-            PlaylistId = Guid.NewGuid(),
-            Type = MapManagerTypeToPlaylistType(_selectedManagerType),
-            Title = "New playlist",
-            Description = "Description of the new playlist",
-            MediaCount = 0,
-            TotalDuration = 0
-        };
-
-        var savedPlaylist = await _playlistFacade.SaveAsync(newPlaylist);
-
+        var savedPlaylist = await CreatePlaylistInternal();
         MessengerService.Send(new PlaylistAddMessage(savedPlaylist));
+    }
+
+    [RelayCommand]
+    private void TogglePlaylistSortOrder()
+    {
+        TogglePlaylistSortOrderInternal();
+    }
+
+    [RelayCommand]
+    private async Task SearchPlaylists(string? searchQuery)
+    {
+        await SearchPlaylistsAsync(searchQuery);
+    }
+
+    [RelayCommand]
+    private async Task SortPlaylists(string? sortOption)
+    {
+        await SortPlaylistsAsync(sortOption);
     }
 
     [RelayCommand]
@@ -798,24 +574,24 @@ public partial class MediumSelectedViewModel : ViewModelBase,
     private async Task GoBack()
     {
         IsMediumSelected = false;
-        await _navigationService.GoToAsync("/media");
+        await NavigationService.GoToAsync("/media");
     }
 
     [RelayCommand]
     private async Task GoToSelect()
     {
-        await _navigationService.GoToAsync("//select");
+        await NavigationService.GoToAsync("//select");
     }
 
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("/settings");
+        await NavigationService.GoToAsync("/settings");
     }
 
-    public void Receive(ManagerSelectedMessage message)
+    public new void Receive(ManagerSelectedMessage message)
     {
-        _selectedManagerType = message.SelectedType;
+        SelectedManagerType = message.SelectedType;
         OnPropertyChanged(nameof(FormatOptions));
         OnPropertyChanged(nameof(GenreOptions));
     }
@@ -825,7 +601,7 @@ public partial class MediumSelectedViewModel : ViewModelBase,
         if (message.SelectedMediumId == _mediumId && message.SelectedPlaylistId == _playlistId)
             return;
 
-        _selectedManagerType = message.ManagerType;
+        SelectedManagerType = message.ManagerType;
         _mediumId = message.SelectedMediumId;
 
         await LoadPlaylistAndRelatedData(message.SelectedPlaylistId);
@@ -834,6 +610,8 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
     public async void Receive(MediumEditedMessage message)
     {
+        _mediumHandler.HandleMediumEditedMessage(message);
+
         if (message.Medium.MediumId == _mediumId)
         {
             await LoadMediumDetailCommand.ExecuteAsync(null);
@@ -842,20 +620,18 @@ public partial class MediumSelectedViewModel : ViewModelBase,
 
     public void Receive(MediumRemovedMessage message)
     {
+        _mediumHandler.HandleMediumRemovedMessage(message);
+
         if (message.MediumId == _mediumId)
         {
             ClearMediumSelection();
         }
+
+        _mediumId = Guid.Empty;
     }
 
-    private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)
+    public void Receive(MediumAddedMessage message)
     {
-        return managerType switch
-        {
-            ManagerType.Video     => PlaylistType.Video,
-            ManagerType.Music     => PlaylistType.Music,
-            ManagerType.AudioBook => PlaylistType.AudioBook,
-            _                     => PlaylistType.Music
-        };
+        _mediumHandler.HandleMediumAddedMessage(message);
     }
 }

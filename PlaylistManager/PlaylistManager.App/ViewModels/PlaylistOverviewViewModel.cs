@@ -1,182 +1,42 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
 using PlaylistManager.App.Messages;
 using PlaylistManager.App.Services;
 using PlaylistManager.BL.Facades.Interfaces;
 using PlaylistManager.BL.Models;
-using PlaylistManager.Common.Enums;
-using PlaylistManager.BL.Enums;
 using PropertyChanged;
 
 namespace PlaylistManager.App.ViewModels;
 
 [AddINotifyPropertyChangedInterface]
-public partial class PlaylistOverviewViewModel : ViewModelBase,
-                                                 IRecipient<PlaylistAddMessage>,
-                                                 IRecipient<PlaylistDeleteMessage>,
-                                                 IRecipient<PlaylistEditMessage>,
-                                                 IRecipient<ManagerSelectedMessage>
+public partial class PlaylistOverviewViewModel(IPlaylistFacade playlistFacade,
+                                               INavigationService navigationService,
+                                               IMessengerService messengerService)
+    : PlaylistBaseViewModel(playlistFacade, navigationService, messengerService)
 {
-    private readonly IPlaylistFacade _playlistFacade;
-    private readonly INavigationService _navigationService;
-    private ManagerType _selectedManagerType = ManagerType.NotDecided;
 
-    public ObservableCollection<PlaylistSummaryModel> Playlists { get; set; } = new();
-    public string PlaylistSearchQuery { get; set; } = string.Empty;
-
-    public string SelectedPlaylistSortOption { get; set; } = "Name";
-    public SortOrder PlaylistSortOrder { get; set; } = SortOrder.Ascending;
-    public string PlaylistSortOrderSymbol { get; set; } = "↑";
-    public ObservableCollection<string> PlaylistSortOption { get; } = new(["Name", "Media Count", "Total Duration"]);
-
-    public bool IsEditMode { get; set; } = false;
+    public bool IsEditMode { get; set; }
     public PlaylistSummaryModel? CurrentlyEditedPlaylist { get; set; }
     public string EditedPlaylistTitle { get; set; } = string.Empty;
 
-    public PlaylistOverviewViewModel(IPlaylistFacade playlistFacade, INavigationService navigationService, IMessengerService messengerService)
-        : base(messengerService)
+    [RelayCommand]
+    private async Task CreatePlaylist()
     {
-        _playlistFacade = playlistFacade;
-        _navigationService = navigationService;
-
-        PropertyChanged += async (_, args) =>
-                           {
-                               switch (args.PropertyName)
-                               {
-                                   case nameof(PlaylistSearchQuery):
-                                       await SearchPlaylistsCommand.ExecuteAsync(PlaylistSearchQuery);
-                                       break;
-                                   case nameof(SelectedPlaylistSortOption):
-                                   case nameof(PlaylistSortOrder):
-                                       await SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
-                                       break;
-                               }
-                           };
-
-        WeakReferenceMessenger.Default.RegisterAll(this);
-    }
-
-    public async void Receive(ManagerSelectedMessage message)
-    {
-        _selectedManagerType = message.SelectedType;
-        await LoadDataAsync();
-    }
-
-    public void Receive(PlaylistAddMessage message)
-    {
-        Playlists.Add(message.Value);
-    }
-
-    public void Receive(PlaylistDeleteMessage message)
-    {
-        var playlist = Playlists.FirstOrDefault(p => p.PlaylistId.ToString() == message.Value);
-        if (playlist != null)
-            Playlists.Remove(playlist);
-    }
-
-    public void Receive(PlaylistEditMessage message)
-    {
-        var index = Playlists.ToList().FindIndex(p => p.PlaylistId == message.Value.PlaylistId);
-        if (index >= 0)
-            Playlists[index] = message.Value;
-    }
-
-    protected override async Task LoadDataAsync()
-    {
-        await LoadPlaylists();
-    }
-
-    private async Task LoadPlaylists()
-    {
-        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
-
-        var playlists = await _playlistFacade.GetPlaylistsByTypeAsync(playlistType);
-
-        Playlists.Clear();
-        foreach (var playlist in playlists)
-        {
-            Playlists.Add(playlist);
-        }
-
-        await SortPlaylistsCommand.ExecuteAsync(SelectedPlaylistSortOption);
+        var savedPlaylist = await CreatePlaylistInternal();
+        MessengerService.Send(new PlaylistAddMessage(savedPlaylist));
     }
 
     [RelayCommand]
-    private async Task SortPlaylists(string? sortOption)
+    private async Task DeletePlaylist(Guid playlistId)
     {
-        if (string.IsNullOrEmpty(sortOption)) return;
+        await DeletePlaylistInternal(playlistId);
+        MessengerService.Send(new PlaylistDeleteMessage(playlistId.ToString()));
 
-        PlaylistSortBy sortBy = sortOption switch
-        {
-            "Name"           => PlaylistSortBy.Title,
-            "Media Count"    => PlaylistSortBy.MediaCount,
-            "Total Duration" => PlaylistSortBy.TotalDuration,
-            _                => PlaylistSortBy.Title
-        };
-
-        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
-
-        var sortedPlaylists = await _playlistFacade.GetPlaylistsSortedAsync(sortBy, PlaylistSortOrder, playlistType);
-
-        Playlists.Clear();
-        foreach (var item in sortedPlaylists)
-        {
-            Playlists.Add(item);
-        }
     }
 
     [RelayCommand]
     private void TogglePlaylistSortOrder()
     {
-        PlaylistSortOrder = PlaylistSortOrder == SortOrder.Ascending
-                                ? SortOrder.Descending
-                                : SortOrder.Ascending;
-
-        PlaylistSortOrderSymbol = PlaylistSortOrder == SortOrder.Ascending
-                                ? "↑"
-                                : "↓";
-    }
-
-    [RelayCommand]
-    private async Task SearchPlaylists(string? searchQuery)
-    {
-        IEnumerable<PlaylistSummaryModel> results;
-        var playlistType = MapManagerTypeToPlaylistType(_selectedManagerType);
-
-        if (string.IsNullOrEmpty(searchQuery))
-        {
-            results = await _playlistFacade.GetPlaylistsByTypeAsync(playlistType);
-        }
-        else
-        {
-            results = await _playlistFacade.GetPlaylistsByNameAsync(searchQuery, playlistType);
-        }
-
-        Playlists.Clear();
-        foreach (var playlist in results)
-        {
-            Playlists.Add(playlist);
-        }
-    }
-
-    [RelayCommand]
-    private async Task CreatePlaylist()
-    {
-        var newPlaylist = PlaylistSummaryModel.Empty with
-        {
-            PlaylistId = Guid.NewGuid(),
-            Type = MapManagerTypeToPlaylistType(_selectedManagerType),
-            Title = "New playlist",
-            Description = "Description of the new playlist",
-            MediaCount = 0,
-            TotalDuration = 0
-
-        };
-
-        var savedPlaylist = await _playlistFacade.SaveAsync(newPlaylist);
-
-        MessengerService.Send(new PlaylistAddMessage(savedPlaylist));
+        TogglePlaylistSortOrderInternal();
     }
 
     [RelayCommand]
@@ -196,9 +56,9 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         }
         else
         {
-            await _navigationService.GoToAsync("/media");
+            await NavigationService.GoToAsync("/media");
 
-            MessengerService.Send(new PlaylistDisplayMessage(playlist.PlaylistId, _selectedManagerType));
+            MessengerService.Send(new PlaylistDisplayMessage(playlist.PlaylistId, SelectedManagerType));
         }
     }
 
@@ -255,7 +115,7 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
             Title = EditedPlaylistTitle
         };
 
-        var savedPlaylist = await _playlistFacade.SaveAsync(updatedPlaylist);
+        var savedPlaylist = await PlaylistFacade.SaveAsync(updatedPlaylist);
 
         var index = Playlists.ToList().FindIndex(p => p.PlaylistId == savedPlaylist.PlaylistId);
         if (index >= 0)
@@ -271,25 +131,6 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
         EditedPlaylistTitle = string.Empty;
     }
 
-    [RelayCommand]
-    private async Task DeletePlaylist(Guid playlistId)
-    {
-        if (IsEditMode && CurrentlyEditedPlaylist?.PlaylistId == playlistId)
-        {
-            CurrentlyEditedPlaylist = null;
-            EditedPlaylistTitle = string.Empty;
-        }
-
-        await _playlistFacade.DeleteAsync(playlistId);
-
-        var playlist = Playlists.FirstOrDefault(p => p.PlaylistId == playlistId);
-        if (playlist != null)
-        {
-            Playlists.Remove(playlist);
-        }
-
-        MessengerService.Send(new PlaylistDeleteMessage(playlistId.ToString()));
-    }
 
     [RelayCommand]
     private async Task GoBack()
@@ -299,24 +140,13 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
             await FinishCurrentEditingAsync();
         }
 
-        await _navigationService.GoToAsync("//select");
+        await NavigationService.GoToAsync("//select");
     }
 
     [RelayCommand]
     private async Task NavigateToSettings()
     {
-        await _navigationService.GoToAsync("/settings");
-    }
-
-    private PlaylistType MapManagerTypeToPlaylistType(ManagerType managerType)
-    {
-        return managerType switch
-        {
-            ManagerType.Video     => PlaylistType.Video,
-            ManagerType.Music     => PlaylistType.Music,
-            ManagerType.AudioBook => PlaylistType.AudioBook,
-            _                     => PlaylistType.Music
-        };
+        await NavigationService.GoToAsync("/settings");
     }
 
     [RelayCommand]
@@ -327,6 +157,6 @@ public partial class PlaylistOverviewViewModel : ViewModelBase,
             return;
         }
 
-        await _playlistFacade.SaveAsync(updatedPlaylist);
+        await PlaylistFacade.SaveAsync(updatedPlaylist);
     }
 }
